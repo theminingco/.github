@@ -1,0 +1,1 @@
+*When submitting a contribution you thereby grant The Mining Company a nonexclusive, royalty-free, fully paid-up, irrevocable, perpetual, worldwide license, with the right to grant and authorize sublicenses, to make, have made, modify, use, import, offer for sale, and sell your contribution or a part thereof.* 

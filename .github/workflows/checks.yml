@@ -1,0 +1,70 @@
+name: checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+        cache: 'npm'
+    - name: Run Lint
+      run: |
+        npm ci
+        npm run lint
+
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: "javascript"
+    - name: Analyze CodeQL
+      uses: github/codeql-action/analyze@v2
+
+  transpile:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+        cache: 'npm'
+    - name: Transpile Code
+      run: |
+        npm ci
+        npm run build
+      env:
+        DISABLE_ESLINT_PLUGIN: true
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+        cache: 'npm'
+    - name: Run Tests
+      run: |
+        npm ci
+        npm run test
