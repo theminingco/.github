@@ -9,7 +9,7 @@ const Status = () => {
         <Box flexDirection="row" alignItems="center" height="100%">
             <Box flexDirection="column" alignItems="center" width="100%">
                 <Box borderStyle="round" alignItems="center" flexDirection="column" width="60%" paddingTop={1} paddingBottom={1}>
-                    <Text>⛏ The Mining Company ⛏</Text>
+                    <Text>⛏ The Mining Company</Text>
                     <Text>{connectionStatus}</Text>
                 </Box>
             </Box>
