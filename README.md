@@ -1,4 +1,4 @@
-# ⛏ The Mining Company ⛏
+# ⛏ The Mining Company
 
 This repository consists of several components:
 * `Manager` - a command line utility for the manager app.
