@@ -6,7 +6,7 @@ import { useConnections } from "../modules/socket.js";
 import Row from "./row.js";
 
 const Main = (props: { onSelect?: (ip: Connection) => void}) => {
-    const { height } = useWindowSize();
+    const { width, height } = useWindowSize();
     const [startIndex, setStartIndex] = useState(0);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const connections = useConnections();
@@ -60,12 +60,12 @@ const Main = (props: { onSelect?: (ip: Connection) => void}) => {
     };
 
     return (
-        <Box width="100%" height={height - 4} flexDirection="column">
-            <Box width="100%" height={numRows} flexDirection="column">
+        <Box width={width} height={height - 4} flexDirection="column">
+            <Box width={width} height={numRows} flexDirection="column">
                 {range(numRows).map(i => <Row key={i} index={i} connection={connectionForIndex(i)} selected={i == selectedIndex} />)}
             </Box>
 
-            <Box width="100%" height={1} flexDirection="row">
+            <Box width={width} height={1} flexDirection="row">
                 <Text>Navigation: ▲ ▼   Selection: RETURN   Exit: ESC</Text>
                 <Spacer />
                 <Text inverse> {connections.length} miner{connections.length == 1 ? "" : "s"} </Text>
