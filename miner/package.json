@@ -2,13 +2,14 @@
     "name": "@theminingco/miner",
     "type": "module",
     "bin": "./lib/app.js",
+    "files": [ "/lib" ],
     "scripts": {
         "build": "../scripts/build",
         "start": "../scripts/start",
         "deploy": "../scripts/deploy"
     },
     "dependencies": {
-        "@theminingco/core": "*",
+        "@theminingco/core": "latest",
         "ink": "^3.2.0",
         "nanoid": "^4.0.0",
         "ws": "^8.11.0",
