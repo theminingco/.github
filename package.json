@@ -4,7 +4,7 @@
     "scripts": {
         "build": "nx run-many --target build",
         "start": "nx run-many --target start",
-        "publish": "nx run-many --target publish",
+        "deploy": "nx run-many --target deploy",
         "test": "jest -u",
         "lint": "eslint ."
     },

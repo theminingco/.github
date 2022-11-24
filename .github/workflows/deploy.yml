@@ -1,4 +1,4 @@
-name: publish
+name: deploy
 
 on:
   release:
@@ -6,7 +6,7 @@ on:
 
 jobs:
 
-  publish:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,9 +21,9 @@ jobs:
         with:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
-      - name: Publish Packages
+      - name: Deploy Packages
         run: |
           npm ci
-          npm run publish
+          npm run deploy
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
