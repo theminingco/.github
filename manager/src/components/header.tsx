@@ -1,10 +1,12 @@
 import React from "react";
 import { Box, Text } from "ink";
+import { useWindowSize } from "core";
 
 const Header = (props: { title?: string, subtitle?: string }) => {
+    const { width } = useWindowSize();
 
     return (
-        <Box borderStyle="round" flexDirection="column" alignItems="center" width="100%" height={4}>
+        <Box borderStyle="round" flexDirection="column" alignItems="center" width={width} height={4}>
             <Text>{props.title}</Text>
             <Text>{props.subtitle}</Text>
         </Box>
