@@ -1,13 +1,8 @@
 name: deploy
 
 on:
-  push:
-    tags:
-      - v*.*.*
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  release:
+    types: [created]
 
 jobs:
 
@@ -18,7 +13,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Setup Node
@@ -32,5 +27,3 @@ jobs:
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
