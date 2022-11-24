@@ -22,7 +22,7 @@ There are also commands that will run for all components. These can be run from 
 Below is a (non-exhaustive) list of available commands:
 * `npm run build` - transpile the [TypeScript](https://www.typescriptlang.org) code for deployment or serving.
 * `npm run start` - start up the app in development mode.
-* `npm run deploy` - deploy the app package to [npm](https://www.npmjs.com).
+* `npm run publish` - publish the app package to [npm](https://www.npmjs.com).
 * `npm run test` - runs the [Jest](https://jestjs.io) unit tests.
 * `npm run lint` - runs [ESLint](https://eslint.org) to check for bugs and code conventions.
 

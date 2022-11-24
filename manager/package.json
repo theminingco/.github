@@ -5,7 +5,7 @@
     "scripts": {
         "build": "tsc",
         "start": "../start",
-        "publish": "npm publish"
+        "publish": "npm version from-git --no-git-tag-version && npm publish"
     },
     "dependencies": {
         "@theminingco/core": "*",
