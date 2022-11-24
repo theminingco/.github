@@ -1,0 +1,4 @@
+#!/bin/bash
+set -o errexit -o pipefail
+npm version from-git --no-git-tag-version --allow-same-version
+npm publish
