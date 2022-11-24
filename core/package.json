@@ -4,8 +4,8 @@
     "main": "./build/app.js",
     "types": "./build/app.d.ts",
     "scripts": {
-        "build": "tsc",
-        "deploy": "../deploy"
+        "build": "../scripts/build",
+        "deploy": "../scripts/deploy"
     },
     "dependencies": {
         "ink": "^3.2.0",

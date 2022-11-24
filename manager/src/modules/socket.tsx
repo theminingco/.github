@@ -38,7 +38,7 @@ export const useConnections = () => {
 
 export const openWebSocket = () => {
     const app = new WebSocketServer({
-        port: parseInt(options.port)
+        port: options.port
     });
 
     app.on("connection", (ws: WebSocket, req: any) => { 

@@ -2,7 +2,11 @@
 echo "#!/bin/bash" > start.command
 echo "set -o errexit -o pipefail -o xtrace" >> start.command
 echo "cd $PWD" >> start.command
-echo "node -r dotenv/config --inspect ./build/app.js" >> start.command
+for VARIABLE in $(cat ../.env | xargs)
+do
+    echo "export $VARIABLE" >> start.command
+done
+echo "node --inspect ./build/app.js" >> start.command
 chmod +x start.command
 open ./start.command
 sleep 1
