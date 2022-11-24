@@ -31,7 +31,7 @@ export const useConnections = () => {
         });
 
         return () => { connections.unregister(listenerKey); };
-    });
+    }, []);
 
     return items;
 };
