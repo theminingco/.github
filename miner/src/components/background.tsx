@@ -1,12 +1,11 @@
 import React from "react";
 import { Box } from "ink";
-// import { useWindowSize } from "../utility/size.js";
 
-const Background = () => {
-    // const { width, height } = useWindowSize();
+const Background = (props: { height: number, flipped?: boolean }) => {
+    // const halfHeight = Math.floor(props.height / 2);
 
     return (
-        <Box>
+        <Box height={props.height}>
             
         </Box>
     );

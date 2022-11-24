@@ -20,6 +20,11 @@
       "dependsOn": [
         "build"
       ]
+    },
+    "deploy": {
+      "dependsOn": [
+        "build"
+      ]
     }
   },
   "affected": {

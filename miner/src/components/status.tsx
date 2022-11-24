@@ -1,17 +1,15 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useConnectionStatus } from "../utility/socket.js";
+import { useConnectionStatus } from "../modules/socket.js";
 
 const Status = () => {
     const connectionStatus = useConnectionStatus();
 
     return (
-        <Box flexDirection="row" alignItems="center" height="100%">
+        <Box borderStyle="round" alignSelf="center" width="60%" padding={1}>
             <Box flexDirection="column" alignItems="center" width="100%">
-                <Box borderStyle="round" alignItems="center" flexDirection="column" width="60%" paddingTop={1} paddingBottom={1}>
-                    <Text>⛏ The Mining Company</Text>
-                    <Text>{connectionStatus}</Text>
-                </Box>
+                <Text>⛏ The Mining Company</Text>
+                <Text>{connectionStatus}</Text>
             </Box>
         </Box>
     );

@@ -1,11 +1,12 @@
 import WebSocket, { WebSocketServer } from "ws";
 import { nanoid } from "nanoid";
+import { ObservableMap } from "core";
 import PingController from "../controllers/ping.js";
 import Controller from "../model/controller.js";
 import Request from "../model/request.js";
 import Connection from "../model/connection.js";
-import ObservableMap from "./observable.js";
 import { useEffect, useState } from "react";
+import { options } from "../app.js";
 
 const controllers: Array<Controller> = [
     new PingController()
@@ -35,9 +36,9 @@ export const useConnections = () => {
     return items;
 };
 
-export const openWebSocket = (port: number) => {
+export const openWebSocket = () => {
     const app = new WebSocketServer({
-        port: port
+        port: parseInt(options.port)
     });
 
     app.on("connection", (ws: WebSocket, req: any) => { 

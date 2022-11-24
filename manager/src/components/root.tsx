@@ -4,15 +4,16 @@ import Header from "./header.js";
 import Connection from "../model/connection.js";
 import Main from "./main.js";
 import Detail from "./detail.js";
-import { useWindowSize } from "../utlity/size.js";
+import { useWindowSize } from "core";
+import { options } from "../app.js";
 
-const Root = (props: { port: number }) => {
+const Root = () => {
     const { width, height } = useWindowSize();
     const [connection, setConnection] = useState<Connection | null>(null);
 
     const title = () => {
         if (connection == null) {
-            return `Manager reachable at ws://localhost:${props.port}`;
+            return `Manager reachable at ws://localhost:${options.port}`;
         } else {
             return "Title";
         }
