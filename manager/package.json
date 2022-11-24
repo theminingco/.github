@@ -1,6 +1,5 @@
 {
     "name": "manager",
-    "private": true,
     "type": "module",
     "bin": "node ./build/app.js",
     "scripts": {
