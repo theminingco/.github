@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "ink";
-import { useWindowSize } from "core";
+import { useWindowSize } from "@theminingco/core";
 
 const Background = (props: { flipped?: boolean }) => {
     const { width, height } = useWindowSize();

@@ -4,7 +4,7 @@ import Header from "./header.js";
 import Connection from "../model/connection.js";
 import Main from "./main.js";
 import Detail from "./detail.js";
-import { useWindowSize } from "core";
+import { useWindowSize } from "@theminingco/core";
 import { options } from "../app.js";
 
 const Root = () => {

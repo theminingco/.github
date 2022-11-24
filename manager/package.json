@@ -1,14 +1,14 @@
 {
-    "name": "manager",
+    "name": "@theminingco/manager",
     "type": "module",
-    "bin": "node ./build/app.js",
+    "bin": "./build/app.js",
     "scripts": {
         "build": "tsc",
         "start": "../start",
         "publish": "npm publish"
     },
     "dependencies": {
-        "core": "*",
+        "@theminingco/core": "*",
         "ink": "^3.2.0",
         "nanoid": "^4.0.0",
         "react": "^18.2.0",

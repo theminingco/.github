@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WebSocket from "ws";
-import { timer } from "core";
+import { timer } from "@theminingco/core";
 import { options } from "../app.js";
 
 let connectionStatus = "Connecting";

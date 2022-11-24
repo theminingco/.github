@@ -1,5 +1,5 @@
 {
-    "name": "theminingco",
+    "name": "@theminingco/root",
     "private": true,
     "scripts": {
         "build": "nx run-many --target build",

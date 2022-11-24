@@ -1,14 +1,14 @@
 {
-    "name": "miner",
+    "name": "@theminingco/miner",
     "type": "module",
-    "bin": "node ./build/app.js",
+    "bin": "./build/app.js",
     "scripts": {
         "build": "tsc",
         "start": "../start",
         "publish": "npm publish"
     },
     "dependencies": {
-        "core": "*",
+        "@theminingco/core": "*",
         "ink": "^3.2.0",
         "nanoid": "^4.0.0",
         "ws": "^8.11.0",

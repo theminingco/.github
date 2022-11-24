@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, useInput, Key } from "ink";
-import { useWindowSize } from "core";
+import { useWindowSize } from "@theminingco/core";
 import Background from "./background.js";
 import Status from "./status.js";
 import { options } from "../app.js";

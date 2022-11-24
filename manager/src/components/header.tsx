@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useWindowSize } from "core";
+import { useWindowSize } from "@theminingco/core";
 
 const Header = (props: { title?: string, subtitle?: string }) => {
     const { width } = useWindowSize();

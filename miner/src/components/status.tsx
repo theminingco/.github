@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { useConnectionStatus } from "../modules/socket.js";
-import { useWindowSize } from "core";
+import { useWindowSize } from "@theminingco/core";
 
 const Status = () => {
     const { width } = useWindowSize();
