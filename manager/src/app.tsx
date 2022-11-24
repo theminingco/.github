@@ -1,5 +1,6 @@
 import React from "react";
 import { render } from "ink";
+import { noEscape } from "core";
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import Root from "./components/root.js";
@@ -10,5 +11,6 @@ export const options = yargs(hideBin(process.argv))
     .help()
     .parseSync();
 
+noEscape();
 openWebSocket();
 render(<Root />, { exitOnCtrlC: false });
