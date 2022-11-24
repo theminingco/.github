@@ -1,11 +1,11 @@
 {
     "name": "core",
-    "private": true,
     "type": "module",
     "main": "./build/app.js",
     "types": "./build/app.d.ts",
     "scripts": {
-        "build": "tsc"
+        "build": "tsc",
+        "publish": "npm publish"
     },
     "dependencies": {
         "ink": "^3.2.0",

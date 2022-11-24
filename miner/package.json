@@ -4,7 +4,8 @@
     "bin": "node ./build/app.js",
     "scripts": {
         "build": "tsc",
-        "start": "../start"
+        "start": "../start",
+        "publish": "npm publish"
     },
     "dependencies": {
         "core": "*",
