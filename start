@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+echo "#!/bin/bash" > start.command
+echo "cd $PWD" >> start.command
+echo "node -r dotenv/config --inspect ./build/app.js" >> start.command
+chmod +x start.command
+open ./start.command
+sleep 1
+rm start.command

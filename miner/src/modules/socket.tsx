@@ -1,7 +1,8 @@
 import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import WebSocket from "ws";
-import Observable from "./observable.js";
+import { Observable } from "core";
+import { options } from "../app.js";
 
 const connectionStatus = new Observable("Connecting");
 
@@ -20,8 +21,8 @@ export const useConnectionStatus = () => {
     return connected;
 };
 
-export const connectToSocket = (url: string) => {
-    const ws = new WebSocket(url);
+export const connectToSocket = () => {
+    const ws = new WebSocket(options.manager);
 
     ws.on("open", () => {
         ws.send("{ \"miner\": \"info\" }");

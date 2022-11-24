@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Box, Text, useInput, Key, Spacer } from "ink";
+import { useWindowSize, range } from "core";
 import Connection from "../model/connection.js";
-import { useWindowSize } from "../utlity/size.js";
-import { useConnections } from "../utlity/socket.js";
+import { useConnections } from "../modules/socket.js";
 import Row from "./row.js";
-import { range } from "../utlity/range.js";
 
 const Main = (props: { onSelect?: (ip: Connection) => void}) => {
     const { height } = useWindowSize();
