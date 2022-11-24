@@ -1,11 +1,11 @@
 {
     "name": "@theminingco/miner",
     "type": "module",
-    "bin": "./build/app.js",
+    "bin": "./lib/app.js",
     "scripts": {
-        "build": "tsc",
-        "start": "../start",
-        "deploy": "../deploy"
+        "build": "../scripts/build",
+        "start": "../scripts/start",
+        "deploy": "../scripts/deploy"
     },
     "dependencies": {
         "@theminingco/core": "*",

@@ -12,15 +12,10 @@
         "strict": true,
         "removeComments": true,
         "esModuleInterop": true,
-        "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
-        "isolatedModules": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "sourceMap": true,
-        "declaration": true
+        "isolatedModules": true
     }
 }
