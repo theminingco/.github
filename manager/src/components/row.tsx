@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useWindowSize } from "core";
+import { useWindowSize } from "@theminingco/core";
 import Connection from "../model/connection.js";
 
 const Row = (props: { index?: number, connection?: Connection, selected?: boolean }) => {

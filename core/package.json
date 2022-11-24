@@ -1,5 +1,5 @@
 {
-    "name": "core",
+    "name": "@theminingco/core",
     "type": "module",
     "main": "./build/app.js",
     "types": "./build/app.d.ts",

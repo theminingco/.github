@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "ink";
-import { noEscape } from "core";
+import { noEscape } from "@theminingco/core";
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
 import Root from "./components/root.js";

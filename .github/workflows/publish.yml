@@ -23,7 +23,6 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - name: Publish Packages
         run: |
-          npm config list
           npm ci
           npm run publish
         env:

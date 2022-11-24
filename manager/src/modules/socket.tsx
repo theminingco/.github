@@ -1,6 +1,6 @@
 import WebSocket, { WebSocketServer } from "ws";
 import { nanoid } from "nanoid";
-import { ObservableMap } from "core";
+import { ObservableMap } from "@theminingco/core";
 import PingController from "../controllers/ping.js";
 import Controller from "../model/controller.js";
 import Request from "../model/request.js";
