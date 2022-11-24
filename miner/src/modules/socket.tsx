@@ -16,7 +16,7 @@ export const useConnectionStatus = () => {
         });
 
         return () => { connectionStatus.unregister(listenerKey); };
-    });
+    }, []);
 
     return connected;
 };

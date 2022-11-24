@@ -1,11 +1,13 @@
 import React from "react";
 import { Box, Text } from "ink";
 import Connection from "../model/connection.js";
+import { useWindowSize } from "core";
 
 const Detail = (props: { connection: Connection, onBack?: () => void}) => {
-    
+    const { width, height } = useWindowSize();
+
     return (
-        <Box width="100%" height="100%" flexDirection="column">
+        <Box width={width} height={height - 4} flexDirection="column">
             <Text inverse>{props.connection.ip}</Text>
         </Box>
     );
