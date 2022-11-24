@@ -1,7 +1,7 @@
 {
     "name": "@theminingco/miner",
     "type": "module",
-    "bin": "./build/app.js",
+    "bin": "./lib/app.js",
     "scripts": {
         "build": "../scripts/build",
         "start": "../scripts/start",

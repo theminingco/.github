@@ -6,7 +6,7 @@ for VARIABLE in $(cat ../.env | xargs)
 do
     echo "export $VARIABLE" >> start.command
 done
-echo "node --inspect ./build/app.js" >> start.command
+echo "node --inspect ./lib/app.js" >> start.command
 chmod +x start.command
 open ./start.command
 sleep 1
