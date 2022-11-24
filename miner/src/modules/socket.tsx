@@ -1,21 +1,21 @@
-import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import WebSocket from "ws";
-import { Observable } from "core";
+import { timer } from "core";
 import { options } from "../app.js";
 
-const connectionStatus = new Observable("Connecting");
+let connectionStatus = "Connecting";
 
 export const useConnectionStatus = () => {
-    const listenerKey = nanoid();
-    const [connected, setConnected] = useState(connectionStatus.get());
+    const [connected, setConnected] = useState(connectionStatus);
 
     useEffect(() => {
-        connectionStatus.register(listenerKey, () => {
-            setConnected(connectionStatus.get());
-        });
-
-        return () => { connectionStatus.unregister(listenerKey); };
+        let index = 0;
+        timer(() => {
+            const prefix = "".padEnd(3);
+            const suffix = "".padEnd(index, ".").padEnd(3);
+            setConnected(`${prefix}${connectionStatus}${suffix}`);
+            index = index == 3 ? 0 : index + 1;
+        }, 1, 0);
     }, []);
 
     return connected;
@@ -25,6 +25,7 @@ export const connectToSocket = () => {
     const ws = new WebSocket(options.manager);
 
     ws.on("open", () => {
+        connectionStatus = "Waiting for instructions";
         ws.send("{ \"miner\": \"info\" }");
     });
       
@@ -33,15 +34,10 @@ export const connectToSocket = () => {
     });
 
     ws.on("close", () => {
-        connectionStatus.set("Closed");
-        // retry
+        connectionStatus = "Connecting";
+        const retryDelay = options.debug ? 3 : 30;
+        timer(connectToSocket, retryDelay);
     });
 
-    ws.on("error", () => {
-        connectionStatus.set("Failed");
-        //retry
-    });
-
-    connectionStatus.set("Connected");
+    ws.on("error", () => { });
 };
-
