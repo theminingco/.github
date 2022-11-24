@@ -1,6 +1,5 @@
 {
     "name": "miner",
-    "private": true,
     "type": "module",
     "bin": "node ./build/app.js",
     "scripts": {
