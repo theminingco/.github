@@ -2,6 +2,7 @@
     "name": "@theminingco/miner",
     "type": "module",
     "bin": "./lib/app.js",
+    "files": [ "/lib" ],
     "scripts": {
         "build": "../scripts/build",
         "start": "../scripts/start",
@@ -9,6 +10,7 @@
     },
     "dependencies": {
         "@theminingco/core": "*",
+        "@types/react": "^18.0.25",
         "ink": "^3.2.0",
         "nanoid": "^4.0.0",
         "ws": "^8.11.0",

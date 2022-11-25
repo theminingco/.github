@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 export * from "./utility/escape.js";
 export * from "./utility/observable.js";
 export * from "./utility/range.js";

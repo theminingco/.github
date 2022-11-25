@@ -3,6 +3,7 @@
     "type": "module",
     "main": "./lib/app.js",
     "types": "./lib/app.d.ts",
+    "files": [ "/lib" ],
     "scripts": {
         "build": "../scripts/build",
         "deploy": "../scripts/deploy"
