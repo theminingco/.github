@@ -2,5 +2,5 @@
 set -o errexit -o pipefail
 npm version from-git --no-git-tag-version --allow-same-version
 VERSION=$(awk '/\"version\":/{print $2}' package.json)
-sed -i '' 's/\"\*\"/'"$VERSION"'/g' package.json
+sed -i '' -e 's/"\*"/'"$VERSION"'/g' package.json
 npm publish
