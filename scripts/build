@@ -1,6 +1,6 @@
 #!/bin/bash
 ARGS=""
-if [ $DEBUG == "true" ]; then
+if [ "$DEBUG" == "true" ]; then
     ARGS="$ARGS--sourceMap"
 fi
 tsc $ARGS

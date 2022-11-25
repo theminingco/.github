@@ -2,8 +2,7 @@
 echo "#!/bin/bash" > start.command
 echo "set -o errexit -o pipefail -o xtrace" >> start.command
 echo "cd $PWD" >> start.command
-for VARIABLE in $(cat ../.env | xargs)
-do
+for VARIABLE in $(cat ../.env | xargs); do
     echo "export $VARIABLE" >> start.command
 done
 echo "node --inspect ./lib/app.js" >> start.command
