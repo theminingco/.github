@@ -8,7 +8,7 @@
         ],
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
-        "jsx": "react-jsx",
+        "jsx": "react",
         "strict": true,
         "removeComments": true,
         "esModuleInterop": true,
