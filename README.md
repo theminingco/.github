@@ -11,7 +11,7 @@ All components are tied together using [Nx](https://nx.dev).
 
 Getting set up with this repository is very easy.
 * Install node (18) - `brew install node`.
-* Clone this repository `git clone https://github.com/jewel-cash/.github`.
+* Clone this repository `git clone https://github.com/theminingco/.github`.
 * Install dependencies using npm - `npm install`.
 * Run one of the commands below - `npm run start`.
 
