@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  worker:
+  automerge:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
