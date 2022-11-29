@@ -2,6 +2,7 @@ name: dependabot
 
 on:
   pull_request:
+    types: [ opened ]
 
 jobs:
   automerge:
