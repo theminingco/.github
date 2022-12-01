@@ -8,6 +8,8 @@ jobs:
   automerge:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    permissions:
+      contents: write
     steps:
       - name: Enable Automerge
         run: gh pr merge --auto --squash "$PR_URL"
