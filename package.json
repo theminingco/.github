@@ -10,7 +10,7 @@
     },
     "devDependencies": {
         "@types/jest": "^29.2.3",
-        "@types/node": "^18.11.9",
+        "@types/node": "^18.11.10",
         "@types/react": "^18.0.25",
         "@types/react-test-renderer": "^18.0.0",
         "@types/ws": "^8.5.3",
