@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import WebSocket from "ws";
-import { timer } from "@theminingco/core";
+import { timer, Handler, Socket } from "@theminingco/core";
 import { options } from "../app.js";
+import CommandHandler from "../handlers/command.js";
+import OpenHandler from "../handlers/open.js";
+import CloseHandler from "../handlers/close.js";
 
 let connectionStatus = "Connecting";
 
@@ -21,23 +23,17 @@ export const useConnectionStatus = () => {
     return connected;
 };
 
+export const setConnectionStatus = (status: string) => {
+    connectionStatus = status;
+};
+
+const handler = Handler([
+    new OpenHandler(),
+    new CloseHandler(),
+    new CommandHandler()
+]);
+
 export const connectToSocket = () => {
-    const ws = new WebSocket(options.manager);
-
-    ws.on("open", () => {
-        connectionStatus = "Waiting for instructions";
-        ws.send("{ \"miner\": \"info\" }");
-    });
-      
-    ws.on("message", () => {
-
-    });
-
-    ws.on("close", () => {
-        connectionStatus = "Connecting";
-        const retryDelay = options.debug ? 3 : 30;
-        timer(connectToSocket, retryDelay);
-    });
-
-    ws.on("error", () => { });
+    const ws = new Socket(options.manager);
+    ws.connect(handler, options.manager);
 };

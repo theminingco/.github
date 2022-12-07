@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
-import Connection from "../model/connection.js";
-import { useWindowSize } from "@theminingco/core";
+import { useWindowSize, Connection } from "@theminingco/core";
 
 const Detail = (props: { connection: Connection, onBack?: () => void}) => {
     const { width, height } = useWindowSize();

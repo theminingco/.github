@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Box} from "ink";
 import Header from "./header.js";
-import Connection from "../model/connection.js";
 import Main from "./main.js";
 import Detail from "./detail.js";
-import { useWindowSize } from "@theminingco/core";
+import { useWindowSize, Connection } from "@theminingco/core";
 import { options } from "../app.js";
 
 const Root = () => {

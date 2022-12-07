@@ -1,22 +1,10 @@
-import WebSocket, { WebSocketServer } from "ws";
 import { nanoid } from "nanoid";
-import { ObservableMap } from "@theminingco/core";
-import PingController from "../controllers/ping.js";
-import Controller from "../model/controller.js";
-import Request from "../model/request.js";
-import Connection from "../model/connection.js";
+import { ObservableMap, Handler, Connection, Server, Socket } from "@theminingco/core";
 import { useEffect, useState } from "react";
 import { options } from "../app.js";
-
-const controllers: Array<Controller> = [
-    new PingController()
-];
-
-const handler = (req: Request, index?: number) => {
-    const i = index ?? 0;
-    if (i >= controllers.length) { return; } 
-    controllers[i].handle(req, () => handler(req, i + 1));
-};
+import InfoHandler from "../handlers/info.js";
+import OpenHandler from "../handlers/open.js";
+import CloseHandler from "../handlers/close.js";
 
 const connections = new ObservableMap<Connection, WebSocket>();
 
@@ -36,18 +24,19 @@ export const useConnections = () => {
     return items;
 };
 
+const handler = Handler([
+    new OpenHandler(),
+    new CloseHandler(),
+    new InfoHandler()
+]);
+
 export const openWebSocket = () => {
-    const app = new WebSocketServer({
+    const wss = new Server({
         port: options.port
     });
 
-    app.on("connection", (ws: WebSocket, req: any) => { 
-        const connection: Connection = {
-            ip: req.socket.remoteAddress
-        };
-        connections.set(connection, ws);
-        ws.on("message", (x) => handler({from: connection, data: JSON.parse(x.toString())}));
-        ws.on("close", () => connections.delete(connection));
+    wss.on("connection", (ws: Socket, req: any) => { 
+        ws.connect(handler, req.socket.remoteAddress);
     });
 };
 

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, useInput, Key, Spacer } from "ink";
-import { useWindowSize, range } from "@theminingco/core";
-import Connection from "../model/connection.js";
+import { useWindowSize, range, Connection } from "@theminingco/core";
 import { useConnections } from "../modules/socket.js";
 import Row from "./row.js";
 
