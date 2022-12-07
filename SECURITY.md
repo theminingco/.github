@@ -1,2 +1,1 @@
-I don't write faulty code.
-
+⛏ The Mining Company
