@@ -6,6 +6,6 @@ export interface IOpen {
 
 export const OpenSchema: JTDSchemaType<IOpen> = {
     properties: {
-        type: { enum: ["open"] },
+        type: { enum: ["open"] }
     }
 };
