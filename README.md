@@ -28,4 +28,4 @@ Below is a (non-exhaustive) list of available commands:
 
 If you look closely, the commands in the root of the repository just call individual commands specified in the component's `package.json` file. These commands should not be run by themselves as it will not resolve the right dependencies and will not execute the prerequisites. Instead you can specify which app to run with `--projects manager` or `--projects miner`.
 
-*This repository is not open source. Copyright (c) 2023 The Mining Company*
+*This repository is not open source. Copyright (c) 2023 ⛏ The Mining Company*
