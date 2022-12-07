@@ -9,7 +9,7 @@ interface Size {
 
 const listeners = new Map<string, () => void>();
 
-process.on("SIGWINCH", () => {
+process.stdout.on("resize", () => {
     listeners.forEach(x => x());
 });
 
