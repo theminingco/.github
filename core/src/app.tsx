@@ -7,9 +7,11 @@ export * from "./entities/info.js";
 export * from "./entities/open.js";
 export * from "./entities/ping.js";
 export * from "./entities/pong.js";
+export * from "./entities/result.js";
 
 export * from "./utility/escape.js";
 export * from "./utility/observable.js";
+export * from "./utility/queue.js";
 export * from "./utility/socket.js";
 export * from "./utility/random.js";
 export * from "./utility/range.js";
