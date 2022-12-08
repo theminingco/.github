@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { timer, Handler, Socket } from "@theminingco/core";
+import { timer, Handler, connect } from "@theminingco/core";
 import { options } from "../app.js";
 import CommandHandler from "../handlers/command.js";
 import OpenHandler from "../handlers/open.js";
 import CloseHandler from "../handlers/close.js";
+import { WebSocket } from "ws";
 
 let connectionStatus = "Connecting";
+let timeoutCancellable: () => void;
+let socket: WebSocket;
 
 export const useConnectionStatus = () => {
     const [connected, setConnected] = useState(connectionStatus);
@@ -27,6 +30,16 @@ export const setConnectionStatus = (status: string) => {
     connectionStatus = status;
 };
 
+export const send = (message: any) => {
+    const json = JSON.stringify(message);
+    socket?.send(json);
+};
+
+export const heartbeat = () => {
+    if (timeoutCancellable != null) { timeoutCancellable(); }
+    timeoutCancellable = timer(() => connectToSocket(), 35);
+};
+
 const handler = Handler([
     new OpenHandler(),
     new CloseHandler(),
@@ -34,6 +47,7 @@ const handler = Handler([
 ]);
 
 export const connectToSocket = () => {
-    const ws = new Socket(options.manager);
-    ws.connect(handler, options.manager);
+    socket?.terminate();
+    socket = new WebSocket(options.manager);
+    connect(socket, handler, options.manager);
 };

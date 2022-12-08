@@ -1,6 +1,6 @@
 import Ajv, { JTDSchemaType } from "ajv/dist/jtd.js";
 import { nanoid } from "nanoid";
-import { WebSocket, WebSocketServer} from "ws";
+import WebSocket from "ws";
 
 const ajv = new Ajv.default();
 
@@ -25,14 +25,15 @@ export const Handler = (handlers: Array<HandlerType<any>>) => {
     };
 };
 
-export class Server extends WebSocketServer<Socket> { }
-export class Socket extends WebSocket {
 
-    connect(handler: (data: any, from: Connection) => void, host: string) {
-        const connection: Connection = { ip: host, id: nanoid() };
-        this.on("open", () => handler({ type: "open" }, connection));
-        this.on("message", (x) => handler(x.toString(), connection));
-        this.on("close", () => handler({ type: "close" }, connection));
-        this.on("error", () => handler({ type: "error" }, connection));
-    }
-}
+export const connect = (socket: WebSocket, handler: (data: any, from: Connection) => void, host: string ) => {
+    const connection: Connection = { ip: host, id: nanoid() };
+    const handle = (data: any) => handler(data, connection);
+    socket.on("open", () => handle({ type: "open" }));
+    socket.on("ping", () => handle({ type: "ping" }));
+    socket.on("pong", () => handle({ type: "pong" }));
+    socket.on("message", (x) => handle(x.toString()));
+    socket.on("close", () => handle({ type: "close" }));
+    socket.on("error", () => handle({ type: "error" }));
+    return connection;
+};

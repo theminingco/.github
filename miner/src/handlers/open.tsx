@@ -1,12 +1,14 @@
-import { HandlerType, IOpen, OpenSchema, Connection } from "@theminingco/core";
-import { setConnectionStatus } from "../modules/socket.js";
+import { HandlerType, IMinerInfo, IOpen, OpenSchema } from "@theminingco/core";
+import { hostname } from "os";
+import { heartbeat, send, setConnectionStatus } from "../modules/socket.js";
 
 export default class OpenHandler implements HandlerType<IOpen> {
     schema = OpenSchema;
 
-    handler(_: IOpen, _0: Connection) {
+    handler() {
         setConnectionStatus("Waiting for instructions");
-
-        //TODO: send miner info
+        const data: IMinerInfo = { type: "info", host: hostname() };
+        send(data);
+        heartbeat();
     }
 }

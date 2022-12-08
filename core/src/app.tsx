@@ -5,6 +5,8 @@ export * from "./entities/command.js";
 export * from "./entities/error.js";
 export * from "./entities/info.js";
 export * from "./entities/open.js";
+export * from "./entities/ping.js";
+export * from "./entities/pong.js";
 
 export * from "./utility/escape.js";
 export * from "./utility/observable.js";
