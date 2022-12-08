@@ -3,8 +3,9 @@ import { Box} from "ink";
 import Header from "./header.js";
 import Main from "./main.js";
 import Detail from "./detail.js";
-import { useWindowSize, Connection } from "@theminingco/core";
+import { useWindowSize } from "@theminingco/core";
 import { options } from "../app.js";
+import { Connection } from "../modules/socket.js";
 
 const Root = () => {
     const { width, height } = useWindowSize();
