@@ -9,8 +9,10 @@
         "deploy": "../scripts/deploy"
     },
     "dependencies": {
+        "ajv": "^8.11.2",
         "ink": "^3.2.0",
         "nanoid": "^4.0.0",
-        "react": "^18.2.0"
+        "react": "^18.2.0",
+        "ws": "^8.11.0"
     }
 }

@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
-import WebSocket from "ws";
-import { timer } from "@theminingco/core";
+import { timer, Handler, connect } from "@theminingco/core";
 import { options } from "../app.js";
+import CommandHandler from "../handlers/command.js";
+import OpenHandler from "../handlers/open.js";
+import CloseHandler from "../handlers/close.js";
+import { WebSocket } from "ws";
 
 let connectionStatus = "Connecting";
+let timeoutCancellable: () => void;
+let socket: WebSocket;
 
 export const useConnectionStatus = () => {
     const [connected, setConnected] = useState(connectionStatus);
@@ -21,23 +26,28 @@ export const useConnectionStatus = () => {
     return connected;
 };
 
+export const setConnectionStatus = (status: string) => {
+    connectionStatus = status;
+};
+
+export const send = (message: any) => {
+    const json = JSON.stringify(message);
+    socket?.send(json);
+};
+
+export const heartbeat = () => {
+    if (timeoutCancellable != null) { timeoutCancellable(); }
+    timeoutCancellable = timer(() => connectToSocket(), 35);
+};
+
+const handler = Handler([
+    new OpenHandler(),
+    new CloseHandler(),
+    new CommandHandler()
+]);
+
 export const connectToSocket = () => {
-    const ws = new WebSocket(options.manager);
-
-    ws.on("open", () => {
-        connectionStatus = "Waiting for instructions";
-        ws.send("{ \"miner\": \"info\" }");
-    });
-      
-    ws.on("message", () => {
-
-    });
-
-    ws.on("close", () => {
-        connectionStatus = "Connecting";
-        const retryDelay = options.debug ? 3 : 30;
-        timer(connectToSocket, retryDelay);
-    });
-
-    ws.on("error", () => { });
+    socket?.terminate();
+    socket = new WebSocket(options.manager);
+    connect(socket, handler, options.manager);
 };
