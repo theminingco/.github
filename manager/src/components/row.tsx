@@ -1,6 +1,13 @@
 import React from "react";
 import { Box, Text } from "ink";
-import { useWindowSize, Connection } from "@theminingco/core";
+import { useWindowSize } from "@theminingco/core";
+import { Connection } from "../modules/socket.js";
+
+interface Column {
+    value: string;
+    max: number;
+    front?: boolean;
+}
 
 const Row = (props: { index?: number, connection?: Connection, selected?: boolean }) => {
     const { width } = useWindowSize();
@@ -8,16 +15,24 @@ const Row = (props: { index?: number, connection?: Connection, selected?: boolea
         return (<Box height={1} />);
     }
 
-    let content = `${props.connection?.ip}`.padEnd(47);
+    const columns: Array<Column> = [
+        { value: `${props.connection?.ip}`, max: 39 },
+        { value: `${props.index}`, max: 8, front: true },
+        { value: `${props.connection?.host}`, max: 25 }
+    ];
+    
+    let content = "";
 
-    if (content.length + 10 <= width) {
-        content = `${props.index}`.padEnd(10) + content;
+    for (const column of columns) {
+        if (content.length + column.max + 2 > width) { continue; }
+        let value = column.value;
+        if (value.length > column.max) {
+            value = value.slice(0, column.max - 1) + "…";
+        }
+        value = value.padEnd(column.max + 2);
+        content = column.front ? value + content : content + value;
     }
-
-    if (content.length + 10 <= width) {
-        content = content + "a".padEnd(10);
-    }
-
+    
     content = content.padEnd(width);
 
     return (

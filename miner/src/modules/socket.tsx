@@ -5,6 +5,7 @@ import CommandHandler from "../handlers/command.js";
 import OpenHandler from "../handlers/open.js";
 import CloseHandler from "../handlers/close.js";
 import { WebSocket } from "ws";
+import PingHandler from "../handlers/ping.js";
 
 let connectionStatus = "Connecting";
 let timeoutCancellable: () => void;
@@ -43,11 +44,12 @@ export const heartbeat = () => {
 const handler = Handler([
     new OpenHandler(),
     new CloseHandler(),
+    new PingHandler(),
     new CommandHandler()
 ]);
 
 export const connectToSocket = () => {
     socket?.terminate();
     socket = new WebSocket(options.manager);
-    connect(socket, handler, options.manager);
+    connect(socket, handler);
 };

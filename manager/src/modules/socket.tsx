@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { ObservableMap, Handler, Connection, timer, connect } from "@theminingco/core";
+import { ObservableMap, Handler, timer, connect, IMinerInfo } from "@theminingco/core";
 import { useEffect, useState } from "react";
 import { options } from "../app.js";
 import InfoHandler from "../handlers/info.js";
@@ -8,17 +8,24 @@ import PongHandler from "../handlers/pong.js";
 import { IncomingMessage } from "http";
 import { WebSocket, WebSocketServer } from "ws";
 
-const connections = new ObservableMap<Connection, WebSocket>();
-const timeoutCancellables = new Map<Connection, () => void>();
+export interface Connection {
+    ip: string;
+    host?: string;
+}
+
+const sockets = new Map<string, WebSocket>();
+const connections = new ObservableMap<string, Connection>();
+const timeoutCancellables = new Map<string, () => void>();
 let server: WebSocketServer;
 
 export const useConnections = () => {
     const listenerKey = nanoid();
-    const [items, setItems] = useState<Array<Connection>>([]);
+    const initial = Array.from(connections.values());
+    const [items, setItems] = useState<Array<Connection>>(initial);
 
     useEffect(() => {
         connections.register(listenerKey, () => {
-            const newConnections = Array.from(connections.keys());
+            const newConnections = Array.from(connections.values());
             setItems(newConnections);
         });
 
@@ -28,22 +35,30 @@ export const useConnections = () => {
     return items;
 };
 
-export const dropConnection = (connection: Connection) => {
-    const socket = connections.get(connection);
-    socket?.terminate();
-    connections.delete(connection);
+export const updateConnection = (connection: string, info: IMinerInfo) => {
+    const oldCon = connections.get(connection);
+    if (oldCon == null) { return; }
+    const newCon: Connection = { ...oldCon, ...info };
+    connections.set(connection, newCon);
 };
 
-export const send = (message: any, connection: Connection) => {
-    const socket = connections.get(connection);
+export const dropConnection = (connection: string) => {
+    const socket = sockets.get(connection);
+    socket?.terminate();
+    connections.delete(connection);
+    sockets.delete(connection);
+};
+
+export const send = (message: any, connection: string) => {
+    const socket = sockets.get(connection);
     const json = JSON.stringify(message);
     socket?.send(json);
 };
 
-export const heartbeat = (connection: Connection) => {
+export const heartbeat = (connection: string) => {
     const cancellable = timeoutCancellables.get(connection);
     if (cancellable != null) { cancellable(); }
-    timer(() => connections.get(connection)?.ping(), 30);
+    timer(() => sockets.get(connection)?.ping(), 30);
     const newCancellable = timer(() => dropConnection(connection), 35);
     timeoutCancellables.set(connection, newCancellable);
 };
@@ -57,10 +72,13 @@ const handler = Handler([
 export const openWebSocket = () => {
     server = new WebSocketServer({ port: options.port });
     server.on("connection", (socket: WebSocket, request: IncomingMessage) => {
-        const ip = request.socket.remoteAddress ?? "";
-        const connection = connect(socket, handler, ip);
-        connections.set(connection, socket);
-        heartbeat(connection);
+        const connection: Connection = {
+            ip: request.socket.remoteAddress ?? ""
+        };
+        const id = connect(socket, handler);
+        connections.set(id, connection);
+        sockets.set(id, socket);
+        heartbeat(id);
     });
 };
 

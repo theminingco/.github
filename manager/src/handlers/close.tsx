@@ -1,10 +1,10 @@
-import { HandlerType, IClose, CloseSchema, Connection } from "@theminingco/core";
+import { HandlerType, IClose, CloseSchema } from "@theminingco/core";
 import { dropConnection } from "../modules/socket.js";
 
 export default class CloseHandler implements HandlerType<IClose> {
     schema = CloseSchema;
 
-    handler(_: IClose, connection: Connection) {
+    handler(_: IClose, connection: string) {
         dropConnection(connection);
     }
 }

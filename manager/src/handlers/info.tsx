@@ -1,9 +1,10 @@
-import { HandlerType, IMinerInfo, MinerInfoSchema, Connection } from "@theminingco/core";
+import { HandlerType, IMinerInfo, MinerInfoSchema } from "@theminingco/core";
+import { updateConnection } from "../modules/socket.js";
 
 export default class InfoHandler implements HandlerType<IMinerInfo> {
     schema = MinerInfoSchema;
 
-    handler(_: IMinerInfo, _0: Connection) {
-
+    handler(info: IMinerInfo, connection: string) {
+        updateConnection(connection, info);
     }
 }
