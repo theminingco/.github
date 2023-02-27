@@ -1,1 +1,1 @@
-# .proprietary
+# jewl.app
