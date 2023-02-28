@@ -1,3 +1,4 @@
+"""This module contains all the code related to running an inference api."""
 from fastapi import FastAPI
 from uvicorn import run
 
@@ -10,9 +11,12 @@ app = FastAPI(
 
 @app.post("/infer")
 def run_inference():
+    """Run inference on a sample using a trained model"""
     return {"Hello": "World"}
 
+
 def main(args):
+    """The entrypoint of the api module."""
     log_level = "trace" if args.verbose else "info"
     port = args.port if hasattr(args, "port") else 2000
     run(

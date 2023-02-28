@@ -1,0 +1,51 @@
+name: checks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Setup Node
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    - name: Run Lint
+      run: |
+        pip install -r requirements.txt
+        python3 run lint
+
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: "python"
+    - name: Analyze CodeQL
+      uses: github/codeql-action/analyze@v2
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Setup Node
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    - name: Run Lint
+      run: |
+        pip install -r requirements.txt
+        python3 run unit

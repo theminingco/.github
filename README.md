@@ -23,6 +23,6 @@ Getting set up with this repository is very easy.
 
 The repository is set up very easiliy. There is an entrypoint file called `run` which handles all command-line argument parsing. This file has a set of subcommands. To get a list of subcommands run `./run -h`.
 
-Each subcommand corresponds to a folder in the repository (except for `core` which does not exist as a subcommand). If you look closely in the `run` file you can see that the subcommand just resolves the submodule and calls the `main()` function inside that submodule.
+Each subcommand corresponds to a file in the repository. If you look closely in the `run` file you can see that most subcommand just resolve the submodule and calls the `main()` function inside that submodule.
 
 *Copyright © 2023 jewl.app*
