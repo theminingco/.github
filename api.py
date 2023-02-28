@@ -26,3 +26,11 @@ def main(args):
         log_level=log_level,
         reload=args.watch
     )
+
+if __name__ == "__main__":
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("-w", "--watch", action="store_true")
+    parser.add_argument("-p", "--port", type=int)
+    main(parser.parse_args())

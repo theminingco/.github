@@ -17,12 +17,10 @@ Getting set up with this repository is very easy.
 * Create a virtual python environment `virtualenv .venv`.
 * Activate the virual environment `source .venv/bin/activate`.
 * Install the python requirements `pip3 install -r requirements.txt`.
-* Run one of the commands such as `./run -h`.
+* Run one of the commands such as `python3 api.py`.
 
 ## Commands
 
-The repository is set up very easiliy. There is an entrypoint file called `run` which handles all command-line argument parsing. This file has a set of subcommands. To get a list of subcommands run `./run -h`.
-
-Each subcommand corresponds to a file in the repository. If you look closely in the `run` file you can see that most subcommand just resolve the submodule and calls the `main()` function inside that submodule.
+The repository is set up very easiliy. Each file works as a standalone script that can be called using `python3 FILE.py`. You can pass the `-h` option to get more information about the script.
 
 *Copyright © 2023 jewl.app*
