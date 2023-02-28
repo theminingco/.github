@@ -10,3 +10,8 @@ def main(args):
     proc = Run(files, do_exit=False)
     if proc.linter.stats.global_note < 10:
         sysexit(1)
+
+if __name__ == "__main__":
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    main(parser.parse_args())
