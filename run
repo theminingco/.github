@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+from core.parser import Parser
+from importlib import import_module
+
+def main():
+    parser = Parser()
+    subparsers = parser.add_subparsers(title="commands", dest="command")
+    parser.add_argument('-v', '--verbose', action='store_true')
+
+    prepare = subparsers.add_parser("prepare")
+
+    train = subparsers.add_parser("train")
+
+    test = subparsers.add_parser("test")
+
+    infer = subparsers.add_parser("infer")
+
+    api = subparsers.add_parser("api")
+
+    args = parser.parse_args()
+    if hasattr(args, "command"):
+        module = import_module(f"{args.command}.main")
+        module.main(args)
+    else:
+        parser.print_help()
+
+
+if __name__ == '__main__':
+    main()
