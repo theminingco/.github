@@ -5,7 +5,7 @@ from importlib import import_module
 def main():
     parser = Parser()
     subparsers = parser.add_subparsers(title="commands", dest="command")
-    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument("-v", "--verbose", action="store_true")
 
     prepare = subparsers.add_parser("prepare")
 
@@ -16,6 +16,8 @@ def main():
     infer = subparsers.add_parser("infer")
 
     api = subparsers.add_parser("api")
+    api.add_argument("-w", "--watch", action="store_true")
+    api.add_argument("-p", "--port", type=int)
 
     args = parser.parse_args()
     if hasattr(args, "command"):
@@ -25,5 +27,5 @@ def main():
         parser.print_help()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
