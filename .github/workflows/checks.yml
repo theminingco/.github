@@ -11,14 +11,14 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: Setup Node
+    - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
         cache: 'pip'
     - name: Run Lint
       run: |
-        pip install -r requirements.txt
+        pip install -r requirements.txt -q
         python3 run lint
 
   analyze:
@@ -40,12 +40,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: Setup Node
+    - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
         cache: 'pip'
-    - name: Run Lint
+    - name: Run Tests
       run: |
-        pip install -r requirements.txt
+        pip install -r requirements.txt -q
         python3 run unit
