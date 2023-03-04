@@ -11,6 +11,7 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     permissions:
       pull-requests: write
+      content: wrtie
     steps:
       - name: Enable Automerge
         run: gh pr merge --auto --squash "$PR_URL"
