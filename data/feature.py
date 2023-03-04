@@ -1,6 +1,8 @@
 """This module contains all the code related getting features."""
 from importlib import import_module
 
+from torch import Tensor
+
 # min/max/std/avg/count of input transaction amount
 # min/max/std/avg/count of ouptut transaction amount
 # min/max/std/avg of time between input transactions
@@ -10,7 +12,7 @@ from importlib import import_module
 # active period of the address
 
 
-def get_features(chain: str, address: str = None, transaction: str = None, **_) -> None:
+def get_features(chain: str, address: str = None, transaction: str = None, **_) -> Tensor:
     """This function fetches the provider for a chain and gets the features for an address or transaction from that provider."""
     assert address is not None or transaction is not None, "one of `address` and `transaction` should be provided."
     provider = import_module(f"provider.{chain}")

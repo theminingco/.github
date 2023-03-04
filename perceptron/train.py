@@ -1,6 +1,6 @@
 """This module contains all the code related to training the model."""
 
-def train_model():
+def train_model() -> None:
     """The entrypoint of the train module."""
     print("train")
 
