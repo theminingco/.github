@@ -1,10 +1,13 @@
 """This module contains all the code related to testing the model."""
 
-def main(args):
+def test_model() -> None:
     """The entrypoint of the test module."""
-    print(args)
+    print("test")
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
+
     parser = ArgumentParser()
-    main(parser.parse_args())
+    args = parser.parse_args()
+
+    test_model(**vars(args))
