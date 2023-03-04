@@ -2,7 +2,7 @@ name: dependabot
 
 on:
   pull_request:
-    branches: [main]
+    types: [opened]
 
 jobs:
 
@@ -11,6 +11,7 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     permissions:
       pull-requests: write
+      content: write
     steps:
       - name: Enable Automerge
         run: gh pr merge --auto --squash "$PR_URL"
