@@ -1,10 +1,11 @@
 """This module contains all the code related to unit tests."""
 
-def main(args):
+def run_unit_tests(**_) -> None:
     """The entrypoint of the unit test module."""
-    print(args)
+    print("unit tests")
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    main(parser.parse_args())
+    args = parser.parse_args()
+    run_unit_tests(**vars(args))

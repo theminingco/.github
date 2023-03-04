@@ -19,7 +19,7 @@ jobs:
     - name: Run Lint
       run: |
         pip install -r requirements.txt -q
-        python3 lint.py
+        python3 -m checks.lint
 
   # analyze:
   #   runs-on: ubuntu-latest
@@ -48,4 +48,4 @@ jobs:
     - name: Run Tests
       run: |
         pip install -r requirements.txt -q
-        python3 unit.py
+        python3 -m checks.unit

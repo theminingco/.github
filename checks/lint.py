@@ -3,10 +3,9 @@ from glob import glob
 from sys import exit as sysexit
 from pylint.lint import Run
 
-def main(args):
+def run_linter(**_) -> None:
     """The entrypoint of the lint module."""
-    _ = args
-    files = glob("./*.py")
+    files = glob("./**/*.py")
     proc = Run(files, do_exit=False)
     if proc.linter.stats.global_note < 10:
         sysexit(1)
@@ -14,4 +13,5 @@ def main(args):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    main(parser.parse_args())
+    args = parser.parse_args()
+    run_linter(**vars(args))

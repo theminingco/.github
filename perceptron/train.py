@@ -1,10 +1,13 @@
 """This module contains all the code related to training the model."""
 
-def main(args):
+def train_model():
     """The entrypoint of the train module."""
-    print(args)
+    print("train")
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
+
     parser = ArgumentParser()
-    main(parser.parse_args())
+    args = parser.parse_args()
+
+    train_model(**vars(args))
