@@ -1,14 +1,5 @@
-# jewl.app
+# ⛏ The Mining Company
 
-## The app
-
-This repository consists of several components repersenting individual subcommands:
-* `core` - shared code and logic.
-* `prepare` - prepare the dataset for training creating a train, test, validation split.
-* `train` - train a model on a specific dataset for a specific number of iterations.
-* `test` - test the trained model agains the test dataset.
-* `infer` - run inference on newly generated samples.
-* `api` - run an inference api.
 
 ## Getting Started
 
@@ -25,13 +16,18 @@ The repository is set up very easiliy. Each file works as a standalone script th
 
 ### Example
 
-An example workflow for creating, training and serving a `fox` model could be:
+An example workflow for creating, training and serving a model could be:
 
-* Create a fresh model using `python3 -m perceptron.create`
-* Prepare the training and test data `python3 -m data.prepare`
-* Train the model `python3 -m perceptron.train`
-* Test the model on a test set `python3 -m perceptron.test`
-* Run inference on a newly created sample `python3 -m perceptron.infer`
-* Start an inference api `python3 -m server.api`
+* Create a fresh model using `python3 -m perceptron.create`.
+* Prepare the training and test data `python3 -m data.prepare`.
+* Train the model `python3 -m perceptron.train`.
+* Test the model on a test set `python3 -m perceptron.test`.
+* Run inference on a newly created sample `python3 -m perceptron.infer`.
+* Start an inference api `python3 -m server.api`.
 
-*Copyright © 2023 jewl.app*
+## Third-party tools
+
+* Machine learning models are trained using [PyTorch](https://pytorch.org).
+* Server API is created using [FastAPI](https://fastapi.tiangolo.com).
+
+*Copyright © 2023 ⛏ The Mining Company*

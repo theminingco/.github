@@ -1,15 +1,21 @@
 """This module contains all the code related getting features."""
 from importlib import import_module
-
 from torch import Tensor
 
-# min/max/std/avg/count of input transaction amount
-# min/max/std/avg/count of ouptut transaction amount
+# count of input transactions
+# count of output transactions
+
+# min/max/std/avg of input transaction amount
+# min/max/std/avg of ouptut transaction amount
 # min/max/std/avg of time between input transactions
 # min/max/std/avg of time between output transactions
 
 # The life period of the address
 # active period of the address
+
+
+
+# dict with address as key and array of transactions as value
 
 
 def get_features(chain: str, address: str = None, transaction: str = None, **_) -> Tensor:
