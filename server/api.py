@@ -15,12 +15,12 @@ model = Identity()
 if model_path is not None and exists(model_path):
     model = Transformer.load(model_path)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+api_key = getenv("AUTH_KEY")
 
-def api_key_auth(supplied: str = Depends(oauth2_scheme)) -> None:
+def api_key_auth(supplied_key: str = Depends(oauth2_scheme)) -> None:
     """Compare the supplied auth key to one specified in the env variables."""
-    required = getenv("AUTH_KEY")
-    if hash(supplied) is not hash(required):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Forbidden")
+    if hash(supplied_key) is not hash(api_key):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
 
 app = FastAPI(
     title="jewl-ai",
@@ -29,13 +29,13 @@ app = FastAPI(
     redoc_url=None
 )
 
-@app.get("/", include_in_schema=False, dependencies=[Depends(api_key_auth)])
+@app.get("/", include_in_schema=False)
 def redoc() -> HTMLResponse:
     """Return the redoc documentation page."""
     return get_redoc_html(
         openapi_url="/openapi.json",
         title="⛏ The Mining Company",
-        redoc_favicon_url="https://⛏ The Mining Company/favicon-32x32.png"
+        redoc_favicon_url="https://avatars.githubusercontent.com/u/118801889?s=32"
     )
 
 
@@ -56,6 +56,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument("-w", "--watch", action="store_true")
+    parser.add_argument("-p", "--port", type=int, default=2000)
     args = parser.parse_args()
 
     start_api(**vars(args))
