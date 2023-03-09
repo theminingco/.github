@@ -3,8 +3,9 @@ from argparse import ArgumentParser
 from os import makedirs
 from os.path import dirname
 from math import log
-from torch import Tensor, load, save, float32
-from torch import arange, exp, sin, cos
+from torch import tensor, Tensor, load, save
+from torch import arange, exp, sin, cos, equal
+from torch import round as round_tensor
 from torch import ones, triu, zeros_like, rand, zeros
 from torch.nn import Module, Dropout
 from torch.nn import TransformerDecoder, TransformerDecoderLayer
@@ -46,39 +47,36 @@ class Transformer(Module):
         }
         save(spec, path)
 
-    def _nopeek(self, src: Tensor) -> Tensor:
-        nopeek = src.size()[0]
+    def _nopeek(self, x: Tensor) -> Tensor:
+        nopeek = x.size()[0]
         nopeek = ones(nopeek, nopeek)
         nopeek = triu(nopeek).transpose(0, 1)
         return nopeek.masked_fill(nopeek == 0, float('-inf')).masked_fill(nopeek == 1, float(0.0))
 
-
-    def forward(self, src: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         """Propagate through the model."""
-        nopeek_msk = self._nopeek(src)
-        msk = zeros_like(src)
-        return self.decoder(src, msk, tgt_mask=nopeek_msk)
+        nopeek_msk = self._nopeek(x)
+        msk = zeros_like(x)
+        return self.decoder(x, msk, tgt_mask=nopeek_msk)
 
 class Positional(Module):
     """Encode positional information into an a tensor."""
 
-    def __init__(self, nhid: int, dropout=0.1, max_len=5000) -> None:
+    def __init__(self, nfeatures: int, dropout=0.1, max_len=5000) -> None:
         super().__init__()
         self.dropout = Dropout(p=dropout)
 
-        pe = zeros(max_len, nhid)
-        position = arange(0, max_len, dtype=float32).unsqueeze(1)
-        div_term = exp(arange(0, nhid, 2).float() * (-log(10000.0) / nhid))
-        pe[:, 0::2] = sin(position * div_term)
-        pe[:, 1::2] = cos(position * div_term)
-        pe = pe.unsqueeze(0).transpose(0, 1)
+        position = arange(max_len).unsqueeze(1)
+        div_term = exp(arange(0, nfeatures, 2) * (-log(10000.0) / nfeatures))
+        pe = zeros(max_len, 1, nfeatures)
+        pe[:, 0, 0::2] = sin(position * div_term)
+        pe[:, 0, 1::2] = cos(position * div_term)
         self.register_buffer('pe', pe)
-        self.factor = nhid
 
-    def forward(self, inp: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         """Propagate through the model."""
-        oup = inp * self.factor + self.pe[:inp.size(0), :]
-        return self.dropout(oup)
+        x = x + self.pe[:x.size(0)]
+        return self.dropout(x)
 
 
 if __name__ == "__main__":
@@ -111,5 +109,13 @@ def test_create_model() -> None:
     """Test whether a codel can be created and propagated through."""
     test_model = Transformer.create(nfeatures=8)
     test_input = rand(32, 32, 8)
-    test_output = test_model(input)
+    test_output = test_model(test_input)
     assert test_input.size() == test_output.size(), f"{test_input.size()} != {test_output.size()}"
+
+def test_positional() -> None:
+    """Test whether positional embedding is generated properly."""
+    test_model = Positional(1)
+    test_input = zeros(4, 1, 1)
+    test_output = round_tensor(test_model(test_input).squeeze(), decimals=4)
+    expected_output = round_tensor(tensor([0.0000, 0.9350, 1.0103, 0.1568]), decimals=4)
+    assert equal(test_output, expected_output), f"{test_output} != {expected_output}"

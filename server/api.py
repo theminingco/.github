@@ -2,13 +2,11 @@
 from argparse import ArgumentParser
 from os import getenv
 from os.path import exists
-from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.openapi.docs import get_redoc_html
 from uvicorn import run
-from data.feature import get_features
 from perceptron.create import Transformer
 
 model_path = getenv("MODEL_PATH")
@@ -36,14 +34,6 @@ def redoc() -> HTMLResponse:
         title="⛏ The Mining Company",
         redoc_favicon_url="https://⛏ The Mining Company/favicon-32x32.png"
     )
-
-@app.get("/v1/address/{chain}/{address}", dependencies=[Depends(api_key_auth)])
-@app.get("/v1/transaction/{chain}/{transaction}", dependencies=[Depends(api_key_auth)])
-def get_risk_profile(chain: str, address: str | None, transaction: str | None) -> List[float]:
-    """Run inference on a sample using a trained model."""
-    features = get_features(chain, address, transaction)
-    prediction = model(features)[0]
-    return prediction.numpy()
 
 
 def start_api(verbose: bool, port: int | None, watch: bool) -> None:
