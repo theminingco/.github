@@ -115,7 +115,8 @@ def test_create_model() -> None:
 def test_positional() -> None:
     """Test whether positional embedding is generated properly."""
     test_model = Positional(1)
+    test_model.eval()
     test_input = zeros(4, 1, 1)
     test_output = round_tensor(test_model(test_input).squeeze(), decimals=4)
-    expected_output = round_tensor(tensor([0.0000, 0.9350, 1.0103, 0.1568]), decimals=4)
+    expected_output = round_tensor(tensor([0.0000, 0.8415, 0.9093, 0.1411]), decimals=4)
     assert equal(test_output, expected_output), f"{test_output} != {expected_output}"
