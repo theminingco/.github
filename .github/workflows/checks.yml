@@ -48,4 +48,4 @@ jobs:
     - name: Run Tests
       run: |
         pip install -r requirements.txt -q
-        python3 -m checks.unit
+        python3 -m checks.test
