@@ -1,0 +1,37 @@
+name: Technical Debt
+description: When you want to suggest a technical improvement.
+title: "[Technical] "
+labels: ["technical-debt"]
+body:
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: A clear and concise description of what should happen.
+      placeholder: Something needs to change.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: A clear and concise description of any alternative solutions or features considered.
+      placeholder: All the other alternatives are not viable solutions.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks
+      description: A clear and concise description of why this change is necessary.
+      placeholder: Not changing this will cause something bad to happen.
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Terms of service
+      description: By submitting this issue you hereby grant ⛏ The Mining Company a nonexclusive, royalty-free, fully paid-up, irrevocable, perpetual, worldwide license, with the right to grant and authorize sublicenses, to make, have made, modify, use, import, offer for sale, and sell your contribution or a part thereof.
+      options:
+        - label: I agree
+          required: true
