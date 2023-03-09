@@ -148,10 +148,10 @@ if __name__ == "__main__":
 
 # MARK: TESTS
 
-def test_create_model() -> None:
+def test_model_forward() -> None:
     """Test whether a codel can be created and propagated through."""
     test_model = Transformer.create(nfeatures=8)
-    test_input = rand(32, 32, 8)
+    test_input = rand(16, 32, 8)
     test_output = test_model(test_input)
     assert test_input.size() == test_output.size(), f"{test_input.size()} != {test_output.size()}"
 
@@ -176,7 +176,7 @@ def test_padding_big() -> None:
     test_output_size = list(test_model(test_input).size())
     assert test_output_size == [32, 32, 8], f"{test_output_size} != {[32, 32, 8]}"
 
-def test_positional() -> None:
+def test_positional_layer() -> None:
     """Test whether positional embedding is generated properly."""
     test_model = Positional(1)
     test_model.eval()
