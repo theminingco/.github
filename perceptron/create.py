@@ -70,7 +70,7 @@ class Decoder(Module):
     def _msk(self, x: Tensor) -> Tensor:
         """Create a padding mask for tensor x."""
         msk = sum_dim(x, dim=-1)
-        return msk == 0
+        return (msk == 0).transpose(0, 1)
 
     def _nopeek(self, x: Tensor) -> Tensor:
         """Create a nopeek mask for tensor x."""
@@ -141,7 +141,7 @@ if __name__ == "__main__":
         print(f"Saved {args.name} model to {args.path}")
 
     model.eval()
-    model_input = rand(32, 32, args.nfeatures)
+    model_input = rand(16, 32, args.nfeatures)
     model_output = model(model_input)
     print(f"{model_input.size()} -> {model_output.size()}")
 
