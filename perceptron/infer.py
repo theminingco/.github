@@ -1,4 +1,5 @@
 """This module contains all the code related to running inference with a model."""
+from argparse import ArgumentParser
 from torch import Tensor
 from data.feature import get_features
 from perceptron.create import Transformer
@@ -12,8 +13,6 @@ def infer(chain: str, model: str, address: str = None, transaction: str = None, 
     return model(features)[0]
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
-
     parser = ArgumentParser()
     parser.add_argument("-c", "--chain", type=str, default="btc")
     parser.add_argument("-a", "--address", type=int, default="13AM4VW2dhxYgXeQepoHkHSQuy6NgaEb94")

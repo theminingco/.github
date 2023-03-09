@@ -1,5 +1,7 @@
 """This module contains all the code related to running an inference api."""
+from argparse import ArgumentParser
 from os import getenv
+from os.path import exists
 from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse
@@ -10,7 +12,7 @@ from data.feature import get_features
 from perceptron.create import Transformer
 
 model_path = getenv("MODEL_PATH")
-model = None if model_path is None else Transformer.load(model_path)
+model = Transformer.load(model_path) if exists(model_path) else None
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def api_key_auth(supplied: str = Depends(oauth2_scheme)) -> None:
@@ -58,8 +60,6 @@ def start_api(verbose: bool, port: int | None, watch: bool) -> None:
     )
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
-
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument("-w", "--watch", action="store_true")

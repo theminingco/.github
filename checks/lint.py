@@ -1,4 +1,5 @@
 """This module contains all the code related to running the code linter."""
+from argparse import ArgumentParser
 from glob import glob
 from sys import exit as sysexit
 from pylint.lint import Run
@@ -11,7 +12,7 @@ def run_linter(**_) -> None:
         sysexit(1)
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
     parser = ArgumentParser()
     args = parser.parse_args()
+
     run_linter(**vars(args))
