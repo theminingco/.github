@@ -7,10 +7,13 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.openapi.docs import get_redoc_html
 from uvicorn import run
+from torch.nn import Identity
 from perceptron.create import Transformer
 
 model_path = getenv("MODEL_PATH")
-model = Transformer.load(model_path) if exists(model_path) else None
+model = Identity()
+if model_path is not None and exists(model_path):
+    model = Transformer.load(model_path)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def api_key_auth(supplied: str = Depends(oauth2_scheme)) -> None:
