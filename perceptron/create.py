@@ -48,7 +48,7 @@ class Transformer(Module):
         save(spec, path)
 
     def _nopeek(self, x: Tensor) -> Tensor:
-        nopeek = x.size()[0]
+        nopeek = x.size(0)
         nopeek = ones(nopeek, nopeek)
         nopeek = triu(nopeek).transpose(0, 1)
         return nopeek.masked_fill(nopeek == 0, float('-inf')).masked_fill(nopeek == 1, float(0.0))
@@ -105,14 +105,14 @@ if __name__ == "__main__":
 
 # MARK: TESTS
 
-def test_create_model() -> None:
+def test_model_forward() -> None:
     """Test whether a codel can be created and propagated through."""
     test_model = Transformer.create(nfeatures=8)
-    test_input = rand(32, 32, 8)
+    test_input = rand(16, 32, 8)
     test_output = test_model(test_input)
     assert test_input.size() == test_output.size(), f"{test_input.size()} != {test_output.size()}"
 
-def test_positional() -> None:
+def test_positional_layer() -> None:
     """Test whether positional embedding is generated properly."""
     test_model = Positional(1)
     test_model.eval()
