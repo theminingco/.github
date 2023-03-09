@@ -60,8 +60,7 @@ def run_test_method(function: Callable[[], None], verbose: bool, stop_on_failure
         return True
     except AssertionError as e:
         print(f"  [{cross}] {name}")
-        if verbose:
-            print("".join(format_exception(None, e, e.__traceback__)))
+        print("".join(format_exception(None, e, e.__traceback__)))
         if stop_on_failure:
             sysexit(1)
         return False
