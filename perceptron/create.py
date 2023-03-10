@@ -18,6 +18,7 @@ class Transformer(Module):
 
     def __init__(self, nfeatures: int, nhid: int, nhead: int, nlayers: int, dropout: float) -> None:
         super().__init__()
+        self.spec = { "nfeatures": nfeatures, "nhid": nhid, "nhead": nhead, "nlayers": nlayers, "dropout": dropout }
         self.padding = Padding(nfeatures)
         self.positional = Positional(nfeatures, dropout)
         self.decoder = Decoder(nfeatures, nhid, nhead, nlayers, dropout)
@@ -30,19 +31,16 @@ class Transformer(Module):
     @classmethod
     def load(cls, path: str, **_):
         """Load a model from a `.pt` file."""
-        spec = load(path)
-        instance = cls(**spec["parameters"])
-        instance.load_state_dict(spec["state"])
+        genesis = load(path)
+        instance = cls(**genesis["spec"])
+        instance.load_state_dict(genesis["state"])
         return instance
 
     def save(self, path: str) -> None:
         """Save a model to a `.pt` file."""
         makedirs(dirname(args.path), exist_ok=True)
-        spec = {
-            "parameters": self.genesis,
-            "state": self.internal.state_dict()
-        }
-        save(spec, path)
+        genesis = { "spec": self.spec, "state": self.state_dict() }
+        save(genesis, path)
 
     def forward(self, x: Tensor) -> Tensor:
         """Propagate through the model."""
@@ -138,12 +136,12 @@ if __name__ == "__main__":
     if args.path is not None:
         makedirs(dirname(args.path), exist_ok=True)
         model.save(args.path)
-        print(f"Saved {args.name} model to {args.path}")
-
-    model.eval()
-    model_input = rand(16, 32, args.nfeatures)
-    model_output = model(model_input)
-    print(f"{model_input.size()} -> {model_output.size()}")
+        print(f"Saved model to {args.path}")
+    else:
+        model.eval()
+        model_input = rand(16, 32, args.nfeatures)
+        model_output = model(model_input)
+        print(f"{model_input.size()} -> {model_output.size()}")
 
 
 # MARK: TESTS
