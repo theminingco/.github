@@ -13,7 +13,7 @@ cryptography==39.0.2
 dill==0.3.6
 docutils==0.19
 ecdsa==0.18.0
-fastapi==0.93.0
+fastapi==0.94.0
 h11==0.14.0
 hyperlink==21.0.0
 idna==3.4
