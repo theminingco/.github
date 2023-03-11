@@ -42,12 +42,12 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--length", default=50, type=int)
     args = parser.parse_args()
 
-    sticks = []
+    data = []
     previous = randint(5, 5000)
     for n in range(args.amount):
         opening = previous + randint(-20, 20)
         closing = previous + randint(-200, 200)
-        sticks.append((opening, closing))
+        data.append((opening, closing))
         previous = closing
 
-    print_sticks(sticks, **vars(args))
+    print_sticks(data, **vars(args))
