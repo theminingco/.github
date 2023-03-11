@@ -1,9 +1,12 @@
 """This module contains all the code related to printing ascii progress bars."""
 from argparse import ArgumentParser
+from os import popen
 from time import sleep
 
-def print_bar(n, total, suffix: str | None, length=25, **_):
+def print_bar(n, total, suffix="", length=0, **_):
     """Print an updatable progressbar to the terminal."""
+    _, columns = popen("stty size", "r").read().split()
+    length = int(int(columns) * 0.25) if length is None or length == 0 else length
     iteration = f"{n:0{len(str(total))}d}"
     filled_length = int(length * n // total)
     progress_bar = ">" + " " * (length-1)
@@ -22,7 +25,7 @@ def print_bar(n, total, suffix: str | None, length=25, **_):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-n", "--iterations", type=int, default=100)
-    parser.add_argument("-l", "--length", type=int, default=25)
+    parser.add_argument("-l", "--length", type=int)
     parser.add_argument("-s", "--suffix", type=str)
     args = parser.parse_args()
 
