@@ -47,11 +47,7 @@ torch==1.13.1
 Twisted==22.10.0
 txaio==23.1.1
 typing_extensions==4.5.0
-<<<<<<< Updated upstream
-uvicorn==0.21.0
-=======
 urllib3==1.26.13
-uvicorn==0.20.0
->>>>>>> Stashed changes
+uvicorn==0.21.0
 wrapt==1.15.0
 zope.interface==5.5.2
