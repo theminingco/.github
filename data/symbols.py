@@ -1,11 +1,12 @@
 """This module contains all the code related to getting all available symbols."""
 from argparse import ArgumentParser
 from typing import List
+from os import getenv
 from binance.spot import Spot
 
-client = Spot()
+client = Spot(api_key=getenv("BINANCE_KEY"), api_secret=getenv("BINANCE_SECRET"))
 
-def get_available_symbols(**_) -> List[str]:
+def get_available_symbols() -> List[str]:
     """The entrypoint of the symbol module."""
     exchange_info = client.exchange_info()
     symbols = []
@@ -19,6 +20,6 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     args = parser.parse_args()
 
-    ids = get_available_symbols(**vars(args))
+    ids = get_available_symbols()
 
     print(f"{len(ids)} symbols found trading with USDT")

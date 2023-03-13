@@ -9,4 +9,4 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     args = parser.parse_args()
 
-    train_model(**vars(args))
+    train_model()

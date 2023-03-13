@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from torch import Tensor
 from perceptron.create import Transformer
 
-def infer(model: str, address: str = None, transaction: str = None, **_) -> Tensor:
+def infer(model: str, address: str = None, transaction: str = None) -> Tensor:
     """Run inferernce on a new sample."""
     assert address is not None or transaction is not None, "one of `address` and `transaction` should be provided."
     model = Transformer.load(model)
@@ -17,5 +17,5 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--model", type=str, default=".tmp/model.pt")
     args = parser.parse_args()
 
-    prediction = infer(**vars(args))
+    prediction = infer(args.model, args.address, args.transaction)
     print(prediction.numpy())

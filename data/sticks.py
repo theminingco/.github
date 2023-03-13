@@ -1,12 +1,13 @@
 """This module contains all the code related to getting all available symbols."""
 from argparse import ArgumentParser
+from os import getenv
 from typing import List
 from binance.spot import Spot
 from util.stick import Stick, print_sticks
 
-client = Spot()
+client = Spot(api_key=getenv("BINANCE_KEY"), api_secret=getenv("BINANCE_SECRET"))
 
-def get_candle_sticks(symbol: str, interval: str = "15m", limit: int = 512, end_time: int = None, **_) -> List[Stick]:
+def get_candle_sticks(symbol: str, interval: str = "15m", limit: int = 512, end_time: int = None) -> List[Stick]:
     """The entrypoint of the sticks module."""
     chain = hash(symbol)
     klines = client.klines(symbol, interval, limit=limit, endTime=end_time)
@@ -19,9 +20,9 @@ def get_candle_sticks(symbol: str, interval: str = "15m", limit: int = 512, end_
             low_price=float(kline[3]),
             close_price=float(kline[4]),
             volume=float(kline[5]),
-            close_time=float(kline[6]),
+            close_time=int(kline[6]),
             quote_volume=float(kline[7]),
-            num_trades=float(kline[8]),
+            num_trades=int(kline[8]),
             taker_base_volume=float(kline[9]),
             taker_quote_volume=float(kline[10]),
             chain=chain
@@ -37,5 +38,5 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--limit", type=int, default=10)
     args = parser.parse_args()
 
-    candle_sticks = get_candle_sticks(**vars(args))
+    candle_sticks = get_candle_sticks(args.symbol, args.interval, args.limit)
     print_sticks(candle_sticks)

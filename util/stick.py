@@ -1,11 +1,12 @@
 """This module contains all the code related to printing ascii box plots."""
 from argparse import ArgumentParser
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, asdict
 from os import popen, makedirs
 from os.path import dirname
 from typing import List
 from random import randint
 from math import floor, log10
+from csv import DictReader, DictWriter
 from numpy import amin, amax
 
 @dataclass
@@ -24,7 +25,7 @@ class Stick:
     taker_quote_volume: float = 0
     chain: int = 0
 
-def print_legend(minimum: float, maximum: float, length: int) -> None:
+def _print_legend(minimum: float, maximum: float, length: int) -> None:
     """Print a legend for candlesitcks."""
     def _round_sig(x: float):
         return round(x, 3 - int(floor(log10(abs(x)))) - 1)
@@ -37,7 +38,7 @@ def print_legend(minimum: float, maximum: float, length: int) -> None:
     space_splitter = int(len(space) / 2)
     print(f"{low_price}{space[:space_splitter]}{mid_price}{space[space_splitter:]}{high_price}")
 
-def print_stick(stick: Stick, step: float, offset: float) -> None:
+def _print_stick(stick: Stick, step: float, offset: float) -> None:
     """Print a single candlestick."""
     stick_start = amin([stick.open_price, stick.close_price])
     stick_end = amax([stick.open_price, stick.close_price])
@@ -49,16 +50,16 @@ def print_stick(stick: Stick, step: float, offset: float) -> None:
     suffix = "\x1b[0m"
     print(f"{prefix}{space}{pre_stick}[{stick_space}]{post_stick}{suffix}")
 
-def print_sticks(sticks: List[Stick], length: int = None, **_) -> None:
+def print_sticks(sticks: List[Stick], length: int = None) -> None:
     """Print one or more candlesticks and an accompanying legend."""
     _, columns = popen("stty size", "r").read().split()
     length = int(columns) if length is None or length == 0 else length
     minimum = amin([ stick.low_price for stick in sticks ])
     maximum = amax([ stick.high_price for stick in sticks ])
-    print_legend(minimum, maximum, length)
+    _print_legend(minimum, maximum, length)
     step = (maximum - minimum) / length
     for stick in sticks:
-        print_stick(stick, step, minimum)
+        _print_stick(stick, step, minimum)
 
 def write_sticks(sticks: List[Stick], path: str) -> None:
     """Write one or more candlesitcks to a file."""
@@ -67,12 +68,21 @@ def write_sticks(sticks: List[Stick], path: str) -> None:
     makedirs(dirname(path), exist_ok=True)
     with open(path, "w+", encoding="utf8") as f:
         legend = [ field.name for field in fields(Stick) ]
-        legend_text = ",".join(legend)
-        f.write(f"{legend_text}\n")
+        writer = DictWriter(f, legend)
+        writer.writeheader()
         for stick in sticks:
-            items = [ f"{getattr(stick, key)}" for key in legend ]
-            items_text = ",".join(items)
-            f.write(f"{items_text}\n")
+            writer.writerow(asdict(stick))
+
+def read_sticks(file: str) -> List[Stick]:
+    """Read one or more sticks from a csv file."""
+    with open(file, "r", encoding="utf8") as f:
+        reader = DictReader(f)
+        sticks = []
+        for row in reader:
+            for field in fields(Stick):
+                row[field.name] = field.type(row[field.name])
+            sticks.append(Stick(**row))
+        return sticks
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -95,4 +105,4 @@ if __name__ == "__main__":
         data.append(sticker)
         previous = closing
 
-    print_sticks(data, **vars(args))
+    print_sticks(data, args.length)

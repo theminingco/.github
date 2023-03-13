@@ -15,7 +15,7 @@ from typing import Callable, List
 check = "\x1b[32m✓\x1b[0m"
 cross = "\x1b[31m✗\x1b[0m"
 
-def run_tests(verbose: bool, stop_on_failure: bool, module: List[str], **_) -> None:
+def run_tests(verbose: bool, stop_on_failure: bool, module: List[str]) -> None:
     """The entrypoint of the test module."""
     if module is None:
         module = glob("**/*.py")
@@ -72,4 +72,4 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--module", type=str, nargs="*")
     args = parser.parse_args()
 
-    run_tests(**vars(args))
+    run_tests(args.verbose, args.stop_on_failure, args.module)

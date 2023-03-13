@@ -24,12 +24,12 @@ class Transformer(Module):
         self.decoder = Decoder(nfeatures, nhid, nhead, nlayers, dropout)
 
     @classmethod
-    def create(cls, nfeatures: int = 256, nhid: int = 8, nhead: int = 8, nlayers: int = 2, dropout: float = 0.1, **_):
+    def create(cls, nfeatures: int = 256, nhid: int = 8, nhead: int = 8, nlayers: int = 2, dropout: float = 0.1):
         """Create a new model."""
         return cls(nfeatures, nhid, nhead, nlayers, dropout)
 
     @classmethod
-    def load(cls, path: str, **_):
+    def load(cls, path: str):
         """Load a model from a `.pt` file."""
         genesis = load(path)
         instance = cls(**genesis["spec"])
@@ -54,7 +54,7 @@ class Decoder(Module):
 
     def __init__(self, nfeatures: int, nhid: int, nhead: int, nlayers: int, dropout: float) -> None:
         super().__init__()
-        decoder_layer = TransformerDecoderLayer(nfeatures, nhead, nhid, dropout)
+        decoder_layer = TransformerDecoderLayer(nfeatures, nhead, nhid, dropout, batch_first=True)
         self.decoder = TransformerDecoder(decoder_layer, nlayers)
 
         for p in self.parameters():
@@ -67,12 +67,11 @@ class Decoder(Module):
 
     def _msk(self, x: Tensor) -> Tensor:
         """Create a padding mask for tensor x."""
-        msk = sum_dim(x, dim=-1)
-        return (msk == 0).transpose(0, 1)
+        return sum_dim(x, dim=-1) == 0
 
     def _nopeek(self, x: Tensor) -> Tensor:
         """Create a nopeek mask for tensor x."""
-        size = x.size(0)
+        size = x.size(1)
         nopeek = tril(ones(size, size, device=x.device))
         nopeek = nopeek.masked_fill(nopeek == 0, float('-inf'))
         return nopeek.masked_fill(nopeek == 1, float(0.0))
@@ -103,20 +102,20 @@ class Padding(Module):
 class Positional(Module):
     """Encode positional information into an a tensor."""
 
-    def __init__(self, nfeatures: int, dropout: float = 0.1, max_len: int = 5000) -> None:
+    def __init__(self, nfeatures: int, dropout: float = 0.1, max_len: int = 4096) -> None:
         super().__init__()
         self.dropout = Dropout(p=dropout)
 
         position = arange(max_len).unsqueeze(1)
         div_term = exp(arange(0, nfeatures, 2) * (-log(10000.0) / nfeatures))
-        pe = zeros(max_len, 1, nfeatures)
-        pe[:, 0, 0::2] = sin(position * div_term)
-        pe[:, 0, 1::2] = cos(position * div_term)
+        pe = zeros(max_len, nfeatures)
+        pe[:, 0::2] = sin(position * div_term)
+        pe[:, 1::2] = cos(position * div_term)
         self.register_buffer('pe', pe)
 
     def forward(self, x: Tensor) -> Tensor:
         """Propagate through the model."""
-        x = x + self.pe[:x.size(0)]
+        x = x + self.pe[:x.size(1)]
         return self.dropout(x)
 
 
@@ -131,7 +130,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    model = Transformer.create(**vars(args))
+    model = Transformer.create(args.nfeatures, args.nhid, args.nhead, args.nlayers, args.dropout)
 
     if args.path is not None:
         makedirs(dirname(args.path), exist_ok=True)
@@ -139,7 +138,7 @@ if __name__ == "__main__":
         print(f"Saved model to {args.path}")
     else:
         model.eval()
-        model_input = rand(16, 32, args.nfeatures)
+        model_input = rand(32, 16, args.nfeatures)
         model_output = model(model_input)
         print(f"{model_input.size()} -> {model_output.size()}")
 
@@ -149,36 +148,36 @@ if __name__ == "__main__":
 def test_model_forward() -> None:
     """Test whether a codel can be created and propagated through."""
     test_model = Transformer.create(nfeatures=8)
-    test_input = rand(16, 32, 8)
+    test_input = rand(32, 16, 8)
     test_output = test_model(test_input)
     assert test_input.size() == test_output.size(), f"{test_input.size()} != {test_output.size()}"
 
 def test_padding_small() -> None:
     """Test whether padding is done for a tensor with not enough features."""
     test_model = Padding(8)
-    test_input = zeros(32, 32, 7)
+    test_input = zeros(32, 16, 7)
     test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 32, 8], f"{test_output_size} != {[32, 32, 8]}"
+    assert test_output_size == [32, 16, 8], f"{test_output_size} != {[32, 16, 8]}"
 
 def test_padding_exact() -> None:
     """Test whether padding is done for a tensor with exactly enough features."""
     test_model = Padding(8)
-    test_input = zeros(32, 32, 8)
+    test_input = zeros(32, 16, 8)
     test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 32, 8], f"{test_output_size} != {[32, 32, 8]}"
+    assert test_output_size == [32, 16, 8], f"{test_output_size} != {[32, 16, 8]}"
 
 def test_padding_big() -> None:
     """Test whether padding is done for a tensor with too many features."""
     test_model = Padding(8)
-    test_input = zeros(32, 32, 9)
+    test_input = zeros(32, 16, 9)
     test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 32, 8], f"{test_output_size} != {[32, 32, 8]}"
+    assert test_output_size == [32, 16, 8], f"{test_output_size} != {[32, 16, 8]}"
 
 def test_positional_layer() -> None:
     """Test whether positional embedding is generated properly."""
     test_model = Positional(1)
     test_model.eval()
-    test_input = zeros(4, 1, 1)
+    test_input = zeros(1, 4, 1)
     test_output = round_tensor(test_model(test_input).squeeze(), decimals=4)
     expected_output = round_tensor(tensor([0.0000, 0.8415, 0.9093, 0.1411]), decimals=4)
     assert equal(test_output, expected_output), f"{test_output} != {expected_output}"
