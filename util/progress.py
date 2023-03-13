@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from os import popen
 from time import sleep
 
-def print_bar(n, total, suffix="", length=0, **_):
+def print_bar(n: int, total: int, prefix: str = None, suffix: str = None, length: int = None, **_):
     """Print an updatable progressbar to the terminal."""
     _, columns = popen("stty size", "r").read().split()
     length = int(int(columns) * 0.25) if length is None or length == 0 else length
@@ -12,11 +12,14 @@ def print_bar(n, total, suffix="", length=0, **_):
     progress_bar = ">" + " " * (length-1)
     progress_bar = "-" * filled_length + progress_bar[:length-filled_length]
 
-    if suffix is None or suffix == "":
+    if suffix is None:
         perc = int(round((n / total) * 100))
-        suffix = f"{perc}%"
+        suffix = f" - {perc}%"
 
-    line = f"{iteration}/{total} [{progress_bar}] - {suffix}"
+    if prefix is None:
+        prefix = f"{iteration}/{total} "
+
+    line = f"{prefix}[{progress_bar}]{suffix}"
 
     print(line, end="\r")
     if n == total:

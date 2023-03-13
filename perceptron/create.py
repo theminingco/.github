@@ -24,7 +24,7 @@ class Transformer(Module):
         self.decoder = Decoder(nfeatures, nhid, nhead, nlayers, dropout)
 
     @classmethod
-    def create(cls, nfeatures=256, nhid=8, nhead=8, nlayers=2, dropout=0.1, **_):
+    def create(cls, nfeatures: int = 256, nhid: int = 8, nhead: int = 8, nlayers: int = 2, dropout: float = 0.1, **_):
         """Create a new model."""
         return cls(nfeatures, nhid, nhead, nlayers, dropout)
 
@@ -103,7 +103,7 @@ class Padding(Module):
 class Positional(Module):
     """Encode positional information into an a tensor."""
 
-    def __init__(self, nfeatures: int, dropout=0.1, max_len=5000) -> None:
+    def __init__(self, nfeatures: int, dropout: float = 0.1, max_len: int = 5000) -> None:
         super().__init__()
         self.dropout = Dropout(p=dropout)
 
