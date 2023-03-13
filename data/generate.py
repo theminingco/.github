@@ -54,8 +54,9 @@ class DataGenerator:
         symbols = get_available_symbols()
 
         func = partial(self._generate_sample, interval, size)
-        for _ in range(iterations):
-            process_map(func, symbols, max_workers=threads)
+        for n in range(iterations):
+            desc = f"{n+1:0{len(str(iterations))}d}"
+            process_map(func, symbols, max_workers=threads, desc=desc)
 
 if __name__ == "__main__":
     interval_choices = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
