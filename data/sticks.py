@@ -6,21 +6,25 @@ from util.stick import Stick, print_sticks
 
 client = Spot()
 
-def get_candle_sticks(symbol: str, interval: str, limit: int, **_) -> List[Stick]:
+def get_candle_sticks(symbol: str, interval: str = "15m", limit: int = 512, end_time: int = None, **_) -> List[Stick]:
     """The entrypoint of the sticks module."""
-    klines = client.klines(symbol, interval, limit=limit)
+    chain = hash(symbol)
+    klines = client.klines(symbol, interval, limit=limit, endTime=end_time)
     sticks = []
     for kline in klines:
         stick = Stick(
-            float(kline[1]),
-            float(kline[2]),
-            float(kline[3]),
-            float(kline[4]),
-            float(kline[5]),
-            float(kline[7]),
-            float(kline[8]),
-            float(kline[9]),
-            float(kline[10])
+            open_time=int(kline[0]),
+            open_price=float(kline[1]),
+            high_price=float(kline[2]),
+            low_price=float(kline[3]),
+            close_price=float(kline[4]),
+            volume=float(kline[5]),
+            close_time=float(kline[6]),
+            quote_volume=float(kline[7]),
+            num_trades=float(kline[8]),
+            taker_base_volume=float(kline[9]),
+            taker_quote_volume=float(kline[10]),
+            chain=chain
         )
         sticks.append(stick)
     return sticks

@@ -1,10 +1,11 @@
 """This module contains all the code related to getting all available symbols."""
 from argparse import ArgumentParser
+from typing import List
 from binance.spot import Spot
 
 client = Spot()
 
-def get_available_symbols(**_) -> None:
+def get_available_symbols(**_) -> List[str]:
     """The entrypoint of the symbol module."""
     exchange_info = client.exchange_info()
     symbols = []

@@ -39,10 +39,9 @@ def redoc() -> HTMLResponse:
     )
 
 
-def start_api(verbose: bool, port: int | None, watch: bool) -> None:
+def start_api(verbose: bool, watch: bool, port: int = None) -> None:
     """The entrypoint of the api module."""
     log_level = "trace" if verbose else "info"
-    port = int(getenv("PORT"))
     port = 2000 if port is None else port
     run(
         "server.api:app",

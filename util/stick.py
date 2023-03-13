@@ -1,7 +1,8 @@
 """This module contains all the code related to printing ascii box plots."""
 from argparse import ArgumentParser
-from dataclasses import dataclass
-from os import popen
+from dataclasses import dataclass, fields
+from os import popen, makedirs
+from os.path import dirname
 from typing import List
 from random import randint
 from math import floor, log10
@@ -10,17 +11,20 @@ from numpy import amin, amax
 @dataclass
 class Stick:
     """A dataclass for a Kline candlestick."""
-    open_price: float
-    high_price: float
-    low_price: float
-    close_price: float
-    volume: float
-    quote_volume: float
-    num_trades: int
-    taker_base_volume: float
-    taker_quote_volume: float
+    open_time: int = 0
+    open_price: float = 0
+    high_price: float = 0
+    low_price: float = 0
+    close_price: float = 0
+    close_time: int = 0
+    volume: float = 0
+    quote_volume: float = 0
+    num_trades: int = 0
+    taker_base_volume: float = 0
+    taker_quote_volume: float = 0
+    chain: int = 0
 
-def print_legend(minimum: float, maximum: float, length: int):
+def print_legend(minimum: float, maximum: float, length: int) -> None:
     """Print a legend for candlesitcks."""
     def _round_sig(x: float):
         return round(x, 3 - int(floor(log10(abs(x)))) - 1)
@@ -33,7 +37,7 @@ def print_legend(minimum: float, maximum: float, length: int):
     space_splitter = int(len(space) / 2)
     print(f"{low_price}{space[:space_splitter]}{mid_price}{space[space_splitter:]}{high_price}")
 
-def print_stick(stick: Stick, step: float, offset: float):
+def print_stick(stick: Stick, step: float, offset: float) -> None:
     """Print a single candlestick."""
     stick_start = amin([stick.open_price, stick.close_price])
     stick_end = amax([stick.open_price, stick.close_price])
@@ -45,7 +49,7 @@ def print_stick(stick: Stick, step: float, offset: float):
     suffix = "\x1b[0m"
     print(f"{prefix}{space}{pre_stick}[{stick_space}]{post_stick}{suffix}")
 
-def print_sticks(sticks: List[Stick], length=0, **_):
+def print_sticks(sticks: List[Stick], length: int = None, **_) -> None:
     """Print one or more candlesticks and an accompanying legend."""
     _, columns = popen("stty size", "r").read().split()
     length = int(columns) if length is None or length == 0 else length
@@ -55,6 +59,20 @@ def print_sticks(sticks: List[Stick], length=0, **_):
     step = (maximum - minimum) / length
     for stick in sticks:
         print_stick(stick, step, minimum)
+
+def write_sticks(sticks: List[Stick], path: str) -> None:
+    """Write one or more candlesitcks to a file."""
+    if len(sticks) == 0:
+        return
+    makedirs(dirname(path), exist_ok=True)
+    with open(path, "w+", encoding="utf8") as f:
+        legend = [ field.name for field in fields(Stick) ]
+        legend_text = ",".join(legend)
+        f.write(f"{legend_text}\n")
+        for stick in sticks:
+            items = [ f"{getattr(stick, key)}" for key in legend ]
+            items_text = ",".join(items)
+            f.write(f"{items_text}\n")
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -68,7 +86,13 @@ if __name__ == "__main__":
         closing = previous + randint(-200, 200)
         lowing = amin([opening, closing]) + randint(-20, -1)
         highing = amax([opening, closing]) + randint(1, 20)
-        data.append(Stick(float(opening), float(highing), float(lowing), float(closing), 0, 0, 0, 0, 0))
+        sticker = Stick(
+            open_price=float(opening),
+            high_price=float(highing),
+            low_price=float(lowing),
+            close_price=float(closing)
+        )
+        data.append(sticker)
         previous = closing
 
     print_sticks(data, **vars(args))
