@@ -17,7 +17,7 @@ if model_path is not None and exists(model_path):
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 api_key = getenv("AUTH_KEY")
 
-def api_key_auth(supplied_key: str = Depends(oauth2_scheme)) -> None:
+def _api_key_auth(supplied_key: str = Depends(oauth2_scheme)) -> None:
     """Compare the supplied auth key to one specified in the env variables."""
     if hash(supplied_key) is not hash(api_key):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
@@ -39,10 +39,9 @@ def redoc() -> HTMLResponse:
     )
 
 
-def start_api(verbose: bool, watch: bool, port: int = None) -> None:
+def start_api(verbose: bool, watch: bool, port: int = 2000) -> None:
     """The entrypoint of the api module."""
     log_level = "trace" if verbose else "info"
-    port = 2000 if port is None else port
     run(
         "server.api:app",
         host="0.0.0.0",
@@ -58,4 +57,4 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--port", type=int, default=2000)
     args = parser.parse_args()
 
-    start_api(**vars(args))
+    start_api(args.verbose, args.watch, args.port)

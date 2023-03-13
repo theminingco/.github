@@ -18,8 +18,8 @@ The repository is set up very easiliy. Each file works as a standalone script th
 
 An example workflow for creating, training and serving a model could be:
 
+* Generate a new dataset using `python3 -m data.generate`.
 * Create a fresh model using `python3 -m perceptron.create`.
-* Prepare the training and test data `python3 -m data.prepare`.
 * Train the model `python3 -m perceptron.train`.
 * Test the model on a test set `python3 -m perceptron.test`.
 * Run inference on a newly created sample `python3 -m perceptron.infer`.

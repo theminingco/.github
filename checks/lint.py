@@ -4,7 +4,7 @@ from glob import glob
 from sys import exit as sysexit
 from pylint.lint import Run
 
-def run_linter(**_) -> None:
+def run_linter() -> None:
     """The entrypoint of the lint module."""
     files = glob("**/*.py")
     proc = Run(files, do_exit=False)
@@ -15,4 +15,4 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     args = parser.parse_args()
 
-    run_linter(**vars(args))
+    run_linter()

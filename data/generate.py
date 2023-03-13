@@ -1,73 +1,75 @@
 """This module contains all the code related to preparing the dataset."""
 from argparse import ArgumentParser
+from multiprocessing import cpu_count
 from os import makedirs
-from os.path import splitext
+from os.path import splitext, basename
 from shutil import rmtree
 from glob import glob
 from time import time
+from functools import partial
+from tqdm.contrib.concurrent import process_map
 from data.sticks import get_candle_sticks
 from data.symbols import get_available_symbols
-from util.progress import print_bar
 from util.stick import write_sticks
 
-def check_existing_files(path: str) -> dict[str, int]:
-    """Check any existing files to make sure the same sample is not generated twice."""
-    lowest_timestamp = { }
+class DataGenerator:
+    """A class for generating data."""
 
-    existing_files = glob(f"{path}/*.csv")
-    for existing_file in existing_files:
-        name = splitext(existing_file)[0]
-        parts = name.split("-")
-        if len(parts) < 2:
-            continue
+    def __init__(self, path: str) -> None:
+        makedirs(path, exist_ok=True)
 
-        if parts[0] not in lowest_timestamp or lowest_timestamp[parts[0]] < int(parts[2]):
-            lowest_timestamp[parts[0]] = int(parts[1])
+        self.path = path
+        self.lowest_timestamp = { }
+        self.process = None
 
-    return lowest_timestamp
-
-def generate_samples(lowest_timestamp: dict[str, int], interval: str, size: int, path: str):
-    """Start generating new samples. This method loops endlessly until interrupeted."""
-    symbols = get_available_symbols()
-    total = len(symbols)
-
-    print_bar(0, total, prefix="", suffix="")
-    counter = 0
-    while True:
-        for n, symbol in enumerate(symbols):
-            end_time = lowest_timestamp[symbol] if symbol in lowest_timestamp else int(time() * 1000)
-            if end_time == 0:
+        existing_files = glob(f"{path}/**/*.csv")
+        for existing_file in existing_files:
+            path, _ = splitext(existing_file)
+            parts = basename(path).split("-")
+            if len(parts) < 2:
                 continue
-            sticks = get_candle_sticks(symbol, interval, size, end_time - 1)
-            if len(sticks) != size:
-                lowest_timestamp[symbol] = 0
-                continue
+            symbol = parts[0]
+            timestamp = int(parts[1])
 
-            filename = f"{path}/{symbol}-{sticks[0].open_time}.csv"
-            write_sticks(sticks, filename)
+            if symbol not in self.lowest_timestamp or self.lowest_timestamp[symbol] < timestamp:
+                self.lowest_timestamp[symbol] = timestamp
 
-            lowest_timestamp[symbol] = sticks[0].open_time
-            counter += 1
-            print_bar(n, total, prefix="", suffix=f" {counter}")
+    def _generate_sample(self, interval: str, size: int, symbol: str):
+        """Generate a single sample for a symbol."""
+        end_time = self.lowest_timestamp[symbol] if symbol in self.lowest_timestamp else int(time() * 1000)
+        if end_time == 0:
+            return
+        sticks = get_candle_sticks(symbol, interval, size, end_time - 1)
+        if len(sticks) != size:
+            self.lowest_timestamp[symbol] = 0
+            return
 
-def generate_dataset(path: str, interval: str = "15m", size: int = 512, fresh: bool = False, **_) -> None:
-    """The entrypoint of the generate module."""
-    if fresh:
-        rmtree(path)
-    makedirs(path, exist_ok=True)
+        filename = f"{self.path}/{symbol}-{sticks[0].open_time}.csv"
+        write_sticks(sticks, filename)
 
-    lowest_timestamp = check_existing_files(path)
-    generate_samples(lowest_timestamp, interval, size, path)
+        self.lowest_timestamp[symbol] = sticks[0].open_time
 
+    def start_generating(self, interval: str = "15m", size: int = 512, iterations: int = 10, threads: int = cpu_count()) -> None:
+        """Start generating new samples."""
+        symbols = get_available_symbols()
+
+        func = partial(self._generate_sample, interval, size)
+        for _ in range(iterations):
+            process_map(func, symbols, max_workers=threads)
 
 if __name__ == "__main__":
+    interval_choices = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
     parser = ArgumentParser()
     parser.add_argument("-p", "--path", type=str, default=".tmp/data")
     parser.add_argument("-s", "--size", type=int, default=512)
+    parser.add_argument("-i", "--interval", type=str, choices=interval_choices, default="15m")
+    parser.add_argument("-n", "--iterations", type=int, default=1)
+    parser.add_argument("-t", "--threads", type=int, default=cpu_count())
     parser.add_argument("-f", "--fresh", action="store_true")
     args = parser.parse_args()
 
-    try:
-        generate_dataset(**vars(args))
-    except KeyboardInterrupt:
-        print()
+    if args.fresh:
+        rmtree(args.path)
+
+    generator = DataGenerator(args.path)
+    generator.start_generating(args.interval, args.size, args.iterations, args.threads)
