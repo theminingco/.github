@@ -28,7 +28,8 @@ class DataFrame(Dataset):
             stick.close_price,
             stick.volume,
             float(stick.num_trades),
-            float(stick.chain)
+            float(stick.chain),
+            float(0)
         ]
 
     def __getitem__(self, index: int):
