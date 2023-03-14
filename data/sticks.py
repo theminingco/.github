@@ -1,33 +1,32 @@
 """This module contains all the code related to getting all available symbols."""
 from argparse import ArgumentParser
 from os import getenv
-from typing import List
 from binance.spot import Spot
-from util.stick import Stick, print_sticks
+from torch import zeros, float32, tensor, Tensor
+from util.stick import print_sticks
 
 client = Spot(api_key=getenv("BINANCE_KEY"), api_secret=getenv("BINANCE_SECRET"))
 
-def get_candle_sticks(symbol: str, interval: str = "15m", limit: int = 512, end_time: int = None) -> List[Stick]:
+def get_candle_sticks(symbol: str, interval: str = "15m", limit: int = 512, end_time: int = None) -> Tensor:
     """The entrypoint of the sticks module."""
     chain = hash(symbol)
     klines = client.klines(symbol, interval, limit=limit, endTime=end_time)
-    sticks = []
-    for kline in klines:
-        stick = Stick(
-            open_time=int(kline[0]),
-            open_price=float(kline[1]),
-            high_price=float(kline[2]),
-            low_price=float(kline[3]),
-            close_price=float(kline[4]),
-            volume=float(kline[5]),
-            close_time=int(kline[6]),
-            quote_volume=float(kline[7]),
-            num_trades=int(kline[8]),
-            taker_base_volume=float(kline[9]),
-            taker_quote_volume=float(kline[10]),
-            chain=chain
-        )
-        sticks.append(stick)
+    sticks = zeros((limit, 12), dtype=float32)
+    for n, kline in enumerate(klines):
+        sticks[n] = tensor([
+            float(kline[1]),    # 0: open price
+            float(kline[4]),    # 1: close price
+            float(kline[3]),    # 2: low price
+            float(kline[2]),    # 3: high price
+            float(kline[5]),    # 4: volume
+            float(kline[7]),    # 5: quote volume
+            float(kline[8]),    # 6: number of trades
+            float(kline[9]),    # 7: taker base volume
+            float(kline[10]),   # 8: taker quote volume
+            float(chain),       # 9: chain
+            float(kline[0]),    # 10: open time
+            float(kline[6])     # 11: close time
+        ], dtype=float32)
     return sticks
 
 if __name__ == "__main__":
