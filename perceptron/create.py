@@ -11,7 +11,6 @@ from torch import ones, tril, ones_like, rand, zeros
 from torch.nn import Module, Dropout
 from torch.nn import TransformerDecoder, TransformerDecoderLayer
 from torch.nn.init import xavier_normal_
-from torch.nn.functional import pad
 
 class Transformer(Module):
     """A full Transformer Decoder model."""
@@ -19,7 +18,6 @@ class Transformer(Module):
     def __init__(self, nfeatures: int, nhid: int, nhead: int, nlayers: int, dropout: float) -> None:
         super().__init__()
         self.spec = { "nfeatures": nfeatures, "nhid": nhid, "nhead": nhead, "nlayers": nlayers, "dropout": dropout }
-        self.padding = Padding(nfeatures)
         self.positional = Positional(nfeatures, dropout)
         self.decoder = Decoder(nfeatures, nhid, nhead, nlayers, dropout)
 
@@ -44,7 +42,6 @@ class Transformer(Module):
 
     def forward(self, x: Tensor) -> Tensor:
         """Propagate through the model."""
-        x = self.padding(x)
         x = self.positional(x)
         return self.decoder(x)
 
@@ -84,20 +81,6 @@ class Decoder(Module):
             tgt_mask=self._nopeek(x),
             tgt_key_padding_mask=self._msk(x)
         )
-
-
-class Padding(Module):
-    """Pad the last dimension of a tensor to a specific length."""
-
-    def __init__(self, nfeatures: int) -> None:
-        super().__init__()
-        self.nfeatures = nfeatures
-
-    def forward(self, x: Tensor) -> Tensor:
-        """Propagate through the model."""
-        pad_size = self.nfeatures - x.size(-1)
-        return pad(x, (0, pad_size))
-
 
 class Positional(Module):
     """Encode positional information into an a tensor."""
@@ -151,27 +134,6 @@ def test_model_forward() -> None:
     test_input = rand(32, 16, 8)
     test_output = test_model(test_input)
     assert test_input.size() == test_output.size()
-
-def test_padding_small() -> None:
-    """Test whether padding is done for a tensor with not enough features."""
-    test_model = Padding(8)
-    test_input = zeros(32, 16, 7)
-    test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 16, 8]
-
-def test_padding_exact() -> None:
-    """Test whether padding is done for a tensor with exactly enough features."""
-    test_model = Padding(8)
-    test_input = zeros(32, 16, 8)
-    test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 16, 8]
-
-def test_padding_big() -> None:
-    """Test whether padding is done for a tensor with too many features."""
-    test_model = Padding(8)
-    test_input = zeros(32, 16, 9)
-    test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 16, 8]
 
 def test_positional_layer() -> None:
     """Test whether positional embedding is generated properly."""

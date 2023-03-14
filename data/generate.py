@@ -8,9 +8,9 @@ from glob import glob
 from time import time
 from functools import partial
 from tqdm.contrib.concurrent import process_map
+from torch import save
 from data.sticks import get_candle_sticks
 from data.symbols import get_available_symbols
-from util.stick import write_sticks
 
 class DataGenerator:
     """A class for generating data."""
@@ -44,10 +44,10 @@ class DataGenerator:
             self.lowest_timestamp[symbol] = 0
             return
 
-        filename = f"{self.path}/{symbol}-{sticks[0].open_time}.csv"
-        write_sticks(sticks, filename)
+        filename = f"{self.path}/{symbol}-{sticks[0][10]}.pt"
+        save(sticks, filename)
 
-        self.lowest_timestamp[symbol] = sticks[0].open_time
+        self.lowest_timestamp[symbol] = sticks[0][10]
 
     def start_generating(self, interval: str = "15m", size: int = 512, iterations: int = 10, threads: int = cpu_count()) -> None:
         """Start generating new samples."""
