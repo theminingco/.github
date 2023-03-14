@@ -150,28 +150,28 @@ def test_model_forward() -> None:
     test_model = Transformer.create(nfeatures=8)
     test_input = rand(32, 16, 8)
     test_output = test_model(test_input)
-    assert test_input.size() == test_output.size(), f"{test_input.size()} != {test_output.size()}"
+    assert test_input.size() == test_output.size()
 
 def test_padding_small() -> None:
     """Test whether padding is done for a tensor with not enough features."""
     test_model = Padding(8)
     test_input = zeros(32, 16, 7)
     test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 16, 8], f"{test_output_size} != {[32, 16, 8]}"
+    assert test_output_size == [32, 16, 8]
 
 def test_padding_exact() -> None:
     """Test whether padding is done for a tensor with exactly enough features."""
     test_model = Padding(8)
     test_input = zeros(32, 16, 8)
     test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 16, 8], f"{test_output_size} != {[32, 16, 8]}"
+    assert test_output_size == [32, 16, 8]
 
 def test_padding_big() -> None:
     """Test whether padding is done for a tensor with too many features."""
     test_model = Padding(8)
     test_input = zeros(32, 16, 9)
     test_output_size = list(test_model(test_input).size())
-    assert test_output_size == [32, 16, 8], f"{test_output_size} != {[32, 16, 8]}"
+    assert test_output_size == [32, 16, 8]
 
 def test_positional_layer() -> None:
     """Test whether positional embedding is generated properly."""
@@ -180,4 +180,4 @@ def test_positional_layer() -> None:
     test_input = zeros(1, 4, 1)
     test_output = round_tensor(test_model(test_input).squeeze(), decimals=4)
     expected_output = round_tensor(tensor([0.0000, 0.8415, 0.9093, 0.1411]), decimals=4)
-    assert equal(test_output, expected_output), f"{test_output} != {expected_output}"
+    assert equal(test_output, expected_output)

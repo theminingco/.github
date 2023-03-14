@@ -106,3 +106,15 @@ if __name__ == "__main__":
         previous = closing
 
     print_sticks(data, args.length)
+
+def test_io_sticks():
+    """Test the write_sticks function."""
+    sticks = [
+        Stick(open_price=1, high_price=2, low_price=0, close_price=1),
+        Stick(open_price=2, high_price=3, low_price=1, close_price=2),
+        Stick(open_price=3, high_price=4, low_price=2, close_price=3),
+        Stick(open_price=4, high_price=5, low_price=3, close_price=4),
+        Stick(open_price=5, high_price=6, low_price=4, close_price=5)
+    ]
+    write_sticks(sticks, ".tmp/test.csv")
+    assert read_sticks(".tmp/test.csv") == sticks
