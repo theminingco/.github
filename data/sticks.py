@@ -1,10 +1,9 @@
 """This module contains all the code related to getting all available symbols."""
 from argparse import ArgumentParser
 from os import getenv
-from typing import List
 from binance.spot import Spot
-from util.stick import print_sticks
 from torch import zeros, float32, tensor, Tensor
+from util.stick import print_sticks
 
 client = Spot(api_key=getenv("BINANCE_KEY"), api_secret=getenv("BINANCE_SECRET"))
 

@@ -53,8 +53,8 @@ if __name__ == "__main__":
     data = zeros((args.amount, 4), dtype=float32)
     previous = tensor(randint(5, 5000), dtype=float32)
     for n in range(args.amount):
-        opening = previous + randint(-20, 20),
-        closing = previous + randint(-200, 200),
+        opening = previous + randint(-20, 20)
+        closing = previous + randint(-200, 200)
         lowing = minimum(opening, closing) + randint(-20, -1)
         highing = maximum(opening, closing) + randint(1, 20)
         data[n] = tensor([opening, closing, lowing, highing], dtype=float32)
