@@ -9,7 +9,7 @@ from torch.optim import Optimizer, Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import Dataset
 from tqdm import tqdm
-from data.prepare import prepare_dataset
+from data.prepare import DataFrame
 from perceptron.create import Transformer
 from util.device import best_device
 
@@ -52,8 +52,8 @@ def train_model(path: str, iterations: int, batch_size: int, trn_dataset: str, v
     d = device(best_device())
     print(f"Training model on {d}")
 
-    trn_data = prepare_dataset(trn_dataset, batch_size, True, d)
-    val_data = prepare_dataset(val_dataset, batch_size, True, d)
+    trn_data = DataFrame(trn_dataset, batch_size, True, d)
+    val_data = DataFrame(val_dataset, batch_size, True, d)
 
     checkpoints = max(10, iterations // 100)
     trn_steps = iterations // checkpoints
