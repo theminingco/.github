@@ -7,23 +7,23 @@ Getting set up with this repository is very easy.
 * Install python3 and virtualenv `brew install python@3.10 virtualenv`.
 * Create a virtual python environment `virtualenv .venv`.
 * Activate the virual environment `source .venv/bin/activate`.
-* Install the python requirements `pip3 install -r requirements.txt`.
-* Run one of the commands such as `python3 -m server.api`.
+* Install theminingco as an editable package `pip install -e .`.
+* Check if the installation worked `tmc`.
 
 ## Commands
 
-The repository is set up very easiliy. Each file works as a standalone script that can be called using `python3 -m MODULE`. You can pass the `-h` option to get more information about the script.
+The repository is set up very easiliy. Each file works as a standalone script that can be called using `tmc MODULE`. You can pass the `-h` option to get more information about the script.
 
 ### Example
 
 An example workflow for creating, training and serving a model could be:
 
-* Generate a new dataset using `python3 -m data.generate`.
-* Create a fresh model using `python3 -m perceptron.create`.
-* Train the model `python3 -m perceptron.train`.
-* Test the model on a test set `python3 -m perceptron.test`.
-* Run inference on a newly created sample `python3 -m perceptron.infer`.
-* Start an inference api `python3 -m server.api`.
+* Generate a new dataset using `tmc data.generate`.
+* Create a fresh model using `tmc perceptron.create`.
+* Train the model `tmc perceptron.train`.
+* Test the model on a test set `tmc perceptron.test`.
+* Run inference on a newly created sample `tmc perceptron.infer`.
+* Start an inference api `tmc server.api`.
 
 ## Third-party tools
 

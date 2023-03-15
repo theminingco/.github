@@ -18,8 +18,8 @@ jobs:
         cache: 'pip'
     - name: Run Lint
       run: |
-        pip install -r requirements.txt -q
-        python3 -m checks.lint
+        pip install -e .
+        tmc checks.lint
 
   analyze:
     runs-on: ubuntu-latest
@@ -47,5 +47,5 @@ jobs:
         cache: 'pip'
     - name: Run Tests
       run: |
-        pip install -r requirements.txt -q
-        python3 -m checks.test
+        pip install -e .
+        tmc checks.test
