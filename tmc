@@ -21,7 +21,6 @@ def _choices():
     modules = glob(f"{basepath}/**/*.py")
     return [ _script_name(module) for module in modules if "__init__" not in module ]
 
-
 def _motd():
     """Print a message of the day from https://zenquotes.io/api/today."""
     response = get("https://zenquotes.io/api/today", timeout=10).json()[0]
@@ -32,7 +31,6 @@ def _motd():
     print("\n".join(motd))
     print(f"\033[1m{response['a']}\033[0m")
     print()
-
 
 if __name__ == "__main__":
     choices = _choices()
