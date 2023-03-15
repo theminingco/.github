@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+"""Shim for creating a command line interface for the tmc module."""
+from argparse import ArgumentParser
+from glob import glob
+from os.path import splitext, dirname, split
+from subprocess import run, CalledProcessError
+from sys import exit as sysexit
+from textwrap import wrap
+from requests import get
+
+def _script_name(path: str):
+    """Get the name of a script given the path."""
+    path = splitext(path)[0]
+    path, file = split(path)
+    path, sub = split(path)
+    return f"{sub}.{file}"
+
+def _choices():
+    """Get a list of all the subcommands."""
+    basepath = dirname(__file__)
+    modules = glob(f"{basepath}/**/*.py")
+    return [ _script_name(module) for module in modules if "__init__" not in module ]
+
+def _motd():
+    """Print a message of the day from https://zenquotes.io/api/today."""
+    response = get("https://zenquotes.io/api/today", timeout=10).json()[0]
+    motd = wrap(response["q"], 32)
+    print()
+    print(" /$$$$$$$$ /$$      /$$  /$$$$$$\n|__  $$__/| $$$    /$$$ /$$__  $$\n   | $$   | $$$$  /$$$$| $$  \\__/\n   | $$   | $$ $$/$$ $$| $$\n   | $$   | $$  $$$| $$| $$\n   | $$   | $$\\  $ | $$| $$    $$\n   | $$   | $$ \\/  | $$|  $$$$$$/\n   |__/   |__/     |__/ \\______/")
+    print()
+    print("\n".join(motd))
+    print(f"\033[1m{response['a']}\033[0m")
+    print()
+
+if __name__ == "__main__":
+    choices = _choices()
+    parser = ArgumentParser()
+    parser.add_argument("subcommand", type=str, choices=choices, nargs="?")
+    args, unknownargs = parser.parse_known_args()
+
+    if args.subcommand is None:
+        _motd()
+    else:
+        try:
+            run(["python", "-m", args.subcommand, *unknownargs], check=True)
+        except CalledProcessError:
+            sysexit(1)
