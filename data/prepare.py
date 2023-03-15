@@ -1,16 +1,19 @@
 """This module contains all the code related to preparing the dataset."""
 from argparse import ArgumentParser
 from glob import glob
-from torch import load
+from torch import load, Tensor
 from torch.utils.data import DataLoader, Dataset
 from torch.nn.functional import pad, normalize
 
 class DataFrame(Dataset):
     """A class for loading minibatches in parallel."""
 
-    def __init__(self, path: str, device: str = "cpu"):
+    def __init__(self, path: str, batch_size: int = 256, shuffle: bool = True, device: str = "cpu"):
         self.device = device
         self.files = glob(f"{path}/*.pt")
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.loader = iter(DataLoader(self, batch_size=batch_size, shuffle=shuffle))
 
     def __len__(self):
         """Get the amount of data in the set."""
@@ -23,11 +26,14 @@ class DataFrame(Dataset):
         sticks = normalize(sticks, dim=1)
         return pad(sticks, (0, 4))
 
-def prepare_dataset(path: str, batch_size: int = 256, shuffle: bool = True, device: str = "cpu") -> None:
-    """The entrypoint of the perpare module."""
-    frame = DataFrame(path, device)
-    loader = DataLoader(frame, batch_size=batch_size, shuffle=shuffle)
-    return iter(loader)
+    def __next__(self):
+        """Get the next batch."""
+        try:
+            next_batch = next(self.loader)
+        except StopIteration:
+            self.loader = iter(DataLoader(self, batch_size=self.batch_size, shuffle=self.shuffle))
+            next_batch = next(self.loader)
+        return next_batch
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -36,6 +42,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    dataset = prepare_dataset(args.path, args.batch_size)
+    dataset = DataFrame(args.path, args.batch_size)
     batch = next(dataset)
     print(batch.size())

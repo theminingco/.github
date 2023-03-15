@@ -36,7 +36,9 @@ class Transformer(Module):
 
     def save(self, path: str) -> None:
         """Save a model to a `.pt` file."""
-        makedirs(dirname(args.path), exist_ok=True)
+        folder = dirname(path)
+        if folder is not None and folder != "":
+            makedirs(folder, exist_ok=True)
         genesis = { "spec": self.spec, "state": self.state_dict() }
         save(genesis, path)
 
@@ -116,7 +118,6 @@ if __name__ == "__main__":
     model = Transformer.create(args.nfeatures, args.nhid, args.nhead, args.nlayers, args.dropout)
 
     if args.path is not None:
-        makedirs(dirname(args.path), exist_ok=True)
         model.save(args.path)
         print(f"Saved model to {args.path}")
     else:

@@ -16,7 +16,8 @@ class DataSplitter:
         self.tst_percentage = tst_percentage
 
         for name in ["trn", "val", "tst"]:
-            makedirs(f"{path}/{name}", exist_ok=True)
+            folder = f"{path}/{name}" if path is not None and path != "" else name
+            makedirs(folder, exist_ok=True)
 
     def _split_item(self, file: str) -> None:
         """Take a single file and move it to either trn, val or tst."""

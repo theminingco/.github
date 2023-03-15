@@ -16,7 +16,8 @@ class DataGenerator:
     """A class for generating data."""
 
     def __init__(self, path: str) -> None:
-        makedirs(path, exist_ok=True)
+        if path is not None and path != "":
+            makedirs(path, exist_ok=True)
 
         self.path = path
         self.lowest_timestamp = { }
