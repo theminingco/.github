@@ -1,4 +1,4 @@
-"""This module contains all the code related to unit tests."""
+"""A simple test module for python projects."""
 from __future__ import print_function
 from argparse import ArgumentParser
 from sys import modules
@@ -58,7 +58,7 @@ def run_test_method(function: Callable[[], None], verbose: bool, stop_on_failure
                 function()
         print(f"  [{check}] {name}")
         return True
-    except AssertionError as e:
+    except Exception as e: # pylint: disable=broad-except
         print(f"  [{cross}] {name}")
         print("".join(format_exception(None, e, e.__traceback__)))
         if stop_on_failure:

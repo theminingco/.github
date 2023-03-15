@@ -1,4 +1,4 @@
-"""This module contains all the code related to training the model."""
+"""The training module of the perceptron."""
 from argparse import ArgumentParser
 from time import time
 from functools import partial
@@ -73,7 +73,7 @@ def train_model(path: str, iterations: int, batch_size: int, trn_dataset: str, v
         model.save(path)
         scheduler.step(val_loss)
         elapsed_time = int(time() - start_time)
-        print(f"Checkpoint completed in {elapsed_time}s [d: {(trn_loss - val_loss):3f}]")
+        print(f"Checkpoint completed in {elapsed_time}s [d: {abs(trn_loss - val_loss):3f}]")
 
 if __name__ == "__main__":
     parser = ArgumentParser()

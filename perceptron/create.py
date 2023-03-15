@@ -1,4 +1,4 @@
-"""This module contains all the code related loading models from file."""
+"""Create a new model."""
 from argparse import ArgumentParser
 from os import makedirs
 from os.path import dirname
@@ -29,7 +29,7 @@ class Transformer(Module):
     @classmethod
     def load(cls, path: str):
         """Load a model from a `.pt` file."""
-        genesis = load(path)
+        genesis = load(path, map_location ="cpu")
         instance = cls(**genesis["spec"])
         instance.load_state_dict(genesis["state"])
         return instance

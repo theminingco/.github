@@ -1,4 +1,4 @@
-"""This module contains all the code related to preparing the dataset."""
+"""A script for generating data."""
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
 from os import makedirs
@@ -11,6 +11,7 @@ from tqdm.contrib.concurrent import process_map
 from torch import save
 from data.sticks import get_candle_sticks
 from data.symbols import get_available_symbols
+from util.time import parse_time
 
 class DataGenerator:
     """A class for generating data."""
@@ -37,18 +38,19 @@ class DataGenerator:
 
     def _generate_sample(self, interval: str, size: int, symbol: str):
         """Generate a single sample for a symbol."""
-        end_time = self.lowest_timestamp[symbol] if symbol in self.lowest_timestamp else int(time() * 1000)
+        end_time = self.lowest_timestamp[symbol] if symbol in self.lowest_timestamp else int(time())
         if end_time == 0:
             return
-        sticks = get_candle_sticks(symbol, interval, size, end_time - 1)
+        sticks = get_candle_sticks(symbol, interval, size, (end_time * 1000) - 1)
         if len(sticks) != size:
             self.lowest_timestamp[symbol] = 0
             return
 
-        filename = f"{self.path}/{symbol}-{sticks[0][10]}.pt"
+        start_time = end_time - int(parse_time(interval).total_seconds()) * size
+        filename = f"{self.path}/{symbol}-{start_time}.pt"
         save(sticks, filename)
 
-        self.lowest_timestamp[symbol] = sticks[0][10]
+        self.lowest_timestamp[symbol] = start_time
 
     def start_generating(self, interval: str = "15m", size: int = 512, iterations: int = 10, threads: int = cpu_count()) -> None:
         """Start generating new samples."""

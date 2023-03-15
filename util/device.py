@@ -1,4 +1,4 @@
-"""This module contains all the code related to finding the most efficient torch device."""
+"""A module to determine the best device to use for PyTorch."""
 from argparse import ArgumentParser
 from torch import device
 from torch.cuda import is_available as has_cuda
@@ -33,6 +33,8 @@ if __name__ == "__main__":
 
     d = device(best_device())
     print(d)
+
+# MARK: - Tests
 
 def test_best_device():
     """Test the best_device function."""

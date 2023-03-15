@@ -1,4 +1,4 @@
-"""This module contains all the code related to running an inference api."""
+"""The api module for the server."""
 from argparse import ArgumentParser
 from os import getenv
 from os.path import exists

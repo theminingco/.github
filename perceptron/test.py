@@ -1,4 +1,4 @@
-"""This module contains all the code related to testing the model."""
+"""The test module of the perceptron package."""
 from argparse import ArgumentParser
 
 def evaluate_model() -> None:
