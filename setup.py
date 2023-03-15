@@ -9,7 +9,7 @@ setup(
     install_requires=[
         "binance-connector==2.0.0",
         "python-dotenv==1.0.0",
-        "fastapi==0.94.0",
+        "fastapi==0.94.1",
         "numpy==1.24.2",
         "pylint==2.17.0",
         "torch==1.13.1",
