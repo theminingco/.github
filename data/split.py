@@ -1,4 +1,4 @@
-"""This module contains all the code related splitting datasets into train, validate and test sets."""
+"""A script for splitting data into train validation and test data."""
 from argparse import ArgumentParser
 from glob import glob
 from os import makedirs

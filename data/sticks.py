@@ -1,31 +1,36 @@
-"""This module contains all the code related to getting all available symbols."""
+"""The sticks module is responsible for fetching candle sticks from the Binance API."""""
 from argparse import ArgumentParser
 from os import getenv
 from binance.spot import Spot
 from torch import zeros, float32, tensor, Tensor
-from util.stick import print_sticks
+from util.hash import cyclic_redundancy_check
 
 client = Spot(api_key=getenv("BINANCE_KEY"), api_secret=getenv("BINANCE_SECRET"))
 
 def get_candle_sticks(symbol: str, interval: str = "15m", limit: int = 512, end_time: int = None) -> Tensor:
     """The entrypoint of the sticks module."""
-    chain = hash(symbol)
+    chain = cyclic_redundancy_check(symbol)
     klines = client.klines(symbol, interval, limit=limit, endTime=end_time)
-    sticks = zeros((limit, 12), dtype=float32)
+    sticks = zeros((limit, 8), dtype=float32)
     for n, kline in enumerate(klines):
+        open_price = float(kline[1]) + 1e-12
+        high_price = float(kline[2]) + 1e-12
+        low_price = float(kline[3]) + 1e-12
+        close_price = float(kline[4]) + 1e-12
+        base_volume = float(kline[5]) + 1e-12
+        quote_volume = float(kline[7]) + 1e-12
+        number_of_trades = float(kline[8]) + 1e-12
+        taker_base_volume = float(kline[9]) + 1e-12
+        taker_quote_volume = float(kline[10]) + 1e-12
         sticks[n] = tensor([
-            float(kline[1]),    # 0: open price
-            float(kline[4]),    # 1: close price
-            float(kline[3]),    # 2: low price
-            float(kline[2]),    # 3: high price
-            float(kline[5]),    # 4: volume
-            float(kline[7]),    # 5: quote volume
-            float(kline[8]),    # 6: number of trades
-            float(kline[9]),    # 7: taker base volume
-            float(kline[10]),   # 8: taker quote volume
-            float(chain),       # 9: chain
-            float(kline[0]),    # 10: open time
-            float(kline[6])     # 11: close time
+            low_price / high_price,             # 0: low to high ratio
+            open_price / high_price,            # 1: open to high ratio
+            close_price / high_price,           # 2: close to high ratio
+            number_of_trades / 1e6,             # 3: trade percentage
+            taker_base_volume / base_volume,    # 4: taker base volume percentage
+            taker_quote_volume / quote_volume,  # 5: taker quote volume percentage
+            chain,                              # 6: hashed chain
+            float(0),                           # 7: padding
         ], dtype=float32)
     return sticks
 
@@ -37,5 +42,14 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--limit", type=int, default=10)
     args = parser.parse_args()
 
-    candle_sticks = get_candle_sticks(args.symbol, args.interval, args.limit)
-    print_sticks(candle_sticks)
+    candle_sticks, timestamps = get_candle_sticks(args.symbol, args.interval, args.limit)
+    total = candle_sticks.size(0)
+    for k in range(total):
+        perc = candle_sticks[k][2] - candle_sticks[k][1]
+        color = ""
+        if perc > 0:
+            color = "\x1b[32m"
+        elif perc < 0:
+            color = "\x1b[31m"
+        suffix = "\x1b[0m"
+        print(f"{color}{abs(perc):.2%}{suffix}")

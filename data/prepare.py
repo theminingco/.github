@@ -1,9 +1,8 @@
-"""This module contains all the code related to preparing the dataset."""
+"""Prepare the data for training."""
 from argparse import ArgumentParser
 from glob import glob
 from torch import load, Tensor
 from torch.utils.data import DataLoader, Dataset
-from torch.nn.functional import pad, normalize
 
 class DataFrame(Dataset):
     """A class for loading minibatches in parallel."""
@@ -22,9 +21,7 @@ class DataFrame(Dataset):
     def __getitem__(self, index: int) -> Tensor:
         """Return a tensor for a given index."""
         file = self.files[index]
-        sticks = load(file).to(self.device)
-        sticks = normalize(sticks, dim=1)
-        return pad(sticks, (0, 4))
+        return load(file).to(self.device)
 
     def __next__(self) -> Tensor:
         """Get the next batch."""

@@ -1,4 +1,4 @@
-"""This module contains all the code related to running the code linter."""
+"""The lint module."""
 from argparse import ArgumentParser
 from glob import glob
 from sys import exit as sysexit

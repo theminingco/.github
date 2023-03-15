@@ -1,4 +1,4 @@
-"""This module contains all the code related to getting all available symbols."""
+"""This module contains the logic to get the available symbols from Binance."""
 from argparse import ArgumentParser
 from typing import List
 from os import getenv
