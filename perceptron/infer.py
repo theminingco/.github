@@ -25,4 +25,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     prediction, ground_truth = infer(args.model, args.symbol, args.interval, args.limit)
-    print(prediction, ground_truth)
+    pred_perc = prediction[2] - prediction[1]
+    true_perc = ground_truth[2] - ground_truth[1]
+    print(f"{pred_perc:.2%} vs {true_perc:.2%}")

@@ -47,7 +47,7 @@ def _run_steps(model: Module, steps: int, data: Dataset, optimizer: Optimizer, l
         progress_bar.set_postfix(params)
     return average_loss
 
-def train_model(path: str, iterations: int, batch_size: int, trn_dataset: str, val_dataset: str) -> None:
+def train_model(path: str, iterations: int, batch_size: int, trn_dataset: str, val_dataset: str, learning_rate: float) -> None:
     """The entrypoint of the train module."""
     d = device(best_device())
     print(f"Training model on {d}")
@@ -61,7 +61,7 @@ def train_model(path: str, iterations: int, batch_size: int, trn_dataset: str, v
 
     model = Transformer.load(path).to(d)
     loss = MSELoss().to(d)
-    optimizer = Adam(model.parameters(), lr=1e-3)
+    optimizer = Adam(model.parameters(), lr=learning_rate)
     scheduler = ReduceLROnPlateau(optimizer, patience=1)
 
     for n in range(checkpoints):
@@ -78,10 +78,11 @@ def train_model(path: str, iterations: int, batch_size: int, trn_dataset: str, v
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-m", "--model", type=str, default=".tmp/model.pt")
-    parser.add_argument("-n", "--iterations", type=int, default=4096)
+    parser.add_argument("-n", "--iterations", type=int, default=8192)
     parser.add_argument("-b", "--batch-size", type=int, default=128)
     parser.add_argument("--trn-dataset", type=str, default=".tmp/data/trn")
     parser.add_argument("--val-dataset", type=str, default=".tmp/data/val")
+    parser.add_argument("--lr", "--learning-rate", type=float, default=1e-3)
     args = parser.parse_args()
 
-    train_model(args.model, args.iterations, args.batch_size, args.trn_dataset, args.val_dataset)
+    train_model(args.model, args.iterations, args.batch_size, args.trn_dataset, args.val_dataset, args.learning_rate)
