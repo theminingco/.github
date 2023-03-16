@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from time import time
 from functools import partial
-from torch import device, tensor, Tensor, float32, no_grad
+from torch import device, tensor, Tensor, float32, no_grad, compile
 from torch.nn import MSELoss, Module
 from torch.nn.utils import clip_grad_norm_
 from torch.optim import Optimizer, Adam
@@ -16,8 +16,9 @@ from util.device import best_device
 def _trn_step(model: Module, optimizer: Optimizer, loss: MSELoss, batch: Tensor) -> Tensor:
     """Run a single training steps."""
     optimizer.zero_grad()
-    pred = model(batch)
-    loss_value = loss(pred, batch)
+    pred = model(batch[:-1])
+    true = batch[1:]
+    loss_value = loss(pred, true)
     loss_value.backward()
     clip_grad_norm_(model.parameters(), 0.5)
     optimizer.step()
@@ -26,8 +27,9 @@ def _trn_step(model: Module, optimizer: Optimizer, loss: MSELoss, batch: Tensor)
 def _val_step(model: Module, loss: MSELoss, batch: Tensor) -> Tensor:
     """Run a single validation steps."""
     with no_grad():
-        pred = model(batch)
-        loss_value = loss(pred, batch)
+        pred = model(batch[:-1])
+        true = batch[1:]
+        loss_value = loss(pred, true)
     return loss_value
 
 def _run_steps(model: Module, steps: int, data: Dataset, optimizer: Optimizer, loss: MSELoss, train: bool, d: str) -> Tensor:

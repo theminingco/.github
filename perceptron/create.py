@@ -6,7 +6,6 @@ from math import log
 from torch import tensor, Tensor, load, save
 from torch import arange, exp, sin, cos, equal
 from torch import round as round_tensor
-from torch import sum as sum_dim
 from torch import ones, tril, ones_like, rand, zeros
 from torch.nn import Module, Dropout
 from torch.nn import TransformerDecoder, TransformerDecoderLayer
@@ -64,24 +63,18 @@ class Decoder(Module):
         """Create an empty memory tensor."""
         return ones_like(x)
 
-    def _msk(self, x: Tensor) -> Tensor:
-        """Create a padding mask for tensor x."""
-        return sum_dim(x, dim=-1) == 0
-
     def _nopeek(self, x: Tensor) -> Tensor:
         """Create a nopeek mask for tensor x."""
         size = x.size(1)
-        nopeek = tril(ones(size, size, device=x.device))
-        nopeek = nopeek.masked_fill(nopeek == 0, float('-inf'))
-        return nopeek.masked_fill(nopeek == 1, float(0.0))
+        nopeek = ones(size, size, device=x.device)
+        return tril(nopeek) == 0
 
     def forward(self, x: Tensor) -> Tensor:
         """Propagate through the model."""
         return self.decoder(
             x,
             self._mem(x),
-            tgt_mask=self._nopeek(x),
-            tgt_key_padding_mask=self._msk(x)
+            tgt_mask=self._nopeek(x)
         )
 
 class Positional(Module):

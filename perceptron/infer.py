@@ -10,9 +10,8 @@ def infer(model: str, symbol: str = "BTCUSDT", interval: str = "15m", limit: int
     model = Transformer.load(model)
     model.eval()
     batch = get_candle_sticks(symbol, interval, limit)
+    pred = model(batch[:-1].unsqueeze(0)).squeeze(0)[-1]
     true = batch[-1]
-    inp = pad(batch[:-1], (0, 0, 0, 1))
-    pred = model(inp.unsqueeze(0)).squeeze(0)[-1]
     return pred, true
 
 if __name__ == "__main__":

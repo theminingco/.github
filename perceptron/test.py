@@ -20,8 +20,9 @@ def evaluate_model(path: str, batch_size: int, dataset: str) -> Tensor:
     with no_grad():
         for _ in progress_bar:
             batch = next(data)
-            pred = model(batch)
-            total_loss += loss(pred, batch)
+            pred = model(batch[:-1])
+            true = batch[1:]
+            total_loss += loss(pred, true)
 
     return total_loss / steps
 
