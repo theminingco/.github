@@ -21,7 +21,7 @@ class Transformer(Module):
         self.decoder = Decoder(nfeatures, nhid, nhead, nlayers, dropout)
 
     @classmethod
-    def create(cls, nfeatures: int = 256, nhid: int = 32, nhead: int = 8, nlayers: int = 2, dropout: float = 0.1):
+    def create(cls, nfeatures: int = 256, nhid: int = 512, nhead: int = 8, nlayers: int = 2, dropout: float = 0.1):
         """Create a new model."""
         return cls(nfeatures, nhid, nhead, nlayers, dropout)
 

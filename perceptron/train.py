@@ -84,7 +84,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--batch-size", type=int, default=128)
     parser.add_argument("--trn-dataset", type=str, default=".tmp/data/trn")
     parser.add_argument("--val-dataset", type=str, default=".tmp/data/val")
-    parser.add_argument("--lr", "--learning-rate", type=float, default=1e-3)
+    parser.add_argument("--learning-rate", type=float, default=1e-3)
     args = parser.parse_args()
 
     train_model(args.model, args.iterations, args.batch_size, args.trn_dataset, args.val_dataset, args.learning_rate)
