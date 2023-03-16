@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from time import time
 from functools import partial
-from torch import device, tensor, Tensor, float32, no_grad, compile
+from torch import device, tensor, Tensor, float32, no_grad
 from torch.nn import MSELoss, Module
 from torch.nn.utils import clip_grad_norm_
 from torch.optim import Optimizer, Adam
