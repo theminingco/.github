@@ -25,9 +25,4 @@ An example workflow for creating, training and serving a model could be:
 * Run inference on a newly created sample `tmc perceptron.infer`.
 * Start an inference api `tmc server.api`.
 
-## Third-party tools
-
-* Machine learning models are trained using [PyTorch](https://pytorch.org).
-* Server API is created using [FastAPI](https://fastapi.tiangolo.com).
-
 *Copyright © 2023 ⛏ The Mining Company*
