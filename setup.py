@@ -12,7 +12,7 @@ setup(
         "fastapi==0.94.1",
         "numpy==1.24.2",
         "pylint==2.17.0",
-        "torch==1.13.1",
+        "torch==2.0.0",
         "tqdm==4.65.0",
         "uvicorn==0.21.0"
     ]
