@@ -1,7 +1,6 @@
 """Inference script for the model."""
 from argparse import ArgumentParser
 from torch import Tensor
-from torch.nn.functional import pad
 from data.sticks import get_candle_sticks
 from perceptron.create import Transformer
 
@@ -9,10 +8,9 @@ def infer(model: str, symbol: str = "BTCUSDT", interval: str = "15m", limit: int
     """Run inferernce on a new sample."""
     model = Transformer.load(model)
     model.eval()
-    batch = get_candle_sticks(symbol, interval, limit)
-    true = batch[-1]
-    inp = pad(batch[:-1], (0, 0, 0, 1))
-    pred = model(inp.unsqueeze(0)).squeeze(0)[-1]
+    batch = get_candle_sticks(symbol, interval, limit + 1)
+    pred = model(batch[:-2].unsqueeze(0)).squeeze(0)[-1]
+    true = batch[-2]
     return pred, true
 
 if __name__ == "__main__":
