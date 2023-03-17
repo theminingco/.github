@@ -1,7 +1,7 @@
-from os import getenv
+"""The fox provider module."""
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
-from os import makedirs
+from os import getenv, makedirs
 from os.path import splitext, basename
 from shutil import rmtree
 from glob import glob

@@ -1,3 +1,4 @@
+"""Positional encoding layer."""
 from argparse import ArgumentParser
 from math import log
 from torch import tensor, Tensor

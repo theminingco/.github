@@ -1,3 +1,4 @@
+"""Load a model from disk."""
 from argparse import ArgumentParser
 from torch import load
 from torch.nn import Module

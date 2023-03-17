@@ -1,3 +1,4 @@
+"""Model specification."""
 from argparse import ArgumentParser
 from os import getenv
 from torch.nn import Module, Identity, Sequential, MSELoss

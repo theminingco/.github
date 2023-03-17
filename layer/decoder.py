@@ -1,3 +1,4 @@
+"""A transformer decoder module."""
 from argparse import ArgumentParser
 from torch import Tensor
 from torch import ones, tril, ones_like, rand
