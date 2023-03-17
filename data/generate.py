@@ -1,79 +1,31 @@
 """A script for generating data."""
 from argparse import ArgumentParser
+from importlib import import_module
 from multiprocessing import cpu_count
-from os import makedirs
-from os.path import splitext, basename
+from os import getenv
+from os.path import isdir
 from shutil import rmtree
-from glob import glob
-from time import time
-from functools import partial
-from tqdm.contrib.concurrent import process_map
-from torch import save
-from data.sticks import get_candle_sticks
-from data.symbols import get_available_symbols
-from util.time import parse_time
 
-class DataGenerator:
-    """A class for generating data."""
+_name = getenv("MODEL", "fox").lower()
 
-    def __init__(self, path: str) -> None:
-        if path is not None and path != "":
-            makedirs(path, exist_ok=True)
-
-        self.path = path
-        self.lowest_timestamp = { }
-        self.process = None
-
-        existing_files = glob(f"{path}/**/*.csv")
-        for existing_file in existing_files:
-            path, _ = splitext(existing_file)
-            parts = basename(path).split("-")
-            if len(parts) < 2:
-                continue
-            symbol = parts[0]
-            timestamp = int(parts[1])
-
-            if symbol not in self.lowest_timestamp or self.lowest_timestamp[symbol] < timestamp:
-                self.lowest_timestamp[symbol] = timestamp
-
-    def _generate_sample(self, interval: str, size: int, symbol: str):
-        """Generate a single sample for a symbol."""
-        end_time = self.lowest_timestamp[symbol] if symbol in self.lowest_timestamp else int(time())
-        if end_time == 0:
-            return
-        sticks = get_candle_sticks(symbol, interval, size, (end_time * 1000) - 1)
-        if len(sticks) != size:
-            self.lowest_timestamp[symbol] = 0
-            return
-
-        start_time = end_time - int(parse_time(interval).total_seconds()) * size
-        filename = f"{self.path}/{symbol}-{start_time}.pt"
-        save(sticks, filename)
-
-        self.lowest_timestamp[symbol] = start_time
-
-    def start_generating(self, interval: str = "15m", size: int = 512, iterations: int = 10, threads: int = cpu_count()) -> None:
-        """Start generating new samples."""
-        symbols = get_available_symbols()
-
-        func = partial(self._generate_sample, interval, size)
-        for n in range(iterations):
-            desc = f"{n+1:0{len(str(iterations))}d}"
-            process_map(func, symbols, max_workers=threads, desc=desc)
+def generate_samples(path: str, amount: int, threads: int):
+    """Generate samples."""
+    try:
+        provider = import_module(f"provider.{_name}")
+        provider.generate_samples(path, amount, threads)
+    except ImportError:
+        print(f"Provider {_name} not found.")
+        return
 
 if __name__ == "__main__":
-    interval_choices = ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
     parser = ArgumentParser()
     parser.add_argument("-p", "--path", type=str, default=".tmp/data")
-    parser.add_argument("-s", "--size", type=int, default=512)
-    parser.add_argument("-i", "--interval", type=str, choices=interval_choices, default="15m")
-    parser.add_argument("-n", "--iterations", type=int, default=1)
+    parser.add_argument("-n", "--amount", type=int, default=512)
     parser.add_argument("-t", "--threads", type=int, default=cpu_count())
     parser.add_argument("-f", "--fresh", action="store_true")
     args = parser.parse_args()
 
-    if args.fresh:
+    if args.fresh and isdir(args.path):
         rmtree(args.path)
 
-    generator = DataGenerator(args.path)
-    generator.start_generating(args.interval, args.size, args.iterations, args.threads)
+    generate_samples(args.path, args.amount, args.threads)

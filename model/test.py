@@ -1,18 +1,18 @@
 """The test module of the perceptron package."""
 from argparse import ArgumentParser
 from torch import Tensor, no_grad, sqrt, tensor, float32
-from torch.nn import MSELoss
 from tqdm import tqdm
 from data.prepare import DataFrame
-from perceptron.create import Transformer
+from model.load import load_model
+from model.spec import init_loss
 
 def evaluate_model(path: str, batch_size: int, dataset: str) -> Tensor:
     """The entrypoint of the test module."""
     data = DataFrame(dataset, batch_size, False)
 
-    model = Transformer.load(path)
+    model = load_model(path)
     model.eval()
-    loss = MSELoss()
+    loss = init_loss()
 
     total_loss = tensor(0, dtype=float32)
     steps = len(data.loader)
@@ -20,12 +20,10 @@ def evaluate_model(path: str, batch_size: int, dataset: str) -> Tensor:
     with no_grad():
         for _ in progress_bar:
             batch = next(data)
-            pred = model(batch[:-1])
-            true = batch[1:]
-            total_loss += loss(pred, true)
+            pred = model(batch[0])
+            total_loss += loss(pred, batch[1])
 
     return total_loss / steps
-
 
 if __name__ == "__main__":
     parser = ArgumentParser()

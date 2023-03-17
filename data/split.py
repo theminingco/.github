@@ -35,7 +35,7 @@ class DataSplitter:
     def split(self, threads: int = cpu_count()) -> None:
         """Split all data files into train, test or validate subsets."""
         files = glob(f"{self.path}/*.pt")
-        process_map(self._split_item, files, max_workers=threads)
+        process_map(self._split_item, files, max_workers=threads, chunksize=8)
 
 
 if __name__ == "__main__":
