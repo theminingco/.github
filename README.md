@@ -1,28 +1,21 @@
 # ⛏ The Mining Company
 
+This is a MEV bot. Use at your own risk. Any losses incurred through the use of this software are your own responsibility.
 
 ## Getting Started
 
 Getting set up with this repository is very easy.
-* Install python3 and virtualenv `brew install python@3.10 virtualenv`.
-* Create a virtual python environment `virtualenv .venv`.
-* Activate the virual environment `source .venv/bin/activate`.
-* Install theminingco as an editable package `pip install -e .`.
-* Check if the installation worked `tmc`.
+* Install Node using `brew install node`.
+* Install the Solana SDK using `curl -sSfL https://release.solana.com/stable/install | sh`.
+* Clone this repository using `git clone https://github.com/jewl-app/.github`.
+* Install dependencies using npm - `npm install`.
+* Run one of the commands below - `npm run start`.
 
 ## Commands
 
-The repository is set up very easiliy. Each file works as a standalone script that can be called using `tmc MODULE`. You can pass the `-h` option to get more information about the script.
-
-### Example
-
-An example workflow for creating, training and serving a model could be:
-
-* Generate a new dataset using `tmc data.generate`.
-* Create a fresh model using `tmc perceptron.create`.
-* Train the model `tmc perceptron.train`.
-* Test the model on a test set `tmc perceptron.test`.
-* Run inference on a newly created sample `tmc perceptron.infer`.
-* Start an inference api `tmc server.api`.
+Below is a (non-exhaustive) list of available commands:
+* `npm run start` - start up the mev bot.
+* `npm run test` - runs the [Jest](https://jestjs.io) unit tests.
+* `npm run lint` - runs [ESLint](https://eslint.org) linter.
 
 *Copyright © 2023 ⛏ The Mining Company*
