@@ -1,25 +1,19 @@
 {
     "env": {
-        "browser": true,
         "es2021": true,
         "node": true
     },
     "extends": [
         "eslint:all",
-        "plugin:react/all",
         "plugin:@typescript-eslint/all"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
         "ecmaVersion": "latest",
         "sourceType": "module",
         "project": ["**/tsconfig.json"]
     },
     "plugins": [
-        "react",
         "@typescript-eslint"
     ],
     "ignorePatterns": ["dist"],
@@ -33,7 +27,6 @@
         "function-call-argument-newline": ["error", "consistent"],
         "function-paren-newline": ["error", "consistent"],
         "operator-linebreak": ["error", "before"],
-        "react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
         "@typescript-eslint/indent": ["error", 4],
         "@typescript-eslint/no-confusing-void-expression": ["error", { "ignoreArrowShorthand": true }],
         "@typescript-eslint/member-delimiter-style": ["error", { "multiline": { "delimiter": "semi", "requireLast": true }, "singleline": { "delimiter": "comma", "requireLast": false } }],
@@ -85,22 +78,6 @@
         "no-duplicate-imports": "off",
         "class-methods-use-this": "off",
         "newline-per-chained-call": "off",
-        "react/destructuring-assignment": "off",
-        "react/require-default-props": "off",
-        "react/forbid-component-props": "off",
-        "react/jsx-sort-props": "off",
-        "react/jsx-max-props-per-line": "off",
-        "react/function-component-definition": "off",
-        "react/jsx-handler-names": "off",
-        "react/jsx-newline": "off",
-        "react/jsx-one-expression-per-line": "off",
-        "react/jsx-no-literals": "off",
-        "react/jsx-max-depth": "off",
-        "react/sort-comp": "off",
-        "react/no-set-state": "off",
-        "react/no-multi-comp": "off",
-        "react/no-danger": "off",
-        "react/jsx-props-no-spreading": "off",
         "@typescript-eslint/no-namespace": "off",
         "@typescript-eslint/naming-convention": "off",
         "@typescript-eslint/space-before-function-paren": "off",
@@ -113,15 +90,5 @@
         "@typescript-eslint/sort-type-constituents": "off",
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/lines-between-class-members": "off"
-    },
-    "settings": {
-        "react": {
-            "version": "detect"
-        }
-    },
-    "overrides": [
-        {
-            "files": ["*.ts", "*.tsx", "*.js", "*.jsx"]
-        }
-    ]
+    }
 }
