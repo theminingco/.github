@@ -74,7 +74,7 @@ const tokenMint = new PublicKey(tokenResponse.address);
 const mintInfo = await connection.getTokenSupply(tokenMint);
 const tokenAmount = amountResponse.amount * 10 ** mintInfo.value.decimals;
 const tokenSeeds = [signer.publicKey.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), tokenMint.toBuffer()];
-const tokenAccount = PublicKey.findProgramAddressSync(tokenSeeds, ASSOCIATED_TOKEN_PROGRAM_ID)[0];
+const _tokenAccount = PublicKey.findProgramAddressSync(tokenSeeds, ASSOCIATED_TOKEN_PROGRAM_ID)[0];
 
 const jupiterConfig: JupiterLoadParams = {
     connection,
@@ -117,6 +117,5 @@ const mainloop = async (): Promise<void> => {
 };
 
 await mainloop();
-
 
 
