@@ -96,21 +96,22 @@ const mainloop = async (): Promise<void> => {
 
     const best = routes.routesInfos[0];
     const outWithSlippage = JSBI.divide(JSBI.multiply(best.outAmount, JSBI.BigInt(10000 - best.slippageBps)), JSBI.BigInt(10000));
-    ephemeral = `Best route: ${best.inAmount} -> ${outWithSlippage}`;
+    const formattedInput = (JSBI.toNumber(best.inAmount) / 10 ** mintInfo.value.decimals).toFixed(2);
+    const formattedOutput = (JSBI.toNumber(outWithSlippage) / 10 ** mintInfo.value.decimals).toFixed(2);
 
     if (JSBI.lessThan(best.inAmount, outWithSlippage)) {
         const { execute } = await jupiter.exchange({ routeInfo: best });
         const result = await execute();
         if ("error" in result) {
-            process.stdout.write(`Failed to swap: ${result.error}\n`);
-        } else if ("inputAmount" in result && "outputAmount" in result && "txid" in result) {
-            const formattedInput = result.inputAmount.toFixed(2);
-            const formattedOutput = result.outputAmount.toFixed(2);
+            process.stdout.write(`${formattedInput} -> ${formattedOutput} ${result.error}\n`);
+        } else if ("txid" in result) {
             const url = `https://solscan.io/tx/${result.txid}`;
             const link = `\u{1b}]8;;${url}\u{7}${result.txid}\u{1b}]8;;\u{7}`;
-            process.stdout.write(`Swapped ${formattedInput} for ${formattedOutput} in ${link}\n`);
+            process.stdout.write(`Swapped ${formattedInput} -> ${formattedOutput} in ${link}\n`);
             onExit(0);
         }
+    } else {
+        ephemeral = `Best route: ${formattedInput} -> ${formattedOutput}`;
     }
 
     return mainloop();
