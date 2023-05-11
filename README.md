@@ -1,12 +1,11 @@
 # ⛏ The Mining Company
 
-This is a MEV bot. Use at your own risk. Any losses incurred through the use of this software are your own responsibility.
+Use at your own risk. Any losses incurred through the use of this software are your own responsibility.
 
 ## Getting Started
 
 Getting set up with this repository is very easy.
 * Install Node using `brew install node`.
-* Install the Solana SDK using `curl -sSfL https://release.solana.com/stable/install | sh`.
 * Clone this repository using `git clone https://github.com/jewl-app/.github`.
 * Install dependencies using npm - `npm install`.
 * Run one of the commands below - `npm run start`.
