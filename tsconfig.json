@@ -7,11 +7,11 @@
         "esModuleInterop": true,
         "module": "ESNext",
         "moduleResolution": "Node",
-        "isolatedModules": true
+        "isolatedModules": true,
+        "allowSyntheticDefaultImports": true
     },
     "exclude": [
         ".git",
-        "lib",
         "node_modules",
     ]
 }
