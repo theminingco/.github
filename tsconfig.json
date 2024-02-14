@@ -1,17 +1,22 @@
 {
-    "compilerOptions": {
-        "target": "ESNext",
-        "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "strict": true,
-        "noEmit": true,
-        "esModuleInterop": true,
-        "module": "ESNext",
-        "moduleResolution": "Node",
-        "isolatedModules": true,
-        "allowSyntheticDefaultImports": true
-    },
-    "exclude": [
-        ".git",
-        "node_modules",
-    ]
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+    "strict": true,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "sourceMap": true
+  }
 }

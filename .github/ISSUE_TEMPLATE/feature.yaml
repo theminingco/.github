@@ -4,26 +4,18 @@ title: "[Feature] "
 labels: ["feature"]
 body:
   - type: textarea
-    id: details
-    attributes:
-      label: Details
-      description: A clear and concise description of what should be added.
-      placeholder: Something needs to be added.
-    validations:
-      required: true
+  id: details
+  attributes:
+    label: Details
+    description: A clear and concise description of what should be added.
+    placeholder: Something needs to be added.
+  validations:
+    required: true
   - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives considered
-      description: A clear and concise description of any alternative solutions or features considered.
-      placeholder: Other alternatives solutions are not viable.
-    validations:
-      required: true
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: Terms of service
-      description: By submitting this issue you hereby grant ⛏ The Mining Company a nonexclusive, royalty-free, fully paid-up, irrevocable, perpetual, worldwide license, with the right to grant and authorize sublicenses, to make, have made, modify, use, import, offer for sale, and sell your contribution or a part thereof.
-      options:
-        - label: I agree
-          required: true
+  id: alternatives
+  attributes:
+    label: Alternatives considered
+    description: A clear and concise description of any alternative solutions or features considered.
+    placeholder: Other alternatives solutions are not viable.
+  validations:
+    required: true

@@ -1,0 +1,44 @@
+name: 'Node Next version'
+description: 'Compute the logical next version for a package'
+inputs:
+  package:
+  description: 'The name of the npm package'
+  required: true
+  path:
+  description: 'The path to the package.json file'
+  required: false
+  default: '.'
+outputs:
+  next_version:
+  description: 'The next logical version'
+  value: ${{ steps.version.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+  - name: Get Deployed Version
+    id: deployed
+    run: |
+    VERSION=$(npm show ${{ inputs.package }} version || echo 0.0.0)
+    echo "Deployed version is $VERSION"
+    echo "version=$VERSION" >> $GITHUB_OUTPUT
+    shell: bash
+  - name: Get Main Version
+    id: main
+    run: |
+    VERSION=$(cat ${{ inputs.path }}/package.json | grep version | head -n 1 | cut -d '"' -f 4)
+    echo "Main version is $VERSION"
+    echo "version=$VERSION" >> $GITHUB_OUTPUT
+    shell: bash
+  - name: Determine Version
+    id: version
+    run: |
+    DEPLOYED_COMPARATOR=$(echo ${{ steps.deployed.outputs.version }} | awk -F. '{ printf("%d%03d%03d\n", $1,$2,$3); }')
+    MAIN_COMPARATOR=$(echo ${{ steps.main.outputs.version }} | awk -F. '{ printf("%d%03d%03d\n", $1,$2,$3); }')
+    if [ "$MAIN_COMPARATOR" -le "$DEPLOYED_COMPARATOR" ]; then
+      VERSION=$(echo ${{ steps.deployed.outputs.version }} | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.)
+    else
+      VERSION=${{ steps.main.outputs.version }}
+    fi
+    echo "Next version is $VERSION"
+    echo "version=$VERSION" >> $GITHUB_OUTPUT
+    shell: bash
