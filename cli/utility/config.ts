@@ -2,7 +2,7 @@ import { getCluster } from "@theminingco/core";
 import { Keypair, Connection } from "@solana/web3.js";
 import base58 from "bs58";
 import { getSecret } from "./secrets";
-import { Metaplex, bundlrStorage, keypairIdentity } from "@metaplex-foundation/js";
+import { Metaplex, irysStorage, keypairIdentity } from "@metaplex-foundation/js";
 
 export let connection = new Connection("https://api.devnet.solana.com");
 export let cluster = "";
@@ -21,5 +21,5 @@ export const initialize = async (): Promise<void> => {
   const bundlerAddress = cluster === "mainnet-beta" ? "https://node1.bundlr.network" : "https://devnet.bundlr.network";
   metaplex = Metaplex.make(connection)
     .use(keypairIdentity(signer))
-    .use(bundlrStorage({ address: bundlerAddress }));
+    .use(irysStorage({ address: bundlerAddress }));
 };

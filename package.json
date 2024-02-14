@@ -12,6 +12,7 @@
     "@parcel/packager-xml": "^2.11.0",
     "@parcel/transformer-webmanifest": "^2.11.0",
     "@parcel/transformer-xml": "^2.11.0",
+    "@types/bn.js": "^5.1.5",
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^29.5.12",
     "@types/marked": "^5.0.2",
