@@ -37,7 +37,7 @@ const createRootToken = async (imagePath: string): Promise<PublicKey> => {
 };
 
 const createCollectionToken = async (name: string, imageUri: string, rootCollection: PublicKey): Promise<PublicKey> => {
-  const collectionTitle = `${name}`;
+  const collectionTitle = `⛏ The Mining Company - ${name}`;
   const image = readFileSync(imageUri);
   const metadata = await metaplex.nfts().uploadMetadata({
     name: collectionTitle,

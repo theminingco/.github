@@ -117,7 +117,8 @@
     "@typescript-eslint/sort-type-constituents": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/lines-between-class-members": "off",
-    "@typescript-eslint/max-params": "off"
+    "@typescript-eslint/max-params": "off",
+    "@typescript-eslint/prefer-destructuring": "off"
   },
   "settings": {
     "react": {
