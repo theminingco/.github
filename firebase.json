@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "theminingco",
+    "site": "theminingco-xyz",
     "public": "web/dist",
     "ignore": [
       "firebase.json",
@@ -14,13 +14,11 @@
       }
     ]
   },
-  "firestore": [
-    {
-      "database": "(default)",
-      "rules": "firestore.rules",
-      "indexes": "firestore.indexes.json"
-    }
-  ],
+  "firestore": {
+    "database": "(default)",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "functions": {
     "source": "lambda",
     "codebase": "default",

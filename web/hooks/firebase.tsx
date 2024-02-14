@@ -15,13 +15,13 @@ import type { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, Query
 import { getFirestore, collection, getDocs, query } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA-Dn62_MuHbc45yzak4S9ao3NXHw07HkY",
-  authDomain: "theminingco.firebaseapp.com",
-  projectId: "theminingco",
-  storageBucket: "theminingco.appspot.com",
-  messagingSenderId: "550370238764",
-  appId: "1:550370238764:web:fa3937801fc783c7264c89",
-  measurementId: "G-FNCKMNE7CB"
+  apiKey: "AIzaSyAZ5K_JvltwcyN9C-b7mrmI8xDCN4SM4Cw",
+  authDomain: "theminingco-xyz.firebaseapp.com",
+  projectId: "theminingco-xyz",
+  storageBucket: "theminingco-xyz.appspot.com",
+  messagingSenderId: "856146705486",
+  appId: "1:856146705486:web:389f1ba0c455cc45e7d71f",
+  measurementId: "G-3X6WSVZN46"
 };
 
 const appCheckSite = "6LdJmxcnAAAAAOgZe95n76VL2-uOSmdRNciewzdA";
