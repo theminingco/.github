@@ -2,34 +2,34 @@ name: 'Node Package Diff'
 description: 'Compute a diff between the local package and the latest published version'
 inputs:
   path:
-  description: 'The path to the package.json file'
-  required: false
-  default: '.'
+    description: 'The path to the package.json file'
+    required: false
+    default: '.'
 outputs:
   has_changes:
-  description: 'Whether or not the package has changes'
-  value: ${{ steps.diff.outputs.has_changes }}
+    description: 'Whether or not the package has changes'
+    value: ${{ steps.diff.outputs.has_changes }}
 runs:
   using: "composite"
   steps:
-  - name: Get Package Name
-    id: name
-    run: |
-    NAME=$(cat '${{ inputs.path }}/package.json' | jq -r '.name')
-    echo "package_name=$NAME" >> $GITHUB_OUTPUT
-    shell: bash
-  - name: Compute Diff
-    id: diff
-    run: |
-    DIFF=$(npm diff --diff '${{ steps.name.outputs.package_name }}@latest' --diff '${{ inputs.path }}' || echo "- not deployed yet")
-    echo "$DIFF" | perl -ne '/^[+-]{1}(?![-+]{2})(?!.*"version": ".*").*$/ && exit 1;' && HAS_CHANGES="false" || HAS_CHANGES="true"
-    echo "has_changes=$HAS_CHANGES" >> $GITHUB_OUTPUT
-    shell: bash
-  - name: Log Result
-    run: |
-    if [[ ${{ steps.diff.outputs.has_changes }} == "true" ]]; then
-      echo "Changes detected in ${{ steps.name.outputs.package_name }}."
-    else
-      echo "No changes detected in ${{ steps.name.outputs.package_name }}."
-    fi
-    shell: bash
+    - name: Get Package Name
+      id: name
+      run: |
+        NAME=$(cat '${{ inputs.path }}/package.json' | jq -r '.name')
+        echo "package_name=$NAME" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: Compute Diff
+      id: diff
+      run: |
+        DIFF=$(npm diff --diff '${{ steps.name.outputs.package_name }}@latest' --diff '${{ inputs.path }}' || echo "- not deployed yet")
+        echo "$DIFF" | perl -ne '/^[+-]{1}(?![-+]{2})(?!.*"version": ".*").*$/ && exit 1;' && HAS_CHANGES="false" || HAS_CHANGES="true"
+        echo "has_changes=$HAS_CHANGES" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: Log Result
+      run: |
+        if [[ ${{ steps.diff.outputs.has_changes }} == "true" ]]; then
+          echo "Changes detected in ${{ steps.name.outputs.package_name }}."
+        else
+          echo "No changes detected in ${{ steps.name.outputs.package_name }}."
+        fi
+      shell: bash
