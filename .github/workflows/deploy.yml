@@ -55,9 +55,6 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
-    environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'theminingco' || '' }}
-      url: https://theminingco.xyz/
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
