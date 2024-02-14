@@ -1,0 +1,29 @@
+{
+  "name": "@theminingco/web",
+  "type": "module",
+  "source": "./public/index.html",
+  "scripts": {
+    "build": "tsc",
+    "start": "parcel serve --no-autoinstall",
+    "clean": "rm -r lib ../.parcel-cache dist || true"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@theminingco/core": "*",
+    "@solana/spl-memo": "^0.2.3",
+    "@solana/spl-token": "^0.4.0",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/web3.js": "^1.90.0",
+    "firebase": "^10.8.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
+    "the-new-css-reset": "^1.11.2"
+  },
+  "browserslist": {
+    "production": ">0.2%, not dead, not op_mini all",
+    "development": "last 1 version"
+  }
+}

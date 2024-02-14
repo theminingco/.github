@@ -1,0 +1,24 @@
+{
+  "name": "@theminingco/cli",
+  "bin": {
+    "theminingco": "./lib/index.js"
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./lib/index.js",
+    "clean": "rm -r lib || true"
+  },
+  "dependencies": {
+    "@metaplex-foundation/js": "^0.20.1",
+    "@project-serum/anchor": "^0.26.0",
+    "@solana/web3.js": "^1.90.0",
+    "@theminingco/core": "*",
+    "bs58": "^5.0.0",
+    "prompts": "^2.4.2"
+  }
+}

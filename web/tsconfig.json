@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./lib",
+    "paths": {
+      "url:*": ["../identity.js"],
+    }
+  },
+  "exclude": ["lib", "dist", "node_modules", "test"]
+}

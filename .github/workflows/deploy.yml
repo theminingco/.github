@@ -1,0 +1,139 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+
+  npm:
+    strategy:
+      matrix:
+        package: [core, cli]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Determine Version
+        uses: ./.github/actions/npm-version
+        id: version
+        with:
+          package: '@theminingco/${{ matrix.package }}'
+      - name: Set Version
+        run: npm version $VERSION
+        working-directory: ${{ matrix.package }}
+        env:
+          VERSION: ${{ steps.version.outputs.next_version }}
+      - name: Build Package
+        run: npm run build ${{ matrix.package }}
+      - name: Copy License
+        run: cp LICENSE ${{ matrix.package }}/LICENSE
+      - name: Determine Changes
+        uses: ./.github/actions/npm-changes
+        id: changes
+        with:
+          path: ${{ matrix.package }}
+      - name: Publish Package
+        if: ${{ steps.changes.outputs.has_changes == 'true' }}
+        run: npm publish --access public
+        working-directory: ${{ matrix.package }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  web:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'theminingco' || '' }}
+      url: https://theminingco.xyz/
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build Web
+        run: npm run build web
+      - name: Bundle Web
+        run:  npx parcel build --no-cache --no-autoinstall
+        working-directory: web
+      - name: Deploy Web
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_DEPLOY_KEY }}
+          channelId: ${{ github.ref == 'refs/heads/main' && 'live' || '' }}
+          expires: ${{ github.ref == 'refs/heads/main' && '' || '3d' }}
+          projectId: theminingco
+
+  lambda:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: [npm]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: Login to Firebase
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.FIREBASE_DEPLOY_KEY }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Deploy Lambda
+        run: npx firebase deploy --only functions --project theminingco
+
+  firestore:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: Login to Firebase
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.FIREBASE_DEPLOY_KEY }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Deploy Firestore
+        run: npx firebase deploy --only firestore --project theminingco
+
+  status:
+    runs-on: ubuntu-latest
+    if: ${{ failure() && github.ref == 'refs/heads/main' }}
+    needs: [web, lambda, npm, firestore]
+    steps:
+      - name: Report Status to Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          title: "Deployment failed"
+          description: |
+            Please check the status [here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+          color: 0xff4041
+          nodetail: true
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+
