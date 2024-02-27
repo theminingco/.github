@@ -8,7 +8,7 @@
     "clean": "rm -r lib ../.parcel-cache dist || true"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.3",
+    "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@theminingco/core": "*",
     "@solana/spl-memo": "^0.2.3",
