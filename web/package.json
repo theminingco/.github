@@ -18,7 +18,7 @@
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-solflare": "^0.6.28",
     "@solana/web3.js": "^1.90.1",
-    "firebase": "^10.8.0",
+    "firebase": "^10.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
