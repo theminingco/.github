@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.1",
-    "@solana/web3.js": "1.90.1",
+    "@solana/web3.js": "1.91.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1"
   },
