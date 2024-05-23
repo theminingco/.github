@@ -12,7 +12,6 @@
     "clean": "nx reset && nx run-many --target clean --projects"
   },
   "devDependencies": {
-    "@types/dompurify": "^3.0.5",
     "@types/jsdom": "^21.1.6",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.12.12",
