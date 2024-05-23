@@ -1,4 +1,4 @@
-import { getSignature, validateSignature } from "@theminingco/core/src/sign";
+import { getSignature, validateSignature } from "../../core/src/sign";
 import { describe, it, beforeEach, afterEach, before } from "mocha";
 import assert from "assert";
 import type { SinonFakeTimers, SinonStub } from "sinon";

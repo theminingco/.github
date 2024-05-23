@@ -1,6 +1,6 @@
 import assert from "assert";
 import { describe, it } from "mocha";
-import { shortAddress } from "@theminingco/core/src/address";
+import { shortAddress } from "../../core/src/address";
 import { address } from "@solana/web3.js";
 
 const testAddress = address("11111111111111111111111111111111");

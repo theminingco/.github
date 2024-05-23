@@ -1,4 +1,4 @@
-import { toDecimal, fromDecimal, toNumber, fromNumber } from "@theminingco/core/src/number";
+import { toDecimal, fromDecimal, toNumber, fromNumber } from "../../core/src/number";
 import { describe, it } from "mocha";
 import assert from "assert";
 

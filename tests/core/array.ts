@@ -1,6 +1,6 @@
 import assert from "assert";
 import { describe, it } from "mocha";
-import { range, interval, nonNull } from "@theminingco/core/src/array";
+import { range, interval, nonNull } from "../../core/src/array";
 
 describe("array", () => {
 

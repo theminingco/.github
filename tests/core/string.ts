@@ -1,4 +1,4 @@
-import { stripNonDigits, formatLargeNumber, formatPriceDelta, stripCharacters } from "@theminingco/core/src/string";
+import { stripNonDigits, formatLargeNumber, formatPriceDelta, stripCharacters } from "../../core/src/string";
 import { describe, it } from "mocha";
 import assert from "assert";
 

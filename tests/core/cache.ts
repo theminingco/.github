@@ -2,7 +2,7 @@ import { describe, it, beforeEach, afterEach } from "mocha";
 import assert from "assert";
 import type { SinonFakeTimers, SinonStub } from "sinon";
 import { stub, useFakeTimers } from "sinon";
-import { invalidateCache, cachedFetch } from "@theminingco/core/src/cache";
+import { invalidateCache, cachedFetch } from "../../core/src/cache";
 
 const res = async (body: string): Promise<Response> => Promise.resolve(new Response(body));
 

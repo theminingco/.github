@@ -1,4 +1,4 @@
-import { unix, isAfter, isBefore, isEqual } from "@theminingco/core/src/time";
+import { unix, isAfter, isBefore, isEqual } from "../../core/src/time";
 import assert from "assert";
 import { describe, it, beforeEach, afterEach } from "mocha";
 import type { SinonFakeTimers } from "sinon";

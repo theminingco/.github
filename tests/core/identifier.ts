@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, afterEach } from "mocha";
 import { SinonStub, stub } from "sinon";
-import { randomId } from "@theminingco/core/src/identifier";
+import { randomId } from "../../core/src/identifier";
 import assert from "assert";
 
 describe("identifier", () => {
