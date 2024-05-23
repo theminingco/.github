@@ -8,7 +8,7 @@
     "clean": "rm -r lib || true"
   },
   "dependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3",
+    "@solana/web3.js": "^2.0.0-preview.3.20240522085249.af13180108efd71afc60e546c671b9a556a57501",
     "@testing-library/react": "^15.0.7",
     "@theminingco/core": "*",
     "jsdom": "^24.0.0",
