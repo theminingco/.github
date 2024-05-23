@@ -2,9 +2,9 @@ import { formatLargeNumber, interval } from "@theminingco/core";
 import { sendInfo } from "../utility/discord";
 import { linkAccount } from "../utility/link";
 import { poolCollection } from "../utility/firebase";
-import { PublicKey } from "@solana/web3.js";
+import { address } from "@solana/web3.js";
 
-const recordStatistics = async (): Promise<void> => {
+export default async function recordStatistics(): Promise<void> {
   const snapshot = await poolCollection.get();
 
   const totalValue = snapshot.docs
@@ -14,7 +14,7 @@ const recordStatistics = async (): Promise<void> => {
   const usdValue = totalValue / 20; // TODO: <-- get sol price from alpaca
 
   const addresses = snapshot.docs
-    .map(doc => new PublicKey(doc.data().address));
+    .map(doc => address(doc.data().address));
 
   const names = snapshot.docs
     .map(doc => doc.data().name.split(" "))
@@ -27,11 +27,9 @@ const recordStatistics = async (): Promise<void> => {
   const fields = {
     "Total Locked Value": `◎${formatLargeNumber(totalValue)}`,
     "USD Equivalent": `$${formatLargeNumber(usdValue)}`,
-    "Pools": symbols
+    "Pools": symbols,
   };
   const block = ["Pools"];
   const date = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   await sendInfo("Daily statistics", date, fields, block);
-};
-
-export default recordStatistics;
+}

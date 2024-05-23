@@ -1,9 +1,15 @@
-# Contributing to theminingco.xyz
-We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
+## Something not working?
 
-- [Reporting a bug](https://github.com/theminingco/.github/issues/new?assignees=&labels=bug&template=bug.yaml&title=%5BBug%5D+)
-- [Discussing the current state of the code](https://github.com/theminingco/.github/issues/new?assignees=&labels=technical-debt&template=debt.yaml&title=%5BTechnical%5D+)
-- [Proposing new features](https://github.com/theminingco/.github/issues/new?assignees=&labels=feature&template=feature.yaml&title=%5BFeature%5D+)
-- [Reporting a security vulnerability](https://github.com/theminingco/.github/security/policy)
+If you think you have found a bug you can create a report through [GitHub](https://github.com/theminingco/.github/issues/new/choose). When writing a bug report please be as specific as possible as this helps us solve issues quicker. You can also report any address or transaction flagged incorrectly through this method. If you do please provide evidence supporting your claims. Please do not share any personal information through this method as bug reports are public.
+
+*Please do not submit potential security vulenerabilities through this method. We have a bounty program for security vulnerabilities. See below.*
+
+## Have an idea for an improvement?
+
+You can submit your feature requests through [GitHub](https://github.com/theminingco/.github/issues/new/choose). All ideas are welcome however we can not make guarantees that each feature request will be honored up and implemented.
+
+## Reporting security vulnerabilities
+
+If you think you have found a security vulnerability you can report it to us (annonymously). For instructions please refer to our [GitHub](https://github.com/theminingco/.github/security/policy) page. We have a bounty program for reporting security vulnerabilities which can be paid out in a variety of cryptocurrencies.
 
 *Copyright © 2023 ⛏ The Mining Company*

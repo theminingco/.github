@@ -102,6 +102,6 @@ We may update our Security Bounty Program from time to time. Thus, you are advis
 
 ## Contact Us
 
-If you have any questions or suggestions about our Security Bounty Program, do not hesitate to contact us through any of our contact [channels](https://github.com/theminingco/.github/blob/main/CONTACT.md).
+If you have any questions or suggestions about our Terms of Service, do not hesitate to contact us.
 
 *Copyright © 2023 ⛏ The Mining Company*

@@ -1,8 +1,9 @@
+import type { Metadata } from "@theminingco/core";
 import { HttpsError } from "firebase-functions/v2/https";
 
 const percentageRegex = /(?<number>\d+)%/u;
 
-const validateAttribute = (attribute: unknown, allowedTraits: Set<string>): [string, number] => {
+function validateAttribute(attribute: unknown, allowedTraits: Set<string>): [string, number] {
   if (typeof attribute !== "object") { throw new HttpsError("invalid-argument", "Metadata attribute must be an object."); }
   if (attribute == null) { throw new HttpsError("invalid-argument", "Metadata attribute must be an object."); }
   const object = attribute as Record<string, unknown>;
@@ -21,9 +22,9 @@ const validateAttribute = (attribute: unknown, allowedTraits: Set<string>): [str
   const number = parseInt(match.groups?.number ?? "0", 10);
   if (number <= 0) { throw new HttpsError("invalid-argument", "Metadata attribute percentage must be greater than 0."); }
   return [object.trait_type, number];
-};
+}
 
-export const extractAttributes = (metadata: unknown): Map<string, number> => {
+export function extractAttributes(metadata: unknown): Map<string, number> {
   if (typeof metadata !== "object") { throw new HttpsError("invalid-argument", "Metadata must be an object."); }
   if (metadata == null) { throw new HttpsError("invalid-argument", "Metadata must be an object."); }
   const object = metadata as Record<string, unknown>;
@@ -32,9 +33,9 @@ export const extractAttributes = (metadata: unknown): Map<string, number> => {
   if (!Array.isArray(object.attributes)) { throw new HttpsError("invalid-argument", "Metadata attributes must be an array."); }
   const attributes = object.attributes.map(x => validateAttribute(x, new Set()));
   return new Map(attributes);
-};
+}
 
-export const verifyMetadata = async (token: { uri: string }, newUri: string, allowedTraits: Iterable<string>): Promise<void> => {
+export async function verifyMetadata(token: { uri: string }, newUri: string, allowedTraits: Iterable<string>): Promise<void> {
   if (!newUri.startsWith("https://arweave.net/")) { throw new HttpsError("invalid-argument", "Metadata not uploaded to permaweb."); }
 
   const oldResponse = await fetch(token.uri);
@@ -62,4 +63,4 @@ export const verifyMetadata = async (token: { uri: string }, newUri: string, all
   const totalPercentage = percentages.reduce((a, b) => a + b[1], 0);
   const requiredPercentage = allowedTraitsSet.size === 0 ? 0 : 100;
   if (totalPercentage !== requiredPercentage) { throw new HttpsError("invalid-argument", "Metadata attributes must sum up to 100%."); }
-};
+}

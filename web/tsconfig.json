@@ -2,9 +2,24 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "./lib",
-    "paths": {
-      "url:*": ["../identity.js"],
-    }
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
   },
-  "exclude": ["lib", "dist", "node_modules", "test"]
+  "exclude": [
+    "lib",
+    "node_modules"
+  ],
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "lib/types/**/*.ts"
+  ]
 }

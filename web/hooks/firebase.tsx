@@ -8,11 +8,9 @@ import React, { createContext, useContext, useMemo, useCallback, useState, useEf
 import { logEvent as logFirebaseEvent } from "firebase/analytics";
 import { setUserProperties as setFirebaseProperty } from "firebase/analytics";
 import { setUserId as setFirebaseUserId } from "firebase/analytics";
-import type { HttpsCallableResult, HttpsCallable } from "firebase/functions";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { getFunctions, httpsCallable, HttpsCallable } from "firebase/functions";
 import { getPerformance } from "firebase/performance";
-import type { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, QueryFieldFilterConstraint } from "firebase/firestore";
-import { getFirestore, collection, getDocs, query } from "firebase/firestore";
+import { getFirestore, DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, QueryFieldFilterConstraint, collection, query, getDocs } from "firebase/firestore/lite";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAZ5K_JvltwcyN9C-b7mrmI8xDCN4SM4Cw",
@@ -21,24 +19,25 @@ const firebaseConfig = {
   storageBucket: "theminingco-xyz.appspot.com",
   messagingSenderId: "856146705486",
   appId: "1:856146705486:web:389f1ba0c455cc45e7d71f",
-  measurementId: "G-3X6WSVZN46"
+  measurementId: "G-3X6WSVZN46",
 };
 
-const appCheckSite = "6LdJmxcnAAAAAOgZe95n76VL2-uOSmdRNciewzdA";
-const fauxWindow = self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean };
-fauxWindow.FIREBASE_APPCHECK_DEBUG_TOKEN = window.location.host.startsWith("localhost");
+const appCheckSite = "6Ldd4-EpAAAAAP3nBdr7J0LT3baDmj5K7ttTxf-w";
 const appCheckConfig = {
   provider: new ReCaptchaEnterpriseProvider(appCheckSite),
-  isTokenAutoRefreshEnabled: true
+  isTokenAutoRefreshEnabled: true,
 };
 
-const converter = <T extends DocumentData>(): FirestoreDataConverter<T> => ({
-  toFirestore: (model: T): DocumentData => model,
-  fromFirestore: (snapshot: QueryDocumentSnapshot): T => snapshot.data() as T
-});
+function converter<T extends DocumentData>(): FirestoreDataConverter<T> {
+  return {
+    toFirestore: (model: T): DocumentData => model,
+    fromFirestore: (snapshot: QueryDocumentSnapshot): T => snapshot.data() as T,
+  };
+}
 
 interface UseFirebase {
   logEvent: (name: string, params?: Record<string, unknown>) => void;
+  logError: (error: Error) => void;
   identify: (identifier: string) => void;
   setProperties: (properties: Record<string, unknown>) => void;
   getCallable: (name: string) => HttpsCallable;
@@ -46,18 +45,19 @@ interface UseFirebase {
 }
 
 const Context = createContext<UseFirebase>({
-  logEvent: () => { /* Empty */ },
-  identify: () => { /* Empty */ },
-  setProperties: () => { /* Empty */ },
-  getCallable: () => async (): Promise<HttpsCallableResult> => Promise.reject(new Error("Not implemented")),
-  getDocuments: async () => Promise.reject(new Error("Not implemented"))
+  logEvent: () => { throw new Error("Not implemented"); },
+  logError: () => { throw new Error("Not implemented"); },
+  identify: () => { throw new Error("Not implemented"); },
+  setProperties: () => { throw new Error("Not implemented"); },
+  getCallable: () => { throw new Error("Not implemented"); },
+  getDocuments: async () => Promise.reject(new Error("Not implemented")),
 });
 
-export const useFirebase = (): UseFirebase => {
+export function useFirebase(): UseFirebase {
   return useContext(Context);
-};
+}
 
-const FirebaseProvider = (props: PropsWithChildren): ReactElement => {
+export default function FirebaseProvider(props: PropsWithChildren): ReactElement {
   const [appCheck, setAppCheck] = useState<AppCheck>();
 
   const app = useMemo(() => {
@@ -74,6 +74,11 @@ const FirebaseProvider = (props: PropsWithChildren): ReactElement => {
     logFirebaseEvent(analytics, name, params);
   }, [app]);
 
+  const logError = useCallback((error: Error): void => {
+    // TODO: log to firebase
+    console.error(error);
+  }, [logEvent]);
+
   const setProperties = useCallback((properties: Record<string, unknown>): void => {
     const analytics = getAnalytics(app);
     setFirebaseProperty(analytics, properties);
@@ -87,8 +92,7 @@ const FirebaseProvider = (props: PropsWithChildren): ReactElement => {
   const getCallable = useCallback((name: string) => {
     if (appCheck == null) { setupAppCheck(app); }
     const functions = getFunctions(app);
-    const callableFunction = httpsCallable(functions, name, { limitedUseAppCheckTokens: true });
-    return callableFunction;
+    return httpsCallable(functions, name, { limitedUseAppCheckTokens: true });
   }, [app, appCheck, setupAppCheck]);
 
   const getDocuments = useCallback(async <T extends DocumentData>(table: string, filter?: QueryFieldFilterConstraint) => {
@@ -104,11 +108,14 @@ const FirebaseProvider = (props: PropsWithChildren): ReactElement => {
     const _performance = getPerformance(app);
   }, [app]);
 
+  useEffect(() => {
+    const fauxWindow = self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean };
+    fauxWindow.FIREBASE_APPCHECK_DEBUG_TOKEN = window.location.host.startsWith("localhost");
+  }, []);
+
   const context = useMemo(() => {
-    return { logEvent, identify, setProperties, getCallable, getDocuments };
-  }, [logEvent, identify, setProperties, getCallable, getDocuments]);
+    return { logEvent, logError, identify, setProperties, getCallable, getDocuments };
+  }, [logEvent, logError, identify, setProperties, getCallable, getDocuments]);
 
   return <Context.Provider value={context}>{props.children}</Context.Provider>;
-};
-
-export default FirebaseProvider;
+}

@@ -4,7 +4,7 @@ By using ⛏ The Mining Company, these terms will automatically apply to you –
 
 We are committed to ensuring that ⛏ The Mining Company is as useful and efficient as possible. For that reason, we reserve the right to make changes to ⛏ The Mining Company at any time and for any reason.
 
-⛏ The Mining Company stores and processes personal data that you have provided to us, in order to provide our service to you. For more information please refer to our [Privacy Policy](https://github.com/theminingco/.github/blob/main/PRIVACY.md)
+⛏ The Mining Company stores and processes personal data that you have provided to us, in order to provide our service to you. For more information please refer to our [Privacy Policy](https://raw.githubusercontent.com/theminingco/.github/main/PRIVACY.md)
 
 It’s your responsibility to keep your device and access to ⛏ The Mining Company secure. We therefore recommend that you do not jailbreak or root your device, which is the process of removing software restrictions and limitations imposed by the official operating system of your device. It could make your device vulnerable to malware/viruses/malicious programs, compromise your device’s security features and it could mean that ⛏ The Mining Company won’t work properly or at all. ⛏ The Mining Company cannot accept responsibility for any losses of funds or data that result from your misuse of ⛏ The Mining Company.
 
@@ -22,6 +22,6 @@ We may update our Terms of Service from time to time. Thus, you are advised to r
 
 ## Contact Us
 
-If you have any questions or suggestions about our Terms of Service, do not hesitate to contact us through any of our contact [channels](https://github.com/theminingco/.github/blob/main/CONTACT.md).
+If you have any questions or suggestions about our Terms of Service, do not hesitate to contact us.
 
 *Copyright © 2023 ⛏ The Mining Company*

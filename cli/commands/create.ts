@@ -1,95 +1,93 @@
-import { TokenStandard } from "@metaplex-foundation/mpl-token-metadata";
 import { metaplex, signer } from "../utility/config";
 import { promptConfirm, promptNumber, promptText } from "../utility/prompt";
-import { PublicKey } from "@solana/web3.js";
+import { Address } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
 import { homedir } from "os";
-import { toMetaplexFile } from "@metaplex-foundation/js";
 import { readFileSync } from "fs";
 import { creators } from "../utility/meta";
 import { range } from "@theminingco/core";
 
-const tokenDescription = "A decentralized investment club powered by the Solana chain that enables members to collaboratively explore investment opportunities, making collective decisions transparently and securely.";
-
-const createRootToken = async (imagePath: string): Promise<PublicKey> => {
+async function createRootToken(imagePath: string): Promise<Address> {
   const title = "⛏ The Mining Company";
   const image = readFileSync(imagePath);
 
   const metadata = await metaplex.nfts().uploadMetadata({
     name: title,
     symbol: "theminingco",
-    description: tokenDescription,
-    image: toMetaplexFile(image, "jewl.png"),
-    external_url: "https://theminingco.xyz/"
+    description: "Keep on digging...",
+    image: toMetaplexFile(image, "image.png"),
+    external_url: "https://theminingco.xyz/",
   });
 
   const token = await metaplex.nfts().create({
     name: title,
     uri: metadata.uri,
-    sellerFeeBasisPoints: 500,
+    sellerFeeBasisPoints: 100,
     tokenStandard: TokenStandard.ProgrammableNonFungible,
     isCollection: true,
     primarySaleHappened: true,
-    creators
+    creators,
   });
 
   return token.mintAddress;
-};
+}
 
-const createCollectionToken = async (name: string, imageUri: string, rootCollection: PublicKey): Promise<PublicKey> => {
+async function createCollectionToken(name: string, imageUri: string, rootCollection: Address): Promise<Address> {
   const collectionTitle = `⛏ The Mining Company - ${name}`;
   const image = readFileSync(imageUri);
   const metadata = await metaplex.nfts().uploadMetadata({
     name: collectionTitle,
     symbol: "theminingco",
-    description: tokenDescription,
+    description: "Keep on digging...",
     image: toMetaplexFile(image, `${name}.png`),
-    external_url: "https://theminingco.xyz/"
+    external_url: "https://theminingco.xyz/",
   });
 
   const token = await metaplex.nfts().create({
     name: collectionTitle,
     uri: metadata.uri,
-    sellerFeeBasisPoints: 500,
+    sellerFeeBasisPoints: 100,
     tokenStandard: TokenStandard.ProgrammableNonFungible,
     isCollection: true,
     collection: rootCollection,
     collectionAuthority: signer,
     primarySaleHappened: true,
-    creators
+    creators,
   });
 
   return token.mintAddress;
-};
+}
 
-const createToken = async (index: number, imageUri: string, poolCollection: PublicKey): Promise<PublicKey> => {
+async function createToken(index: number, imageUri: string, poolCollection: Address): Promise<Address> {
   const tokenTitle = `#${index}`;
   const image = readFileSync(imageUri);
   const metadata = await metaplex.nfts().uploadMetadata({
     name: tokenTitle,
     symbol: "theminingco",
-    description: tokenDescription,
+    description: "Keep on digging...",
     image: toMetaplexFile(image, `${index}.png`),
-    external_url: "https://theminingco.xyz/"
+    external_url: "https://theminingco.xyz/",
   });
 
   const token = await metaplex.nfts().create({
     name: tokenTitle,
     uri: metadata.uri,
-    sellerFeeBasisPoints: 500,
+    sellerFeeBasisPoints: 100,
     tokenStandard: TokenStandard.ProgrammableNonFungible,
     collection: poolCollection,
     collectionAuthority: signer,
     primarySaleHappened: true,
-    creators
+    creators,
   });
 
   return token.mintAddress;
-};
+}
 
 const costPerToken = 0.025;
 
-const createCollection = async (): Promise<void> => {
+// TODO: use createAccount with seed and check if they already exist
+
+export default async function createCollection(): Promise<void> {
   const rootExists = await promptConfirm("Do you already have a root collection?");
   const rootAddress = rootExists ? await promptText("What is the root collection token address?") : null;
   const rootImage = rootExists ? null : await promptText("What is the root collection image?");
@@ -124,6 +122,4 @@ const createCollection = async (): Promise<void> => {
   }
 
   console.info(`Finished creating collection with ${numTokens} tokens.`);
-};
-
-export default createCollection;
+}

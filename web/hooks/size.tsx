@@ -5,7 +5,7 @@ interface UseWindowSize {
   readonly height: number;
 }
 
-export const useWindowSize = (): UseWindowSize => {
+export function useWindowSize(): UseWindowSize {
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
 
@@ -19,4 +19,4 @@ export const useWindowSize = (): UseWindowSize => {
   }, []);
 
   return { width, height };
-};
+}

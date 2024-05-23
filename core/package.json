@@ -1,7 +1,10 @@
 {
   "name": "@theminingco/core",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
+  "sideEffects": false,
   "files": [
     "lib",
     "README.md",
@@ -12,12 +15,10 @@
     "clean": "rm -r lib || true"
   },
   "dependencies": {
-    "@solana/spl-token": "^0.4.1",
-    "@solana/web3.js": "1.91.1",
-    "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1"
-  },
-  "devDependencies": {
-    "@types/uuid": "^9.0.8"
+    "@solana-program/compute-budget": "^0.3.2",
+    "@solana-program/system": "^0.3.2",
+    "@solana-program/token": "^0.1.4",
+    "@solana/web3.js": "^2.0.0-preview.3",
+    "typescript": "^5.4.5"
   }
 }

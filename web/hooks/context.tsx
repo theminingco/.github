@@ -1,15 +1,15 @@
 import type { PropsWithChildren, ReactElement } from "react";
 import React, { useEffect } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "./wallet";
 import { useFirebase } from "./firebase";
 
-const ContextProvider = (props: PropsWithChildren): ReactElement => {
+export default function ContextProvider(props: PropsWithChildren): ReactElement {
   const { publicKey } = useWallet();
   const { identify, setProperties } = useFirebase();
 
   useEffect(() => {
     if (publicKey == null) { return; }
-    identify(publicKey.toBase58());
+    identify(publicKey.toString());
   }, [publicKey, identify]);
 
   useEffect(() => {
@@ -23,8 +23,5 @@ const ContextProvider = (props: PropsWithChildren): ReactElement => {
       .catch(() => { /* Empty */ });
   }, []);
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{props.children}</>;
-};
-
-export default ContextProvider;
+}

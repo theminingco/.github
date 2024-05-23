@@ -1,17 +1,18 @@
-import { connection, signer } from "../utility/solana";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { rpc, signer } from "../utility/solana";
 import { sendWarning } from "../utility/discord";
 import { linkAccount } from "../utility/link";
+import { toNumber } from "@theminingco/core";
 
-const checkTask = async (): Promise<void> => {
-  const accountInfo = await connection.getAccountInfo(signer.publicKey);
-  const balance = (accountInfo?.lamports ?? 0) / LAMPORTS_PER_SOL;
+export default async function checkTask(): Promise<void> {
+  const accountInfo = await rpc.getAccountInfo(signer.address).send();
+  const lamports = BigInt(accountInfo.value?.lamports ?? 0);
+  const balance = toNumber(lamports, 9);
   const usdEquivalent = balance * 20; // TODO: <-- add sol price from alpaca
 
   const fields = {
     "Wallet Balance": `◎${balance.toFixed(2)}`,
     "USD Equivalent": `$${usdEquivalent.toFixed(2)}`,
-    "Account": linkAccount(signer.publicKey)
+    "Account": linkAccount(signer.address),
   };
 
   const block = ["Account"];
@@ -25,6 +26,4 @@ const checkTask = async (): Promise<void> => {
     const message = "Consider withdrawing some.";
     await sendWarning("High reserves", message, fields, block);
   }
-};
-
-export default checkTask;
+}

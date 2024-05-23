@@ -3,13 +3,13 @@ import { interval } from "@theminingco/core";
 import { poolCollection, tokenCollection } from "../utility/firebase";
 import { extractAttributes } from "../utility/meta";
 
-const fetchMetadata = async (uri: string): Promise<Map<string, number>> => {
+async function fetchMetadata(uri: string): Promise<Map<string, number>> {
   const response = await fetch(uri);
   const json = await response.json() as unknown;
   return extractAttributes(json);
-};
+}
 
-const getAllocations = async (): Promise<Map<string, Map<string, number>>> => {
+async function getAllocations(): Promise<Map<string, Map<string, number>>> {
   const snapshot = await tokenCollection.get();
 
   const collections = snapshot.docs.map(x => x.data().collection);
@@ -30,16 +30,20 @@ const getAllocations = async (): Promise<Map<string, Map<string, number>>> => {
   }
 
   return allocations;
-};
+}
 
-const rebalancePool = async (_pool: Pool, _allocation: Map<string, number>): Promise<void> => {
+async function rebalancePool(_pool: Pool, _allocation: Map<string, number>): Promise<void> {
   // TODO: reblance each pool on alpaca based on allocation
   // Allocation does not add up to 100%. Rest should be held in SOL
 
   // Cancel all open orders
   // Create all sell orders
-  const freeBalance = 0; // Get current free balance in USD
-  const totalBuyOrder = 0; // Get amount needed for buy orders in USD
+
+  // TODO: Get current free balance in USD
+  const freeBalance = 0;
+
+  // Get amount needed for buy orders in USD
+  const totalBuyOrder = 0;
 
   if (freeBalance < totalBuyOrder) {
     // Sell SOL to fill the deficit
@@ -51,9 +55,9 @@ const rebalancePool = async (_pool: Pool, _allocation: Map<string, number>): Pro
 
   // Place all buy orders
   return Promise.resolve();
-};
+}
 
-const rebalanceInvestments = async (): Promise<void> => {
+export default async function rebalanceInvestments(): Promise<void> {
   const snapshot = await poolCollection.get();
 
   const allocations = await getAllocations();
@@ -70,6 +74,4 @@ const rebalanceInvestments = async (): Promise<void> => {
   }
 
   await Promise.all(promises);
-};
-
-export default rebalanceInvestments;
+}

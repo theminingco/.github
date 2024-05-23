@@ -23,19 +23,19 @@ jobs:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install
       - name: Determine Version
         uses: ./.github/actions/npm-version
         id: version
         with:
           package: '@theminingco/${{ matrix.package }}'
       - name: Set Version
-        run: npm version $VERSION
+        run: yarn version $VERSION
         working-directory: ${{ matrix.package }}
         env:
           VERSION: ${{ steps.version.outputs.next_version }}
       - name: Build Package
-        run: npm run build ${{ matrix.package }}
+        run: yarn build ${{ matrix.package }}
       - name: Copy License
         run: cp LICENSE ${{ matrix.package }}/LICENSE
       - name: Determine Changes
@@ -63,12 +63,9 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install
       - name: Build Web
-        run: npm run build web
-      - name: Bundle Web
-        run:  npx parcel build --no-cache --no-autoinstall
-        working-directory: web
+        run: yarn build web
       - name: Deploy Web
         if: ${{ !github.event.pull_request.head.repo.fork }}
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -95,9 +92,9 @@ jobs:
         with:
           credentials_json: ${{ secrets.FIREBASE_DEPLOY_KEY }}
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install
       - name: Deploy Lambda
-        run: npx firebase deploy --only functions --project theminingco-xyz
+        run: yarn firebase deploy --only functions --project theminingco-xyz
 
   firestore:
     runs-on: ubuntu-latest
@@ -114,9 +111,9 @@ jobs:
         with:
           credentials_json: ${{ secrets.FIREBASE_DEPLOY_KEY }}
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install
       - name: Deploy Firestore
-        run: npx firebase deploy --only firestore --project theminingco-xyz
+        run: yarn firebase deploy --only firestore --project theminingco-xyz
 
   status:
     runs-on: ubuntu-latest

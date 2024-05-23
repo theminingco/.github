@@ -7,10 +7,12 @@ const app = initializeApp();
 
 const firestore = getFirestore(app);
 
-const converter = <T extends DocumentData>(): FirestoreDataConverter<T> => ({
-  toFirestore: (model: T): DocumentData => model,
-  fromFirestore: (snapshot: QueryDocumentSnapshot): T => snapshot.data() as T
-});
+function converter<T extends DocumentData>(): FirestoreDataConverter<T> {
+  return {
+    toFirestore: (model: T): DocumentData => model,
+    fromFirestore: (snapshot: QueryDocumentSnapshot): T => snapshot.data() as T,
+  };
+}
 
 export const tokenCollection = firestore
   .collection("tokens")

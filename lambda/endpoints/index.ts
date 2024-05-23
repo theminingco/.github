@@ -7,13 +7,13 @@ const config: CallableOptions = {
   cors: true,
   secrets,
   enforceAppCheck: true,
-  consumeAppCheckToken: true
+  consumeAppCheckToken: true,
 };
 
 const endpointSpec = [
   "sell",
   "buy",
-  "update"
+  "update",
 ];
 
 type CallableHandler = (request: CallableRequest) => Promise<unknown>;
