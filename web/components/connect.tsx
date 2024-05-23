@@ -1,95 +1,49 @@
 import type { ReactElement } from "react";
 import React, { useCallback, useMemo } from "react";
-import { MinorButton } from "./button";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { css } from "@emotion/react";
-import { Disclaimer, Headline, Subline } from "./text";
-import { wait } from "@theminingco/core";
-import { WalletReadyState } from "@solana/wallet-adapter-base";
+import type { SupportedWallet } from "../utility/wallet";
+import { useWallet } from "../hooks/wallet";
 import { useFirebase } from "../hooks/firebase";
+import Image from "next/image";
+import Button from "./button";
 
-const Connect = (): ReactElement => {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { wallets, select, connect, disconnect } = useWallet();
-  const { logEvent } = useFirebase();
+export default function Connect(): ReactElement {
+  const { wallets, connect, disconnect } = useWallet();
+  const { logEvent, logError } = useFirebase();
 
-  const connectWallet = useCallback((index: number) => {
-    const wallet = wallets[index];
-    return () => {
-      const isInstalled = wallet.readyState === WalletReadyState.Installed;
-      const isLoadable = wallet.readyState === WalletReadyState.Loadable;
-      if (isInstalled || isLoadable) {
-        select(wallet.adapter.name);
-        wait(200)
-          .then(disconnect)
-          .then(connect)
-          .catch(() => { /* Ignore error */ });
-        logEvent("connect_init", { wallet: wallet.adapter.name });
-      } else {
-        window.open(wallet.adapter.url, "_blank", "noopener,noreferrer");
-        logEvent("connect_refer", { wallet: wallet.adapter.name });
-      }
-
-    };
-  }, [wallets, select, connect, disconnect, logEvent]);
-
-  const buttonStyle = useMemo(() => {
-    return css`
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: calc(50% - 40px);
-            text-transform: unset;
-        `;
-  }, []);
-
-  const textStyle = useMemo(() => {
-    return css`
-            padding: 4px 8px;
-            text-align: center;
-            display: inline-block;
-            width: 100%;
-            font-weight: bold;
-        `;
-  }, []);
+  const connectWallet = useCallback((wallet: SupportedWallet) => {
+    disconnect()
+      .then(async () => connect(wallet))
+      .then(() => { logEvent("wallet.connected", { wallet: wallet.name }); })
+      .catch(logError);
+  }, [wallets, connect, logEvent, logError]);
 
   const buttons = useMemo(() => {
-    const nodes: Array<ReactElement> = [];
-    for (let i = 0; i < wallets.length; i++) {
-      const text = wallets[i].adapter.name;
-      const { icon } = wallets[i].adapter;
-      const image = icon === "" ? null : <img src={icon} alt={`${text} logo`} width={32} height={32} />;
-      nodes.push(
-        <MinorButton css={buttonStyle} key={text} onClick={connectWallet(i)}>
-          {image}
-          <span css={textStyle}>{text}</span>
-        </MinorButton>
+    return wallets.map(wallet => {
+      return (
+        <Button outerClassName="m-2 basis-5/12" key={wallet.name} onClick={() => { connectWallet(wallet); }}>
+          <div className="pt-2 flex flex-col items-center bg-slate-100 bg-opacity-10 rounded-lg">
+            <Image className="rounded-lg" src={wallet.icon} alt={`${wallet.name} logo`} width={32} height={32} />
+            <span className="text-center w-full font-bold py-2 px-4">{wallet.name}</span>
+          </div>
+        </Button>
       );
-    }
-    return nodes;
+    });
   }, [wallets]);
-
-  const disclaimerText = useMemo(() => {
-    return "By connecting a wallet, you acknowledge that you have read and understood ⛏ The Mining Company's Terms of Service and Privacy Policy. Wallets are provided by third parties and access may depend on these third parties being operational.";
-  }, []);
-
-  const blockStyle = useMemo(() => {
-    return css`
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            width: 100%;
-        `;
-  }, []);
 
   return (
     <>
-      <Headline>Connect wallet</Headline>
-      <Subline>Select your wallet to get started.</Subline>
-      <div css={blockStyle}>{buttons}</div>
-      <Disclaimer>{disclaimerText}</Disclaimer>
+      <div key="connect" className="text-2xl font-bold pt-2 px-4">
+        Connect wallet
+      </div>
+      <div className="text-xl pb-2 px-4">
+        Select your wallet to get started.
+      </div>
+      <div className="w-full flex flex-wrap items-center justify-around">
+        {buttons}
+      </div>
+      <div className="text-sm py-2 px-4">
+        Wallets are provided by third parties and access may depend on these third parties being operational.
+      </div>
     </>
   );
-};
-
-export default Connect;
+}

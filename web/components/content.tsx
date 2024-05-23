@@ -1,45 +1,43 @@
-import { css } from "@emotion/react";
 import type { ReactElement } from "react";
-import React, { Suspense, useMemo } from "react";
-import { Disclaimer } from "./text";
-import { useNavigation } from "../hooks/navigation";
+import React, { useEffect, useState } from "react";
+import { useWallet } from "../hooks/wallet";
+import { address } from "@solana/web3.js";
+import dynamic from "next/dynamic";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const Content = (): ReactElement => {
-  const { content } = useNavigation();
+const fallback = <div className="flex-1" />;
+const Details = dynamic(async () => import("./details"), { loading: () => fallback });
+const List = dynamic(async () => import("./list"), { loading: () => fallback });
 
-  const blockStyle = useMemo(() => {
-    return css`
-            width: 100vw;
-            height: calc(100vh - 82px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        `;
-  }, []);
+export default function Content(): ReactElement {
+  const { publicKey } = useWallet();
+  const query = useSearchParams();
+  const router = useRouter();
+  const path = usePathname();
+  const [content, setContent] = useState<ReactElement>();
 
-  const contentStyle = useMemo(() => {
-    return css`
-            max-width: 512px;
-            width: 100vw;
-            max-height: 95%;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        `;
-  }, []);
-
-  const disclaimerText = useMemo(() => {
-    return "Financial markets are complex. The trading and holding of ⛏ The Mining Company tokens are at the risk of the token holder. ⛏ The Mining Company does not provide any financial advice and does not make any recommendations regarding the purchase or sale of any financial assets. ⛏ The Mining Company does not guarantee the performance of any financial assets and does not guarantee the value of any financial assets.";
-  }, []);
+  useEffect(() => {
+    try {
+      if (query.size !== 1) {
+        throw new Error();
+      }
+      const key = query.keys().next().value as unknown;
+      if (typeof key !== "string") {
+        throw new Error();
+      }
+      const collectionMint = address(key);
+      setContent(<Details collection={collectionMint} />);
+    } catch (error) {
+      router.replace(path);
+      setContent(<List />);
+    }
+  }, [query, publicKey, path, router]);
 
   return (
-    <div css={blockStyle}>
-      <div css={contentStyle}>
-        <Suspense>{content}</Suspense>
-        <Disclaimer>{disclaimerText}</Disclaimer>
+    <div className="flex flex-1 items-center justify-center w-screen overflow-y-auto">
+      <div className="relative max-w-lg w-screen h-full flex flex-col items-center justify-center gap-4">
+        {content}
       </div>
     </div>
   );
-};
-
-export default Content;
+}

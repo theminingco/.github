@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js";
+import { Address, address } from "@solana/web3.js";
 import { HttpsError } from "firebase-functions/v2/https";
 
 export class Parsable {
@@ -66,10 +66,10 @@ export class Parsable {
 
   // Sub Types
 
-  public publicKey(): PublicKey {
+  public publicKey(): Address {
     const str = this.string();
     try {
-      return new PublicKey(str);
+      return address(str);
     } catch {
       throw new HttpsError("invalid-argument", "Argument is not a valid public key.");
     }

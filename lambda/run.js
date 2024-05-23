@@ -1,6 +1,4 @@
-/* eslint-disable */
 const { spawn } = require("child_process");
-const fetch = require("node-fetch");
 
 const triggerFunction = async () => {
     let retryCount = 0;
@@ -15,7 +13,7 @@ const triggerFunction = async () => {
 };
 
 const main = async () => {
-    const proc = spawn("npx", ["firebase", "functions:shell", "-p", "2345"]);
+    const proc = spawn("yarn", ["firebase", "functions:shell", "-p", "2345"]);
     proc.stdout.pipe(process.stdout);
     proc.stderr.pipe(process.stderr);
     await new Promise((resolve) => setTimeout(resolve, 5000));

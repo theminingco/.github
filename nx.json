@@ -14,16 +14,7 @@
     },
     "start": {
       "dependsOn": ["build"]
-    },
-    "lint": {
-      "dependsOn": ["^build"]
-    },
-    "lint:fix": {
-      "dependsOn": ["^build"]
     }
-  },
-  "affected": {
-    "defaultBase": "main"
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }

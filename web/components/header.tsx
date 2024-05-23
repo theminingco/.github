@@ -1,70 +1,63 @@
 import type { ReactElement } from "react";
-import React, { useCallback, useMemo, useEffect, lazy } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { usePopup } from "../hooks/popup";
-import { useFirebase } from "../hooks/firebase";
-import { css } from "@emotion/react";
-import { MinorButton } from "../components/button";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { wait } from "@theminingco/core";
-import { useNavigation } from "../hooks/navigation";
+import { useCluster } from "../hooks/cluster";
+import { useWallet } from "../hooks/wallet";
+import { useBalance } from "../hooks/balance";
+import dynamic from "next/dynamic";
+import Button from "../components/button";
+import Link from "next/link";
+import { shortAddress } from "@theminingco/core/lib/address";
+import { Noto_Emoji } from "next/font/google";
+import clsx from "clsx";
 
-const Connect = lazy(async () => import("./connect"));
+const Connect = dynamic(async () => import("./connect"));
 
-const Header = (): ReactElement => {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { publicKey, disconnect } = useWallet();
-  const { logEvent } = useFirebase();
-  const { isHome, openHome } = useNavigation();
-  const { openPopup, closePopup, popup } = usePopup();
+const fonts = Noto_Emoji({
+  weight: "variable",
+  subsets: ["emoji"],
+});
+
+export default function Header(): ReactElement {
+  const { publicKey } = useWallet();
+  const { balance } = useBalance();
+  const { cluster } = useCluster();
+  const { openPopup, closePopup } = usePopup();
 
   const connectText = useMemo(() => {
-    return publicKey == null ? "Connect" : "Disconnect";
-  }, [publicKey]);
+    if (publicKey == null) { return "Connect"; }
+    const key = shortAddress(publicKey);
+    return `${key} (◎${balance.toFixed(2)})`;
+  }, [publicKey, balance]);
 
-  const backText = useMemo(() => {
-    return isHome ? "" : "arrow_back_ios_new";
-  }, [isHome]);
+  const clusterText = useMemo(() => {
+    switch (cluster) {
+      case "testnet": return "TESTNET";
+      case "devnet": return "DEVNET";
+      case "localnet": return "LOCALNET";
+      default: return null;
+    }
+  }, [cluster]);
 
   useEffect(() => {
-    // FIXME: an imperfect solution to detect a Connect popup.
-    if (popup?.type === "div") { return; }
-    closePopup();
+    if (publicKey != null) {
+      closePopup();
+    }
   }, [publicKey, closePopup]);
 
   const loginPressed = useCallback(() => {
-    if (publicKey == null) {
-      logEvent("connect_open");
-      openPopup(<Connect />);
-    } else {
-      wait(200)
-        .then(disconnect)
-        .catch(() => { /* Ignore error */ });
-      logEvent("disconnect");
-    }
-  }, [publicKey, disconnect, openPopup, logEvent]);
-
-  const iconStyle = useMemo(() => {
-    return css`
-            font-family: "Material Icons";
-        `;
-  }, []);
-
-  const blockStyle = useMemo(() => {
-    return css`
-            width: 100vw;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: #e5e5e5;
-        `;
-  }, []);
+    openPopup(<Connect />);
+  }, [publicKey, openPopup]);
 
   return (
-    <div css={blockStyle}>
-      <MinorButton css={iconStyle} onClick={openHome}>{backText}</MinorButton>
-      <MinorButton onClick={loginPressed}>{connectText}</MinorButton>
+    <div className="relative w-full flex items-center justify-between">
+      <Link className="p-1 mx-3" href="/">
+        <span className={clsx("text-3xl", fonts.className)}>⛏</span>
+      </Link>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{clusterText}</div>
+      <Button className="px-4 py-2 m-2 font-bold uppercase" onClick={loginPressed}>
+        {connectText}
+      </Button>
     </div>
   );
-};
-
-export default Header;
+}

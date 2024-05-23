@@ -1,6 +1,5 @@
 
-const updateTokenMetadata = async (): Promise<void> => {
+export default async function updateTokenMetadata(): Promise<void> {
+  // TODO:
   return Promise.resolve();
-};
-
-export default updateTokenMetadata;
+}

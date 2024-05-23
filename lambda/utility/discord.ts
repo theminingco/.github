@@ -8,7 +8,7 @@ interface Webhook {
   readonly block: Set<string> | Array<string>;
 }
 
-const sendWebhook = async (hook: Webhook): Promise<void> => {
+async function sendWebhook(hook: Webhook): Promise<void> {
   const webhookUrl = discordWebhook.value();
   const blockSet = new Set(hook.block);
   const fields = Object.entries(hook.fields).map(([name, value]) => ({ name, value, inline: !blockSet.has(name) }));
@@ -19,9 +19,9 @@ const sendWebhook = async (hook: Webhook): Promise<void> => {
         title: hook.title,
         description,
         color: hook.color,
-        fields
-      }
-    ]
+        fields,
+      },
+    ],
   });
 
   if (webhookUrl === "") {
@@ -30,37 +30,37 @@ const sendWebhook = async (hook: Webhook): Promise<void> => {
     await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: data
+      body: data,
     });
   }
-};
+}
 
-export const sendInfo = async (title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> => {
+export async function sendInfo(title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> {
   await sendWebhook({
     title,
     description,
     color: 0x2d55cc,
     fields,
-    block
+    block,
   });
-};
+}
 
-export const sendWarning = async (title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> => {
+export async function sendWarning(title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> {
   await sendWebhook({
     title,
     description,
     color: 0xf99244,
     fields,
-    block
+    block,
   });
-};
+}
 
-export const sendError = async (title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> => {
+export async function sendError(title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> {
   await sendWebhook({
     title,
     description,
     color: 0xff4041,
     fields,
-    block
+    block,
   });
-};
+}

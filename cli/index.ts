@@ -5,22 +5,22 @@ import { initialize } from "./utility/config";
 
 type Handler = () => Promise<void>;
 
-const handler = (file: string): Handler => {
+function handler(file: string): Handler {
   return async () => {
     const command = await import(file) as { default: Handler };
     await command.default();
   };
-};
+}
 
-const subhandler = (subcommands: Array<Choice<Handler>>): Handler => {
+function subhandler(subcommands: Array<Choice<Handler>>): Handler {
   return async () => {
     const command = await promptChoice("Select a subinstruction to execute", subcommands);
     await command();
   };
-};
+}
 
 const utilCommands: Array<Choice<Handler>> = [
-  { title: "keypair", description: "Keypair utilities.", value: handler("./commands/keypair") }
+  { title: "keypair", description: "Keypair utilities.", value: handler("./commands/keypair") },
 ];
 
 const commands: Array<Choice<Handler>> = [
@@ -28,7 +28,7 @@ const commands: Array<Choice<Handler>> = [
   { title: "update", description: "Update the metadata of an existing ⛏ The Mining Company token.", value: handler("./commands/update") },
   { title: "remove", description: "Remove an existing ⛏ The Mining Company token from the collection.", value: handler("./commands/remove") },
   { title: "mint", description: "Remint an existing ⛏ The Mining Company token that has been burned.", value: handler("./commands/mint") },
-  { title: "utilities", description: "Collection of utilities", value: subhandler(utilCommands) }
+  { title: "utilities", description: "Collection of utilities", value: subhandler(utilCommands) },
 ];
 
 initialize()

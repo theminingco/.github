@@ -1,27 +1,29 @@
-import type { Creator } from "@metaplex-foundation/js";
-import type { PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { SystemProgram } from "@solana/web3.js";
+import { getTransferSolInstruction } from "@solana-program/system";
+import { IInstruction, TransactionSigner } from "@solana/web3.js";
+import { Creator } from "@theminingco/core";
+
 
 interface NftWithFee {
   readonly sellerFeeBasisPoints: number;
   readonly creators: Array<Creator>;
 }
 
-export const createFeeInstructions = (payer: PublicKey, price: number, nftOrSft: NftWithFee): Array<TransactionInstruction> => {
-  const instructions: Array<TransactionInstruction> = [];
+export function createFeeInstructions(payer: TransactionSigner, price: bigint, nftOrSft: NftWithFee):  Array<IInstruction> {
+  const instructions: Array<IInstruction> = [];
   const feeBps = nftOrSft.sellerFeeBasisPoints;
 
   for (const creator of nftOrSft.creators) {
     if (creator.share === 0) { continue; }
     const feeReceiver = creator.address;
-    const feeAmount = feeBps * creator.share * price / 1000000;
+    const feeAmount = BigInt(feeBps * creator.share) * price / 1000000n;
 
-    const instruction = SystemProgram.transfer({
-      fromPubkey: payer,
-      toPubkey: feeReceiver,
-      lamports: feeAmount
-    });
-    instructions.push(instruction);
+    instructions.push(
+      getTransferSolInstruction({
+        source: payer,
+        destination: feeReceiver,
+        amount: feeAmount,
+      })
+    );
   }
   return instructions;
-};
+}

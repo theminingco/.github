@@ -4,7 +4,7 @@ This page is used to inform visitors regarding our policies with the collection,
 
 If you choose to use ⛏ The Mining Company, then you agree to the collection and use of information in relation to this policy. The personal information that we collect is used for providing and improving ⛏ The Mining Company. We will not use or share your information with anyone except as described in this Privacy Policy.
 
-The terms used in this Privacy Policy have the same meanings as in the Terms and Conditions, which is accessible [here](https://github.com/theminingco/.github/blob/main/TERMS.md), unless otherwise defined in this Privacy Policy.
+The terms used in this Privacy Policy have the same meanings as in the Terms and Conditions, which is accessible [here](https://raw.githubusercontent.com/theminingco/.github/main/TERMS.md), unless otherwise defined in this Privacy Policy.
 
 
 ## Information Collection and Use
@@ -47,6 +47,6 @@ We may update our Privacy Policy from time to time. Thus, you are advised to rev
 
 ## Contact Us
 
-If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us through any of our contact [channels](https://github.com/theminingco/.github/blob/main/CONTACT.md).
+If you have any questions or suggestions about our Terms of Service, do not hesitate to contact us.
 
 *Copyright © 2023 ⛏ The Mining Company*

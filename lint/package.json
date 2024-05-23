@@ -1,0 +1,31 @@
+{
+  "name": "@theminingco/lint",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint .",
+    "format": "eslint --fix ."
+  },
+  "dependencies": {
+    "@stylistic/eslint-plugin": "^2.1.0",
+    "@theminingco/core": "*",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "eslint": "^9.3.0",
+    "eslint-plugin-react": "^7.34.1"
+  },
+  "nx": {
+    "targets": {
+      "lint": {
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "format": {
+        "dependsOn": [
+          "^build"
+        ]
+      }
+    }
+  }
+}

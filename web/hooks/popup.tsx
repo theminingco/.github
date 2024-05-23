@@ -1,65 +1,34 @@
 import type { PropsWithChildren, ReactElement } from "react";
 import React, { Suspense, createContext, useCallback, useContext, useMemo, useState } from "react";
-import { css } from "@emotion/react";
+import clsx from "clsx";
+import Spinner from "../components/spinner";
 
-interface UsePopup {
+export interface UsePopup {
   openPopup: (node: ReactElement, closeOnBackground?: boolean) => void;
   closePopup: () => void;
+  setCloseOnBackground: (closesOnBackground: boolean) => void;
   readonly popup: ReactElement | null;
 }
 
-const Context = createContext<UsePopup>({
+export const PopupContext = createContext<UsePopup>({
   openPopup: () => { /* Empty */ },
   closePopup: () => { /* Empty */ },
-  popup: null
+  setCloseOnBackground: () => { /* Empty */ },
+  popup: null,
 });
 
-export const usePopup = (): UsePopup => {
-  return useContext(Context);
-};
+export function usePopup(): UsePopup {
+  return useContext(PopupContext);
+}
 
-const PopupProvider = (props: PropsWithChildren): ReactElement => {
+export default function PopupProvider(props: PropsWithChildren): ReactElement {
   const [popup, setPopup] = useState<ReactElement | null>(null);
-  const [backgroundClick, setBackgroundClick] = useState(false);
+  const [closeOnBackground, setCloseOnBackground] = useState(false);
 
-  const overlayStyle = useMemo(() => {
-    return css`
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            height: 100vh;
-            width: 100vw;
-            background-color: #00000020;
-        `;
-  }, []);
-
-  const backgroundStyle = useMemo(() => {
-    return css`
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #f1f1ef;
-            border-radius: 24px;
-            filter: drop-shadow(4px 4px 20px #00000020);
-            max-height: 70vh;
-            width: 70vw;
-            max-width: 512px;
-            background-color: #2f323a;
-            padding: 16px 32px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            &::-webkit-scrollbar-track {
-                margin: 16px 0;
-            }
-        `;
-  }, []);
-
-  const openPopup = useCallback((node: ReactElement, closeOnBackground = true) => {
+  const openPopup = useCallback((node: ReactElement, closesOnBackground = true) => {
     setPopup(node);
-    setBackgroundClick(closeOnBackground);
-  }, [setPopup]);
+    setCloseOnBackground(closesOnBackground);
+  }, [setPopup, setCloseOnBackground]);
 
   const closePopup = useCallback(() => {
     setPopup(null);
@@ -67,26 +36,38 @@ const PopupProvider = (props: PropsWithChildren): ReactElement => {
 
   const popupNode = useMemo(() => {
     if (popup == null) { return null; }
-    const onClick = backgroundClick ? closePopup : undefined;
+    const onClick = closeOnBackground ? closePopup : undefined;
     return (
-      <Suspense>
-        <div css={overlayStyle} onClick={onClick} />
-        <div css={backgroundStyle}>{popup}</div>
-      </Suspense>
+      <>
+        <div
+          className="fixed z-40 top-0 left-0 w-screen h-screen bg-black bg-opacity-10"
+          onClick={onClick}
+        />
+        <div className={clsx(
+          "fixed z-50 top-1/2 left-1/2 p-4 -translate-x-1/2 -translate-y-1/2",
+          "flex flex-col items-center",
+          "min-h-60 max-h-[90%] w-11/12 max-w-lg",
+          "overflow-y-auto overflow-x-hidden",
+          "scrollbar-track-gray-100 scrollbar-thumb-gray-300",
+          "bg-slate-800 text-slate-100",
+          "rounded-xl shadow-2xl",
+        )}>
+          <Suspense fallback={<Spinner className="my-auto" />}>
+            {popup}
+          </Suspense>
+        </div>
+      </>
     );
-  }, [popup, backgroundClick]);
+  }, [popup, closeOnBackground]);
 
   const context = useMemo(() => {
-    return { openPopup, closePopup, popup };
-  }, [openPopup, closePopup, popup]);
+    return { openPopup, closePopup, setCloseOnBackground, popup };
+  }, [openPopup, closePopup, setCloseOnBackground, popup]);
 
   return (
-    <Context.Provider value={context}>
+    <PopupContext.Provider value={context}>
       {props.children}
       {popupNode}
-    </Context.Provider>
+    </PopupContext.Provider>
   );
-};
-
-export default PopupProvider;
-
+}

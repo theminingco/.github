@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+#legal p {
+    margin-bottom: 1rem;
+}
+
+#legal h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+#legal h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+#legal h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+#legal h4 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+#legal h5 {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+#legal h6 {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+#legal a {
+    text-decoration: underline;
+}

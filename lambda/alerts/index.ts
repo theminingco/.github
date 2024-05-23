@@ -9,7 +9,7 @@ type AlertHandler = (request: AlertEvent) => Promise<unknown>;
 type AlertFunction = CloudFunction<AlertEvent>;
 
 const alertsSpec = [
-  { file: "uptime", topic: "uptime-alert" }
+  { file: "uptime", topic: "uptime-alert" },
 ];
 
 export const alerts = alertsSpec

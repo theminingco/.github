@@ -1,7 +1,9 @@
 {
   "name": "@theminingco/cli",
+  "version": "0.0.0",
+  "license": "UNLICENSED",
   "bin": {
-    "theminingco": "./lib/index.js"
+    "tmc": "./lib/index.js"
   },
   "files": [
     "lib",
@@ -14,11 +16,9 @@
     "clean": "rm -r lib || true"
   },
   "dependencies": {
-    "@metaplex-foundation/js": "^0.20.1",
-    "@project-serum/anchor": "^0.26.0",
-    "@solana/web3.js": "^1.91.1",
+    "@solana/web3.js": "^2.0.0-preview.3",
     "@theminingco/core": "*",
-    "bs58": "^5.0.0",
-    "prompts": "^2.4.2"
+    "prompts": "^2.4.2",
+    "typescript": "^5.4.5"
   }
 }

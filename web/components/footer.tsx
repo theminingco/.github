@@ -1,60 +1,75 @@
 import type { ReactElement } from "react";
-import React, { useCallback, useMemo } from "react";
-import { useWindowSize } from "../hooks/size";
+import React, { useCallback, useEffect, useState } from "react";
+import { faXTwitter, faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faFileContract, faShieldHalved } from "@fortawesome/free-solid-svg-icons";
+import Button from "./button";
+import FontIcon from "./font";
+import { usePopup } from "../hooks/popup";
+import { cachedFetch } from "@theminingco/core/lib/cache";
 import { useFirebase } from "../hooks/firebase";
-import { css } from "@emotion/react";
-import { LinkButton } from "../components/button";
+import Spinner from "./spinner";
 
-const Footer = (): ReactElement => {
-  const { width } = useWindowSize();
-  const { logEvent } = useFirebase();
+const parseMd = async (md: string) => {
+  const marked = await import("marked");
+  const renderer = new marked.Renderer();
+  renderer.link = (href, title, text) => {
+    return `<a target="_blank" rel="noreferrer noopener" href="${href}" title="${title}">${text}</a>`;
+  };
+  return marked.parse(md, { renderer });
+}
 
-  const openLink = useCallback((file: string) => {
-    const filename = file.toUpperCase();
-    const url = `https://github.com/theminingco/.github/blob/main/${filename}.md`;
-    logEvent(`footer_${file}`);
-    window.open(url, "_blank", "noopener,noreferrer");
-  }, [logEvent]);
+const baseUrl = "https://raw.githubusercontent.com/theminingco/.github/main/";
+function HtmlNode(props: { slug: string }): ReactElement {
+  const [html, setHtml] = useState<string>();
+  const { logError } = useFirebase();
 
-  const contactClicked = useCallback(() => openLink("contact"), [openLink]);
-  const termsClicked = useCallback(() => openLink("terms"), [openLink]);
-  const privacyClicked = useCallback(() => openLink("privacy"), [openLink]);
+  useEffect(() => {
+    const file = `${props.slug.toUpperCase()}.md`;
+    cachedFetch(`${baseUrl}${file}`)
+      .then(parseMd)
+      .then(setHtml)
+      .catch(logError);
+  }, [props.slug]);
 
-  const isPhone = useMemo(() => {
-    return width < 768;
-  }, [width]);
-
-  const blockStyle = useMemo(() => {
-    return css`
-            font-size: 12px;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            color: #e5e5e5;
-        `;
-  }, []);
-
-  const leftStyle = useMemo(() => {
-    return css`
-            padding: 6px;
-        `;
-  }, []);
-
-  const spacerStyle = useMemo(() => {
-    return css`
-            flex: 1;
-        `;
-  }, []);
+  if (html == null) {
+    return <Spinner className="my-auto" />;
+  }
 
   return (
-    <div css={blockStyle}>
-      <span css={leftStyle}>{isPhone ? "© 2023" : "Copyright © 2023 ⛏ The Mining Company" }</span>
-      <span css={spacerStyle} />
-      <LinkButton onClick={contactClicked}>{isPhone ? "Contact" : "Contact"}</LinkButton>
-      <LinkButton onClick={termsClicked}>{isPhone ? "ToS" : "Terms of Service"}</LinkButton>
-      <LinkButton onClick={privacyClicked}>{isPhone ? "PP" : "Privacy Policy"}</LinkButton>
+    <div
+      id="legal"
+      className="text-pretty"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
+export default function Footer(): ReactElement {
+  const { openPopup } = usePopup();
+
+  const openMd = useCallback((slug: string) => {
+    openPopup(<HtmlNode slug={slug} />);
+  }, [openPopup]);
+
+  return (
+    <div className="text-sm flex justify-center mx-1">
+      <span className="p-1 grow">Copyright © 2023 ⛏ The Mining Company</span>
+      <span className="grow" />
+      <Button href="https://twitter.com/theminingco" className="p-1 px-2" aria-label="Twitter">
+        <FontIcon className="h-full" icon={faXTwitter} />
+      </Button>
+      <Button href="https://discord.gg/w9DpyG6ddG" className="p-1 px-2" aria-label="Discord">
+        <FontIcon className="h-full" icon={faDiscord} />
+      </Button>
+      <Button href="https://github.com/theminingco" className="p-1 px-2" aria-label="GitHub">
+        <FontIcon className="h-full" icon={faGithub} />
+      </Button>
+      <Button onClick={() => openMd("terms")} className="p-1 px-2" aria-label="Terms of Service">
+        <FontIcon className="h-full" icon={faFileContract} />
+      </Button>
+      <Button onClick={() => openMd("privacy")} className="p-1 px-2" aria-label="Privacy Policy">
+        <FontIcon className="h-full" icon={faShieldHalved} />
+      </Button>
     </div>
   );
-};
-
-export default Footer;
+}

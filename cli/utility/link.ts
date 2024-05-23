@@ -1,22 +1,23 @@
+import { shortAddress } from "@theminingco/core";
 import { cluster } from "./config";
-import type { PublicKey } from "@solana/web3.js";
+import type { Address } from "@solana/web3.js";
 
-const clusterQuery = (): string => {
+function clusterQuery(): string {
   if (cluster === "mainnet-beta") { return ""; }
   return `?cluster=${cluster}`;
-};
+}
 
-export const link = (str: string, url: string): string => {
-  return `\u{1b}]8;;${url}\u{7}${str}\u{1b}]8;;\u{7}`;
-};
+export function link(url: string, str?: string): string {
+  const content = str ?? url;
+  return `\u{1b}]8;;${url}\u{7}${content}\u{1b}]8;;\u{7}`;
+}
 
-export const linkTransaction = (hash: string, text?: string): string => {
-  const content = text ?? hash;
-  return link(content, `https://solscan.io/tx/${hash}${clusterQuery()}`);
-};
+export function linkTransaction(hash: string, text?: string): string {
+  const content = text ?? shortAddress(hash, 8);
+  return link(`https://solscan.io/tx/${hash}${clusterQuery()}`, content);
+}
 
-export const linkAccount = (key: PublicKey, text?: string): string => {
-  const address = key.toBase58();
-  const content = text ?? address;
-  return link(content, `https://solscan.io/address/${address}${clusterQuery()}`);
-};
+export function linkAccount(key: Address, text?: string): string {
+  const content = text ?? shortAddress(key);
+  return link(`https://solscan.io/address/${key.toString()}${clusterQuery()}`, content);
+}

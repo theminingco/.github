@@ -1,56 +1,50 @@
-import styled from "@emotion/styled";
+import clsx from "clsx";
+import React from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, PropsWithChildren, ReactElement } from "react";
 
-export const MajorButton = styled.button`
-    min-height: 40px;
-    padding: 0 20px;
-    background-color: #36456e;
-    font-weight: bold;
-    margin: 8px 16px;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: transform 300ms ease-out 100ms;
-    &:hover {
-        transform: translateY(-2px);
-    }
-`;
+interface BaseProps extends PropsWithChildren {
+  className?: string;
+  outerClassName?: string;
+}
 
-export const MinorButton = styled.button`
-    min-height: 40px;
-    padding: 0 20px;
-    font-weight: bold;
-    margin: 8px 16px;
-    cursor: pointer;
-    transition: transform 300ms ease-out 100ms;
-    &:hover {
-        transform: translateY(-2px);
-    }
-`;
+type ButtonProps = BaseProps & ButtonHTMLAttributes<HTMLButtonElement>;
+type LinkProps = BaseProps & AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
 
-export const LinkButton = styled.button`
-    padding: 6px;
-    font-size: 12px;
-    font-weight: 400;
-    cursor: pointer;
-    &:hover {
-        text-decoration: underline;
-    }
-`;
+type Props = ButtonProps | LinkProps;
 
-export const IconButton = styled.button`
-    padding: 0 6px;
-    margin: 4px;
-    font-size: 16px;
-    font-weight: bold;
-    font-family: "Material Icons";
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    background-color: #e5e5e5;
-    color: #2f323a;
-    text-align: center;
-    &:hover {
-        background-color: #b6b6b6;
-    }
-`;
+export default function Button(props: Props): ReactElement {
+  const { children, className, outerClassName, ...rest } = props;
 
+  let disabled = false;
+  if ("disabled" in rest) {
+    disabled = rest.disabled ?? false;
+  }
+
+  const content = (
+    <div className={clsx(
+      "block w-full h-full transition-transform",
+      disabled ? "" : "group-hover:-translate-y-1",
+      className,
+    )}>
+      {children}
+    </div>
+  );
+
+  if ("href" in rest) {
+    delete rest.target;
+    delete rest.rel;
+    return (
+      <a {...rest} className={clsx("group disabled:cursor-not-allowed", outerClassName)} target="_blank" rel="noreferrer noopener" >
+        {content}
+      </a>
+    );
+  }
+
+  delete rest.type;
+  return (
+    <button {...rest} className={clsx("group disabled:cursor-not-allowed", outerClassName)} type="button">
+      {content}
+    </button>
+  );
+
+}

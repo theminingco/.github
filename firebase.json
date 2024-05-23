@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "theminingco-xyz",
-    "public": "web/dist",
+    "public": "web/lib",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -30,7 +30,7 @@
       "firebase-debug.*.log"
     ],
     "predeploy": [
-      "npm run build lambda"
+      "yarn build lambda"
     ]
   }
 }

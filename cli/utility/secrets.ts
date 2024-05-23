@@ -1,8 +1,8 @@
 import { exec } from "child_process";
 
-export const getSecret = async (name: string): Promise<string> => {
+export async function getSecret(name: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    exec(`npx firebase functions:secrets:access ${name}`, (error, stdout) => {
+    exec(`yarn firebase functions:secrets:access ${name}`, (error, stdout) => {
       if (error) {
         reject(new Error(`Secret "${name}" not found.`));
       } else {
@@ -10,4 +10,4 @@ export const getSecret = async (name: string): Promise<string> => {
       }
     });
   });
-};
+}
