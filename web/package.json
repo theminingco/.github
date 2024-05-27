@@ -20,7 +20,7 @@
     "@wallet-standard/core": "^1.0.3",
     "autoprefixer": "^10.4.19",
     "clsx": "^2.1.1",
-    "firebase": "^10.12.1",
+    "firebase": "^10.12.2",
     "marked": "^12.0.2",
     "next": "^14.2.3",
     "postcss": "^8.4.38",
