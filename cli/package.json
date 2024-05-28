@@ -16,7 +16,7 @@
     "clean": "rm -r lib || true"
   },
   "dependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3.20240524063508.71cba9915ce30b1bac11e4cac1afa0150e96536a",
+    "@solana/web3.js": "^2.0.0-preview.3.20240528185959.a97c34b61532157d914ca975d5c90fdd5e12468c",
     "@theminingco/core": "*",
     "prompts": "^2.4.2",
     "typescript": "^5.4.5"
