@@ -18,7 +18,7 @@
     "@solana-program/compute-budget": "^0.3.2",
     "@solana-program/system": "^0.3.2",
     "@solana-program/token": "^0.1.4",
-    "@solana/web3.js": "^2.0.0-preview.3.20240524063508.71cba9915ce30b1bac11e4cac1afa0150e96536a",
+    "@solana/web3.js": "^2.0.0-preview.3.20240531105317.6340744e5cf0ea91ae677f381d5a187638a19597",
     "typescript": "^5.4.5"
   }
 }
