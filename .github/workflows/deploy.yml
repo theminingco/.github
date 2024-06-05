@@ -11,7 +11,7 @@ jobs:
   npm:
     strategy:
       matrix:
-        package: [core, cli]
+        package: [core, cli, metadata]
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:

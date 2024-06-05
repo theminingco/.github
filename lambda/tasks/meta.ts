@@ -1,49 +1,73 @@
-import { Metadata, getNftsByUpdateAuthority } from "@theminingco/core";
+import { getAssetsByUpdateAuthority, getCollectionsByUpdateAuthority } from "@theminingco/core";
 import { BatchWriter, poolCollection, tokenCollection } from "../utility/firebase";
 import { rpc, signer } from "../utility/solana";
 
-async function updatePoolMetadata(allTokens: Array<Metadata>): Promise<void> {
-  const snaphot = await poolCollection.get();
+async function updatePoolMetadata(): Promise<void> {
+  const pools = await getCollectionsByUpdateAuthority(rpc, signer.address);
+  const snaphot = await poolCollection
+    .select("id", "address")
+    .get();
   const existing = new Map(snaphot.docs.map(x => [x.data().address, x.id]));
 
-  const pools = allTokens.filter(x => x.collection != null && x.collectionDetails != null);
   const batch = new BatchWriter();
 
   for (const pool of pools) {
-    const supply = Number(pool.collectionDetails?.size ?? 0);
-    const docId = existing.get(pool.mint.toString());
+    const docId = existing.get(pool.address.toString());
     if (docId == null) {
       const ref = poolCollection.doc();
-      const price = 0;
-      const available = 0;
-      await batch.create(ref, { address: pool.mint.toString(), name: pool.name, supply, uri: pool.uri, price, available, priceTimestamp: 0 });
+      await batch.create(ref, {
+        address: pool.address.toString(),
+        name: pool.name,
+        supply: pool.currentSize,
+        uri: pool.uri,
+        price: 0,
+        available: 0,
+        priceTimestamp: 0
+      });
     } else {
       const ref = poolCollection.doc(docId);
-      await batch.update(ref, { name: pool.name, supply, uri: pool.uri });
+      await batch.update(ref, {
+        name: pool.name,
+        supply: pool.currentSize,
+        uri: pool.uri
+      });
     }
   }
 
   await batch.finalize();
 }
 
-async function updateTokenMetadata(allTokens: Array<Metadata>): Promise<void> {
-  const snapshot = await tokenCollection.get();
+async function updateTokenMetadata(): Promise<void> {
+  const tokens = await getAssetsByUpdateAuthority(rpc, signer.address);
+  const snapshot = await tokenCollection
+    .select("id", "address")
+    .get();
   const existing = new Map(snapshot.docs.map(x => [x.data().address, x.id]));
-
-  const tokens = allTokens.filter(x => x.collection != null && x.collectionDetails == null);
 
   const batch = new BatchWriter();
 
   for (const token of tokens) {
-    const docId = existing.get(token.mint.toString());
-    const pool = token.collection?.key.toString() ?? "";
+    const docId = existing.get(token.address.toString());
+    if (token.updateAuthority.__kind !== "Collection") {
+      continue;
+    }
+    const pool = token.updateAuthority.fields[0].toString();
     if (docId == null) {
       const ref = tokenCollection.doc();
-      const isAvailable = false;
-      await batch.create(ref, { address: token.mint.toString(), collection: pool, name: token.name, uri: token.uri, isAvailable });
+      await batch.create(ref, {
+        address: token.address.toString(),
+        collection: pool,
+        name: token.name,
+        uri: token.uri,
+        owner: token.owner.toString()
+      });
     } else {
       const ref = tokenCollection.doc(docId);
-      await batch.update(ref, { collection: pool, name: token.name, uri: token.uri });
+      await batch.update(ref, {
+        collection: pool,
+        name: token.name,
+        uri: token.uri
+      });
     }
   }
 
@@ -51,10 +75,8 @@ async function updateTokenMetadata(allTokens: Array<Metadata>): Promise<void> {
 }
 
 export default async function updateMetadata(): Promise<void> {
-  const allTokens = await getNftsByUpdateAuthority(rpc, signer.address);
-
-  await Promise.all([
-    updatePoolMetadata(allTokens),
-    updateTokenMetadata(allTokens),
+  await Promise.allResolved([
+    updatePoolMetadata(),
+    updateTokenMetadata(),
   ]);
 }

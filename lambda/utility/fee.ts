@@ -1,25 +1,31 @@
 import { getTransferSolInstruction } from "@solana-program/system";
-import { IInstruction, TransactionSigner } from "@solana/web3.js";
-import { Creator } from "@theminingco/core";
+import { Address, IInstruction, TransactionSigner, getBase64Decoder, getBase64Encoder, getEncodedSize } from "@solana/web3.js";
+import { rpc } from "./solana";
+import { HttpsError } from "firebase-functions/v2/https";
+import { PluginType, getCollectionV1Decoder, getCollectionV1Encoder, getPluginHeaderV1Decoder, getPluginRegistryV1Decoder, getRoyaltiesDecoder } from "@theminingco/metadata";
 
+export async function createFeeInstructions(props: { payer: TransactionSigner; amount: bigint; collection: Address }):  Promise<Array<IInstruction>> {
+  const accountInfo = await rpc.getAccountInfo(props.collection).send();
+  if (!accountInfo.value) { throw new HttpsError("invalid-argument", "Bad collection"); }
+  const data = getBase64Encoder().encode(accountInfo.value.data[0]);
+  const collection = getCollectionV1Decoder().decode(data);
+  const collectionSize = getEncodedSize(collection, getCollectionV1Encoder());
+  const pluginHeader = getPluginHeaderV1Decoder().decode(data, collectionSize);
+  const pluginRegistry = getPluginRegistryV1Decoder().decode(data, Number(pluginHeader.pluginRegistryOffset));
+  const royaltiesRegistry = pluginRegistry.registry.find((plugin) => plugin.pluginType === PluginType.Royalties);
+  if (!royaltiesRegistry) { return []; }
+  const royalties = getRoyaltiesDecoder().decode(data, Number(royaltiesRegistry.offset));
 
-interface NftWithFee {
-  readonly sellerFeeBasisPoints: number;
-  readonly creators: Array<Creator>;
-}
-
-export function createFeeInstructions(payer: TransactionSigner, price: bigint, nftOrSft: NftWithFee):  Array<IInstruction> {
   const instructions: Array<IInstruction> = [];
-  const feeBps = nftOrSft.sellerFeeBasisPoints;
 
-  for (const creator of nftOrSft.creators) {
-    if (creator.share === 0) { continue; }
+  for (const creator of royalties.creators) {
+    if (creator.percentage === 0) { continue; }
     const feeReceiver = creator.address;
-    const feeAmount = BigInt(feeBps * creator.share) * price / 1000000n;
+    const feeAmount = BigInt(royalties.basisPoints * creator.percentage) * props.amount / 1000000n;
 
     instructions.push(
       getTransferSolInstruction({
-        source: payer,
+        source: props.payer,
         destination: feeReceiver,
         amount: feeAmount,
       })

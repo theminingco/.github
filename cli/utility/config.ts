@@ -17,3 +17,7 @@ export async function initialize(): Promise<void> {
   const seed = getBase58Encoder().encode(solanaWallet).subarray(0, 32);
   signer = await createKeyPairSignerFromBytes(seed);
 }
+
+export const assetSymbol = "tmc";
+export const assetDescription = "Keep on digging...";
+export const assetUrl = "https://theminingco.xyz/";

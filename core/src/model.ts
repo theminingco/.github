@@ -12,7 +12,7 @@ export interface Token {
   readonly address: string;
   readonly collection: string;
   readonly name: string;
-  readonly isAvailable: boolean;
+  readonly owner: string;
   readonly uri: string;
 }
 

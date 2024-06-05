@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node run.js",
-    "clean": "rm -r lib || true"
+    "clean": "rimraf lib"
   },
   "dependencies": {
     "@solana-program/memo": "^0.3.2",

@@ -9,13 +9,16 @@ const fonts = Noto_Sans({
   subsets: ["latin"],
 });
 
+// TODO: dynamic from env (from google cloud)
+const rpcUrl = "https://solana-mainnet.g.alchemy.com/v2/cEI9IVd9_paAuyKLsU_zN4UdM-ASnyhq";
+
 export default function Root(props: PropsWithChildren): ReactElement {
   return (
     <html lang="en">
       <head>
         <title>The Mining Company</title>
         <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Wrap fungible tokens in NFTs." />
+        <meta name="description" content="Keep on digging..." />
         <meta name="theme-color" content="#e8eaed" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#3d4043" media="(prefers-color-scheme: dark)" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
@@ -26,12 +29,13 @@ export default function Root(props: PropsWithChildren): ReactElement {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://theminingco.xyz/" />
         <meta property="og:title" content="The Mining Company" />
-        <meta property="og:description" content="Wrap fungible tokens in NFTs." />
+        <meta property="og:description" content="Keep on digging..." />
         <meta property="og:image" content="/preview" />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content="The Mining Company" />
         <meta property="twitter:image" content="/preview" />
-        <meta property="twitter:description" content="Wrap fungible tokens in NFTs." />
+        <meta property="twitter:description" content="Keep on digging..." />
+        <meta property="rpc-url" content={rpcUrl} />
       </head>
       <body className={clsx(
         "w-doc h-doc flex flex-col justify-center",
