@@ -15,9 +15,9 @@
     "clean": "rimraf lib"
   },
   "devDependencies": {
-    "@kinobi-so/nodes-from-anchor": "^0.20.5",
-    "@kinobi-so/renderers-js": "^0.20.5",
-    "kinobi": "^0.20.3",
+    "@kinobi-so/nodes-from-anchor": "^0.20.6",
+    "@kinobi-so/renderers-js": "^0.20.7",
+    "kinobi": "^0.20.4",
     "typescript": "^5.4.5"
   }
 }
