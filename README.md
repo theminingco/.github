@@ -13,13 +13,6 @@ Keep on digging...
 
 This repository consists of a couple of different components that can be run independently of each other. The following is a (non-exhaustive) list of the components and their purpose. The components are tied together using the [Nx](https://nx.dev) build system.
 
-* [Web App](web/README.md)
-* [Command Line Interface (cli)](cli/README.md)
-* [Lambda Runner](lambda/README.md)
-* [Core Library](core/README.md)
-* [Tests](tests/README.md)
-* [Linter](lint/README.md)
-
 ## Commands
 
 All commands should be run from the root of the repository. The commands will try to run a command with the same name for each individual component, skipping the component if that specific command does not exist.
