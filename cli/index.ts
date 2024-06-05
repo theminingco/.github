@@ -24,10 +24,8 @@ const utilCommands: Array<Choice<Handler>> = [
 ];
 
 const commands: Array<Choice<Handler>> = [
-  { title: "create", description: "Create a ⛏ The Mining Company investment pool collection.", value: handler("./commands/create") },
+  { title: "create", description: "Create a ⛏ The Mining Company collection.", value: handler("./commands/create") },
   { title: "update", description: "Update the metadata of an existing ⛏ The Mining Company token.", value: handler("./commands/update") },
-  { title: "remove", description: "Remove an existing ⛏ The Mining Company token from the collection.", value: handler("./commands/remove") },
-  { title: "mint", description: "Remint an existing ⛏ The Mining Company token that has been burned.", value: handler("./commands/mint") },
   { title: "utilities", description: "Collection of utilities", value: subhandler(utilCommands) },
 ];
 

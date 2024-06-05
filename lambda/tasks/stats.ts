@@ -5,7 +5,9 @@ import { poolCollection } from "../utility/firebase";
 import { address } from "@solana/web3.js";
 
 export default async function recordStatistics(): Promise<void> {
-  const snapshot = await poolCollection.get();
+  const snapshot = await poolCollection
+    .select("supply", "available", "price", "address", "name")
+    .get();
 
   const totalValue = snapshot.docs
     .map(doc => (doc.data().supply - doc.data().available) * doc.data().price)
@@ -20,8 +22,8 @@ export default async function recordStatistics(): Promise<void> {
     .map(doc => doc.data().name.split(" "))
     .map(parts => parts[parts.length - 1]);
 
-  const symbols = interval(snapshot.docs.length)
-    .map(i => linkAccount(addresses[i], names[i]))
+  const symbols = snapshot.docs
+    .map((_, i) => linkAccount(addresses[i], names[i]))
     .join(", ");
 
   const fields = {

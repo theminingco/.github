@@ -1,125 +1,104 @@
-import { metaplex, signer } from "../utility/config";
-import { promptConfirm, promptNumber, promptText } from "../utility/prompt";
-import { Address } from "@solana/web3.js";
+import { assetDescription, assetSymbol, assetUrl, rpc, signer } from "../utility/config";
+import { promptConfirm, promptText } from "../utility/prompt";
+import { Address, IInstruction, generateKeyPairSigner } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
 import { homedir } from "os";
-import { readFileSync } from "fs";
-import { creators } from "../utility/meta";
-import { range } from "@theminingco/core";
+import { readFile, readdir } from "fs/promises";
+import { createTransaction, createTransactions, sendAndConfirmTransactions, sendAndConfirmTransaction, uploadFile, Metadata } from "@theminingco/core";
+import { DataState, getCreateCollectionV2Instruction, getCreateV2Instruction } from "@theminingco/metadata";
+import { royaltiesPlugin } from "../utility/royalties";
 
-async function createRootToken(imagePath: string): Promise<Address> {
-  const title = "⛏ The Mining Company";
-  const image = readFileSync(imagePath);
+async function createCollection(collectionName: string, imagePath: string): Promise<Address> {
+  const collectionSigner = await generateKeyPairSigner();
+  const image = await readFile(imagePath);
+  const imageUri = await uploadFile(rpc, image);
+  const metadata: Metadata = {
+    name: collectionName,
+    symbol: assetSymbol,
+    image: imageUri,
+    description: assetDescription,
+    external_url: assetUrl,
+  };
+  const metaUri = await uploadFile(rpc, JSON.stringify(metadata));
 
-  const metadata = await metaplex.nfts().uploadMetadata({
-    name: title,
-    symbol: "theminingco",
-    description: "Keep on digging...",
-    image: toMetaplexFile(image, "image.png"),
-    external_url: "https://theminingco.xyz/",
+  const instruction = getCreateCollectionV2Instruction({
+    collection: collectionSigner,
+    updateAuthority: signer.address,
+    payer: signer,
+    name: collectionName,
+    uri: metaUri,
+    plugins: [royaltiesPlugin()],
+    externalPluginAdapters: null
   });
 
-  const token = await metaplex.nfts().create({
-    name: title,
-    uri: metadata.uri,
-    sellerFeeBasisPoints: 100,
-    tokenStandard: TokenStandard.ProgrammableNonFungible,
-    isCollection: true,
-    primarySaleHappened: true,
-    creators,
-  });
+  const transaction = await createTransaction(rpc, [instruction], signer.address);
+  await sendAndConfirmTransaction(rpc, transaction);
 
-  return token.mintAddress;
+  return collectionSigner.address;
 }
 
-async function createCollectionToken(name: string, imageUri: string, rootCollection: Address): Promise<Address> {
-  const collectionTitle = `⛏ The Mining Company - ${name}`;
-  const image = readFileSync(imageUri);
-  const metadata = await metaplex.nfts().uploadMetadata({
-    name: collectionTitle,
-    symbol: "theminingco",
-    description: "Keep on digging...",
-    image: toMetaplexFile(image, `${name}.png`),
-    external_url: "https://theminingco.xyz/",
-  });
+async function createAssetInstruction(index: number, imagePath: string, collection: Address): Promise<IInstruction> {
+  const assetName = `#${index}`;
+  const assetSigner = await generateKeyPairSigner();
+  const image = await readFile(`${imagePath}/${index}.png`);
+  const imageUri = await uploadFile(rpc, image);
+  const attributes = await readFile(`${imagePath}/${index}.json`);
+  const metadata: Metadata = {
+    name: assetName,
+    symbol: assetSymbol,
+    image: imageUri,
+    description: assetDescription,
+    external_url: assetUrl,
+    attributes: JSON.parse(attributes.toString()),
+  };
+  const metaUri = await uploadFile(rpc, JSON.stringify(metadata));
 
-  const token = await metaplex.nfts().create({
-    name: collectionTitle,
-    uri: metadata.uri,
-    sellerFeeBasisPoints: 100,
-    tokenStandard: TokenStandard.ProgrammableNonFungible,
-    isCollection: true,
-    collection: rootCollection,
-    collectionAuthority: signer,
-    primarySaleHappened: true,
-    creators,
+  return getCreateV2Instruction({
+    asset: assetSigner,
+    collection,
+    authority: signer,
+    updateAuthority: signer.address,
+    payer: signer,
+    dataState: DataState.AccountState,
+    name: assetName,
+    uri: metaUri,
+    plugins: null,
+    externalPluginAdapters: null
   });
-
-  return token.mintAddress;
 }
 
-async function createToken(index: number, imageUri: string, poolCollection: Address): Promise<Address> {
-  const tokenTitle = `#${index}`;
-  const image = readFileSync(imageUri);
-  const metadata = await metaplex.nfts().uploadMetadata({
-    name: tokenTitle,
-    symbol: "theminingco",
-    description: "Keep on digging...",
-    image: toMetaplexFile(image, `${index}.png`),
-    external_url: "https://theminingco.xyz/",
-  });
+const costPerToken = 0.0029;
 
-  const token = await metaplex.nfts().create({
-    name: tokenTitle,
-    uri: metadata.uri,
-    sellerFeeBasisPoints: 100,
-    tokenStandard: TokenStandard.ProgrammableNonFungible,
-    collection: poolCollection,
-    collectionAuthority: signer,
-    primarySaleHappened: true,
-    creators,
-  });
-
-  return token.mintAddress;
-}
-
-const costPerToken = 0.025;
-
-// TODO: use createAccount with seed and check if they already exist
-
-export default async function createCollection(): Promise<void> {
-  const rootExists = await promptConfirm("Do you already have a root collection?");
-  const rootAddress = rootExists ? await promptText("What is the root collection token address?") : null;
-  const rootImage = rootExists ? null : await promptText("What is the root collection image?");
-  const poolExists = await promptConfirm("Do you already have a pool collection?");
-  const poolAddress = poolExists ? await promptText("What is the pool collection token address?") : null;
-  const poolName = poolExists ? null : await promptText("What is the pool collection name?");
+export default async function createNftCollection(): Promise<void> {
+  const poolName = await promptText("What is the collection name?");
   const imagesFolder = await promptText("What is the folder containing the images?");
-  const numTokens = await promptNumber("How many tokens are there in total in the pool?", 100);
-  const startIndex = await promptNumber("What should the starting index be?", 1);
+  const imagesUri = imagesFolder.replace("~", homedir());
 
-  const totalCost = (numTokens + 1 - startIndex + (rootExists ? 0 : 1) + (poolExists ? 0 : 1)) * costPerToken;
+  const files = await readdir(imagesUri);
+  const filesSet = new Set(files);
+  const images = [];
+  for (let i = 0; i < files.length; i++) {
+    if (filesSet.has(`${i}.png`)) {
+      images.push(i);
+    } else {
+      break;
+    }
+  }
+
+  const totalCost = images.length * costPerToken;
   const confirm = await promptConfirm(`Esimated cost for this mint is at least ◎${totalCost.toFixed(2)}. Continue?`);
   if (!confirm) { return; }
 
-  const imagesUri = imagesFolder.replace("~", homedir());
+  const collection = await createCollection(poolName, `${imagesUri}/0.png`);
+  const instructions: Array<IInstruction> = [];
+  for (let i = 1; i < images.length; i++) {
+    const instruction = await createAssetInstruction(i, imagesUri, collection)
+    instructions.push(instruction);
+  }
+  const transactions = await createTransactions(rpc, instructions, signer.address);
+  await sendAndConfirmTransactions(rpc, transactions); // FIXME: what if some fail?
 
   console.info();
-
-  const rootCollection = rootAddress == null
-    ? await createRootToken(rootImage ?? "")
-    : new PublicKey(rootAddress);
-  console.info(`Using root collection ${linkAccount(rootCollection)}`);
-
-  const poolCollection = poolAddress == null
-    ? await createCollectionToken(poolName ?? "", `${imagesUri}/0.png`, rootCollection)
-    : new PublicKey(poolAddress);
-  console.info(`Using pool collection ${linkAccount(poolCollection)}`);
-
-  for (const index of range(startIndex, numTokens + 1)) {
-    const token = await createToken(index, `${imagesUri}/${index}.png`, poolCollection);
-    console.info(`Created token #${index} ${linkAccount(token)}`);
-  }
-
-  console.info(`Finished creating collection with ${numTokens} tokens.`);
+  console.info(`Created ${instructions.length} assets`);
+  console.info(`Collection: ${linkAccount(collection)}`);
 }

@@ -1,6 +1,7 @@
 node_modules
 .firebase
 lib
+generated
 test-ledger
 cargo.lock
 .env

@@ -1,9 +1,6 @@
-import { Rpc, Address, GetMultipleAccountsApi, AccountInfoBase, AccountInfoWithBase64EncodedData, GetProgramAccountsApi, getBase58Encoder, getBase64Encoder } from '@solana/web3.js';
-import { interval } from "./array";
-import { Token } from "@solana-program/token";
-import { associatedTokenAccount, metadataAddress, metadataProgramId } from './address';
-import { Metadata, unpackMetadata } from './metadata';
-import { unpackTokenAccount } from './token';
+import { Rpc, Address, GetMultipleAccountsApi, AccountInfoBase, AccountInfoWithBase64EncodedData, GetProgramAccountsApi, getBase58Encoder, getBase64Encoder, GetAccountInfoApi } from '@solana/web3.js';
+import { AssetV1, CollectionV1, MPL_CORE_PROGRAM_PROGRAM_ADDRESS, getAssetV1Decoder, getCollectionV1Decoder } from '@theminingco/metadata';
+import { interval } from './array';
 
 type AccountInfo = AccountInfoBase & AccountInfoWithBase64EncodedData;
 
@@ -16,37 +13,72 @@ export async function getMultipleAccountsBatched(rpc: Rpc<GetMultipleAccountsApi
   return results.flat();
 }
 
-export async function getMultipleTokenAccounts(rpc: Rpc<GetMultipleAccountsApi>, mintAccounts: Array<Address>, owner: Address): Promise<Array<Token | null>> {
-  const tokenAccounts = await Promise.all(mintAccounts.map(mint => associatedTokenAccount(owner, mint)));
-  const accountInfos = await getMultipleAccountsBatched(rpc, tokenAccounts);
+export async function getAsset(rpc: Rpc<GetAccountInfoApi>, asset: Address): Promise<AssetV1 | null> {
+  const accountInfo = await rpc.getAccountInfo(asset).send();
+  if (accountInfo.value == null) { return null; }
+  const data = getBase58Encoder().encode(accountInfo.value.data[0]);
+  return getAssetV1Decoder().decode(data);
+};
+
+export async function getMultipleAssets(rpc: Rpc<GetMultipleAccountsApi>, assets: Array<Address>): Promise<Array<AssetV1 | null>> {
+  const accountInfos = await getMultipleAccountsBatched(rpc, assets);
+  const encoder = getBase64Encoder();
+  const decoder = getAssetV1Decoder();
   return accountInfos
-    .mapNonNull(x => ({ data: getBase64Encoder().encode(x.data[0]) }))
-    .mapNonNull(unpackTokenAccount);
-};
+    .mapNonNull(x => encoder.encode(x.data[0]))
+    .mapNonNull(x => decoder.decode(x));
+}
 
-export async function getNftByMint(rpc: Rpc<GetMultipleAccountsApi>, mint: Address): Promise<Metadata | null> {
-  const metaAddress = await metadataAddress(mint);
-  const accountInfo = await getMultipleAccountsBatched(rpc, [metaAddress]);
-  if (accountInfo[0] == null) { return null; }
-  const data = getBase58Encoder().encode(accountInfo[0].data[0]);
-  return unpackMetadata({ data });
-};
-
-export async function getNftsByUpdateAuthority(rpc: Rpc<GetProgramAccountsApi>, updateAuthority: Address): Promise<Array<Metadata>> {
-  const accountInfos = await rpc.getProgramAccounts(metadataProgramId, {
+export async function getAssetsByUpdateAuthority(rpc: Rpc<GetProgramAccountsApi>, updateAuthority: Address): Promise<Array<AssetV1  & { address: Address }>> {
+  const accountInfos = await rpc.getProgramAccounts(MPL_CORE_PROGRAM_PROGRAM_ADDRESS, {
     filters: [{
+      // TODO: <--
       offset: 1n,
       bytes: updateAuthority.toString(),
       encoding: "base58"
     }]
   }).send();
+  const encoder = getBase64Encoder();
+  const datas = accountInfos.map(x => encoder.encode(x.account.data[0]));
+  const decoder = getAssetV1Decoder();
+  const assets = datas.map(x => decoder.decode(x));
+  return assets.map((asset, i) => ({
+    ...asset,
+    address: accountInfos[i].pubkey
+  }));
+}
+
+export async function getCollection(rpc: Rpc<GetAccountInfoApi>, collection: Address): Promise<CollectionV1 | null> {
+  const accountInfo = await rpc.getAccountInfo(collection).send();
+  if (accountInfo.value == null) { return null; }
+  const data = getBase58Encoder().encode(accountInfo.value.data[0]);
+  return getCollectionV1Decoder().decode(data);
+}
+
+export async function getMultipleCollections(rpc: Rpc<GetMultipleAccountsApi>, collections: Array<Address>): Promise<Array<CollectionV1 | null>> {
+  const accountInfos = await getMultipleAccountsBatched(rpc, collections);
+  const encoder = getBase64Encoder();
+  const decoder = getCollectionV1Decoder();
   return accountInfos
-    .map(x => ({ data: getBase58Encoder().encode(x.account.data) }))
-    .map(unpackMetadata);
-};
+    .mapNonNull(x => encoder.encode(x.data[0]))
+    .mapNonNull(x => decoder.decode(x));
+}
 
-export const isTokenOwner = (account: Token | null): boolean => {
-  if (account == null) { return false; }
-  return account.amount > 0;
-};
-
+export async function getCollectionsByUpdateAuthority(rpc: Rpc<GetProgramAccountsApi>, updateAuthority: Address): Promise<Array<CollectionV1 & { address: Address }>> {
+  const accountInfos = await rpc.getProgramAccounts(MPL_CORE_PROGRAM_PROGRAM_ADDRESS, {
+    filters: [{
+            // TODO: <--
+      offset: 1n,
+      bytes: updateAuthority.toString(),
+      encoding: "base58"
+    }]
+  }).send();
+  const encoder = getBase64Encoder();
+  const datas = accountInfos.map(x => encoder.encode(x.account.data[0]));
+  const decoder = getCollectionV1Decoder();
+  const collections = datas.map(x => decoder.decode(x));
+  return collections.map((collection, i) => ({
+    ...collection,
+    address: accountInfos[i].pubkey
+  }));
+}

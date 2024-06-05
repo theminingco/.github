@@ -19,18 +19,20 @@ export function useRpc(): UseRpc {
 }
 
 export default function RpcProvider(props: PropsWithChildren): ReactElement {
-  const transport = useMemo(() => {
-    // TODO: dynamic?
-    return createDefaultRpcTransport({ url: "https://solana-mainnet.g.alchemy.com/v2/cEI9IVd9_paAuyKLsU_zN4UdM-ASnyhq" });
+  const rpcUrl = useMemo(() => {
+    if (!Object.hasOwn(global, "document")) { return fallbackUrl; }
+    if (document == null) { return fallbackUrl; }
+    const tag = document.querySelector("meta[property='rpc-url']");
+    if (tag == null) { return fallbackUrl; }
+    return tag.getAttribute("content") ?? fallbackUrl;
   }, []);
 
-  const rpc = useMemo(() => {
-    return createSolanaRpcFromTransport(transport);
-  }, [transport]);
-
-  const context = useMemo(() => ({
-    rpc,
-  }), [rpc]);
+  const context = useMemo(() => {
+    const transport = createDefaultRpcTransport({ url: rpcUrl });
+    return {
+      rpc: createSolanaRpcFromTransport(transport)
+    };
+  }, [rpcUrl]);
 
   return <RpcContext.Provider value={context}>{props.children}</RpcContext.Provider>;
 }

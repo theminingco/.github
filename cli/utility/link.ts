@@ -17,7 +17,7 @@ export function linkTransaction(hash: string, text?: string): string {
   return link(`https://solscan.io/tx/${hash}${clusterQuery()}`, content);
 }
 
-export function linkAccount(key: Address, text?: string): string {
+export function linkAccount(key: Address | string, text?: string): string {
   const content = text ?? shortAddress(key);
   return link(`https://solscan.io/address/${key.toString()}${clusterQuery()}`, content);
 }

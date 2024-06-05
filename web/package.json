@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "next build && (rm -r lib || true) && mv out lib",
+    "build": "next build && rimraf lib && mv out lib",
     "start": "next dev",
-    "clean": "rm -r lib .next || true"
+    "clean": "rimraf lib .next"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
