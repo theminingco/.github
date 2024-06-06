@@ -13,7 +13,7 @@
     "@solana-program/memo": "^0.3.2",
     "@solana-program/system": "^0.3.2",
     "@solana-program/token": "^0.1.4",
-    "@solana/web3.js": "^2.0.0-preview.3.20240524063508.71cba9915ce30b1bac11e4cac1afa0150e96536a",
+    "@solana/web3.js": "^2.0.0-preview.3.20240606172933.1d232bbb1db0621f7cb7b819664f7eee0af7a0a1",
     "@theminingco/core": "*",
     "firebase-admin": "^12.1.1",
     "firebase-functions": "^5.0.1",
