@@ -19,7 +19,7 @@ export async function GET(): Promise<NextResponse> {
             The Mining Company
           </span>
           <span tw="text-xl font-medium px-3">
-            Fodinae cum codice serpentis ad praenuntianda nummorum pretia et negotiationem automatisticam. Noli lutum fodere, aurum invenire.
+            Keep on digging...
           </span>
         </div>
       </div>
