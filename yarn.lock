@@ -5459,9 +5459,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-tools@npm:^13.11.0":
-  version: 13.11.0
-  resolution: "firebase-tools@npm:13.11.0"
+"firebase-tools@npm:^13.11.2":
+  version: 13.11.2
+  resolution: "firebase-tools@npm:13.11.2"
   dependencies:
     "@google-cloud/cloud-sql-connector": "npm:^1.2.3"
     "@google-cloud/pubsub": "npm:^4.4.0"
@@ -5531,7 +5531,7 @@ __metadata:
     yaml: "npm:^2.4.1"
   bin:
     firebase: lib/bin/firebase.js
-  checksum: 10c0/c7b4de4e08656486d5d815d19c794d52458b9750fd2d78abf2ec069aef8470042ae39003f0ebb98ef046c314fdc60c6502e862ffcf22789ca557af6a04e83068
+  checksum: 10c0/eaeb67d1714fecc878f9188610410c29bf4cb6aa220ba9e7cc90cfbe4ec7f28ed97597705bca16cd3bd76260f8b16a873c93119e0af24ba56b61d5d6307dee9e
   languageName: node
   linkType: hard
 
@@ -9727,7 +9727,7 @@ __metadata:
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     "@types/sinon": "npm:^17.0.3"
-    firebase-tools: "npm:^13.11.0"
+    firebase-tools: "npm:^13.11.2"
     nx: "npm:^19.2.0"
     rimraf: "npm:^5.0.7"
   languageName: unknown
