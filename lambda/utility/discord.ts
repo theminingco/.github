@@ -5,7 +5,7 @@ interface Webhook {
   readonly description: string;
   readonly color: number;
   readonly fields: Record<string, string>;
-  readonly block: Set<string> | Array<string>;
+  readonly block: Set<string> | string[];
 }
 
 async function sendWebhook(hook: Webhook): Promise<void> {
@@ -35,7 +35,7 @@ async function sendWebhook(hook: Webhook): Promise<void> {
   }
 }
 
-export async function sendInfo(title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> {
+export async function sendInfo(title: string, description: string, fields: Record<string, string> = { }, block: string[] = []): Promise<void> {
   await sendWebhook({
     title,
     description,
@@ -45,7 +45,7 @@ export async function sendInfo(title: string, description: string, fields: Recor
   });
 }
 
-export async function sendWarning(title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> {
+export async function sendWarning(title: string, description: string, fields: Record<string, string> = { }, block: string[] = []): Promise<void> {
   await sendWebhook({
     title,
     description,
@@ -55,7 +55,7 @@ export async function sendWarning(title: string, description: string, fields: Re
   });
 }
 
-export async function sendError(title: string, description: string, fields: Record<string, string> = { }, block: Array<string> = []): Promise<void> {
+export async function sendError(title: string, description: string, fields: Record<string, string> = { }, block: string[] = []): Promise<void> {
   await sendWebhook({
     title,
     description,

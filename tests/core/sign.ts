@@ -3,7 +3,8 @@ import { describe, it, beforeEach, afterEach, before } from "mocha";
 import assert from "assert";
 import type { SinonFakeTimers, SinonStub } from "sinon";
 import { useFakeTimers, stub } from "sinon";
-import { Address, createKeyPairFromBytes, getAddressFromPublicKey, signBytes } from "@solana/web3.js";
+import type { Address } from "@solana/web3.js";
+import { createKeyPairFromBytes, getAddressFromPublicKey, signBytes } from "@solana/web3.js";
 
 const validTimestamp = 1577836800000;
 const invalidTimestamp = 1577923200000;
@@ -29,7 +30,7 @@ describe("sign", () => {
     const mockSigner = await createKeyPairFromBytes(mockSecretKey);
     mockSignerSecretKey = mockSigner.privateKey;
     mockSignerPublicKey = await getAddressFromPublicKey(mockSigner.publicKey);
-  })
+  });
 
   beforeEach(() => {
     clock = useFakeTimers();
@@ -43,9 +44,7 @@ describe("sign", () => {
 
   it("Get signature should produce a valid auth key", async () => {
     clock.now = validTimestamp;
-    const auth = await getSignature(mockSignerPublicKey, async (message: Uint8Array) => (
-      signBytes(mockSignerSecretKey, message)
-    ), "test");
+    const auth = await getSignature(mockSignerPublicKey, async (message: Uint8Array) => signBytes(mockSignerSecretKey, message), "test");
     assert.strictEqual(auth, mockAuthKey);
   });
 

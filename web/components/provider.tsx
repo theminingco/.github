@@ -2,7 +2,7 @@ import type { ComponentType, PropsWithChildren, ReactElement } from "react";
 import React from "react";
 
 interface ProviderProps extends PropsWithChildren {
-  readonly providers: Array<ComponentType<PropsWithChildren>>;
+  readonly providers: ComponentType<PropsWithChildren>[];
 }
 
 export default function Provider(props: ProviderProps): ReactElement {

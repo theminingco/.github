@@ -14,6 +14,7 @@ describe("metadata", () => {
     assert.strictEqual(result.external_url, "external_url");
     assert.deepStrictEqual(result.attributes, []);
     assert.deepStrictEqual(result.allocation, []);
+    assert.strictEqual(result.attribution, "");
   });
 
   it("Should unpack metadata with attributes", () => {
@@ -26,6 +27,7 @@ describe("metadata", () => {
     assert.strictEqual(result.external_url, "external_url");
     assert.deepStrictEqual(result.attributes, [{ trait_type: "trait_type", value: "value" }]);
     assert.deepStrictEqual(result.allocation, []);
+    assert.strictEqual(result.attribution, "");
   });
 
   it("Should unpack metadata with allocation", () => {
@@ -38,18 +40,20 @@ describe("metadata", () => {
     assert.strictEqual(result.external_url, "external_url");
     assert.deepStrictEqual(result.attributes, []);
     assert.deepStrictEqual(result.allocation, [{ symbol: "symbol", percentage: "100%" }]);
+    assert.strictEqual(result.attribution, "");
   });
 
-  it("Should unpack metadata with attributes and allocation", () => {
-    const metadata = { name: "name", symbol: "symbol", description: "description", image: "image", external_url: "external_url", attributes: [{ trait_type: "trait_type", value: "value" }], allocation: [{ symbol: "symbol", percentage: "100%" }] };
+  it("Should unpack metadata with attribution", () => {
+    const metadata = { name: "name", symbol: "symbol", description: "description", image: "image", external_url: "external_url", attribution: "attribution" };
     const result = unpackMetadata(metadata);
     assert.strictEqual(result.name, "name");
     assert.strictEqual(result.symbol, "symbol");
     assert.strictEqual(result.description, "description");
     assert.strictEqual(result.image, "image");
     assert.strictEqual(result.external_url, "external_url");
-    assert.deepStrictEqual(result.attributes, [{ trait_type: "trait_type", value: "value" }]);
-    assert.deepStrictEqual(result.allocation, [{ symbol: "symbol", percentage: "100%" }]);
+    assert.deepStrictEqual(result.attributes, []);
+    assert.deepStrictEqual(result.allocation, []);
+    assert.strictEqual(result.attribution, "attribution");
   });
 
   it("Should fail if metadata is not an object", () => {
@@ -184,6 +188,11 @@ describe("metadata", () => {
 
   it("Should fail if allocation has extra keys", () => {
     const metadata = { name: "name", symbol: "symbol", description: "description", image: "image", external_url: "external_url", allocation: [{ symbol: "symbol", percentage: "100%", extra: "extra" }] };
+    assert.throws(() => unpackMetadata(metadata));
+  });
+
+  it("Should fail if attribution is not a string", () => {
+    const metadata = { name: "name", symbol: "symbol", description: "description", image: "image", external_url: "external_url", attribution: 1 };
     assert.throws(() => unpackMetadata(metadata));
   });
 

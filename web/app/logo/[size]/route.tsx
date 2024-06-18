@@ -12,7 +12,7 @@ const prerenderedSizes = [
   "192", "256", "384", "512",
 ];
 
-export function generateStaticParams(): Array<IconProps["params"]> {
+export function generateStaticParams(): IconProps["params"][] {
   return prerenderedSizes.map(size => ({ size }));
 }
 

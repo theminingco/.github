@@ -2,10 +2,11 @@ export interface Pool {
   readonly address: string;
   readonly name: string;
   readonly supply: number;
-  readonly available: number;
   readonly price: number;
   readonly priceTimestamp: number;
-  readonly uri: string;
+  readonly image: string;
+  readonly allocation: Map<string, string>;
+  readonly isReleased: boolean;
 }
 
 export interface Token {
@@ -13,6 +14,7 @@ export interface Token {
   readonly collection: string;
   readonly name: string;
   readonly owner: string;
-  readonly uri: string;
+  readonly image: string;
+  readonly allocation: Map<string, string>;
 }
 

@@ -103,5 +103,3 @@ We may update our Security Bounty Program from time to time. Thus, you are advis
 ## Contact Us
 
 If you have any questions or suggestions about our Terms of Service, do not hesitate to contact us.
-
-*Copyright © 2023 ⛏ The Mining Company*

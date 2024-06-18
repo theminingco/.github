@@ -1,25 +1,24 @@
-import { assetDescription, assetSymbol, assetUrl, rpc, signer } from "../utility/config";
-import { promptConfirm, promptText } from "../utility/prompt";
-import { Address, IInstruction, generateKeyPairSigner } from "@solana/web3.js";
+import { assetAttribution, assetDescription, assetImage, assetSymbol, assetUrl, costPerToken, rpc, signer } from "../utility/config";
+import { promptConfirm, promptNumber, promptText } from "../utility/prompt";
+import type { Address, IInstruction } from "@solana/web3.js";
+import { generateKeyPairSigner } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
-import { homedir } from "os";
-import { readFile, readdir } from "fs/promises";
-import { createTransaction, createTransactions, sendAndConfirmTransactions, sendAndConfirmTransaction, uploadFile, Metadata } from "@theminingco/core";
+import type { Metadata } from "@theminingco/core";
+import { createTransaction, createTransactions, sendAndConfirmTransactions, sendAndConfirmTransaction, uploadData, splitInstructions } from "@theminingco/core";
 import { DataState, getCreateCollectionV2Instruction, getCreateV2Instruction } from "@theminingco/metadata";
 import { royaltiesPlugin } from "../utility/royalties";
 
-async function createCollection(collectionName: string, imagePath: string): Promise<Address> {
+async function createCollection(collectionName: string): Promise<Address> {
   const collectionSigner = await generateKeyPairSigner();
-  const image = await readFile(imagePath);
-  const imageUri = await uploadFile(rpc, image);
   const metadata: Metadata = {
     name: collectionName,
     symbol: assetSymbol,
-    image: imageUri,
+    image: assetImage,
     description: assetDescription,
     external_url: assetUrl,
+    attribution: assetAttribution,
   };
-  const metaUri = await uploadFile(rpc, JSON.stringify(metadata));
+  const metaUri = await uploadData(JSON.stringify(metadata), signer);
 
   const instruction = getCreateCollectionV2Instruction({
     collection: collectionSigner,
@@ -28,7 +27,7 @@ async function createCollection(collectionName: string, imagePath: string): Prom
     name: collectionName,
     uri: metaUri,
     plugins: [royaltiesPlugin()],
-    externalPluginAdapters: null
+    externalPluginAdapters: null,
   });
 
   const transaction = await createTransaction(rpc, [instruction], signer.address);
@@ -37,21 +36,17 @@ async function createCollection(collectionName: string, imagePath: string): Prom
   return collectionSigner.address;
 }
 
-async function createAssetInstruction(index: number, imagePath: string, collection: Address): Promise<IInstruction> {
-  const assetName = `#${index}`;
+async function createAssetInstruction(index: number, collection: Address): Promise<IInstruction> {
   const assetSigner = await generateKeyPairSigner();
-  const image = await readFile(`${imagePath}/${index}.png`);
-  const imageUri = await uploadFile(rpc, image);
-  const attributes = await readFile(`${imagePath}/${index}.json`);
   const metadata: Metadata = {
-    name: assetName,
+    name: `#${index}`,
     symbol: assetSymbol,
-    image: imageUri,
+    image: assetImage,
     description: assetDescription,
     external_url: assetUrl,
-    attributes: JSON.parse(attributes.toString()),
+    attribution: assetAttribution,
   };
-  const metaUri = await uploadFile(rpc, JSON.stringify(metadata));
+  const metaUri = await uploadData(JSON.stringify(metadata), signer);
 
   return getCreateV2Instruction({
     asset: assetSigner,
@@ -60,45 +55,37 @@ async function createAssetInstruction(index: number, imagePath: string, collecti
     updateAuthority: signer.address,
     payer: signer,
     dataState: DataState.AccountState,
-    name: assetName,
+    name: metadata.name,
     uri: metaUri,
     plugins: null,
-    externalPluginAdapters: null
+    externalPluginAdapters: null,
   });
 }
 
-const costPerToken = 0.0029;
-
 export default async function createNftCollection(): Promise<void> {
   const poolName = await promptText("What is the collection name?");
-  const imagesFolder = await promptText("What is the folder containing the images?");
-  const imagesUri = imagesFolder.replace("~", homedir());
+  const tokenCount = await promptNumber("How many tokens are in the collection?", 100);
 
-  const files = await readdir(imagesUri);
-  const filesSet = new Set(files);
-  const images = [];
-  for (let i = 0; i < files.length; i++) {
-    if (filesSet.has(`${i}.png`)) {
-      images.push(i);
-    } else {
-      break;
-    }
-  }
-
-  const totalCost = images.length * costPerToken;
-  const confirm = await promptConfirm(`Esimated cost for this mint is at least ◎${totalCost.toFixed(2)}. Continue?`);
+  const totalCost = tokenCount * costPerToken + costPerToken;
+  const confirm = await promptConfirm(`Esimated cost for this action is at least ◎${totalCost.toFixed(2)}. Continue?`);
   if (!confirm) { return; }
 
-  const collection = await createCollection(poolName, `${imagesUri}/0.png`);
-  const instructions: Array<IInstruction> = [];
-  for (let i = 1; i < images.length; i++) {
-    const instruction = await createAssetInstruction(i, imagesUri, collection)
-    instructions.push(instruction);
+  const collection = await createCollection(poolName);
+
+  const flatInstructions: IInstruction[] = [];
+  for (let i = 1; i <= tokenCount; i++) {
+    const instruction = await createAssetInstruction(i, collection);
+    flatInstructions.push(instruction);
   }
-  const transactions = await createTransactions(rpc, instructions, signer.address);
-  await sendAndConfirmTransactions(rpc, transactions); // FIXME: what if some fail?
+
+  let instructions = splitInstructions(flatInstructions);
+  while (instructions.length > 0) {
+    const transactions = await createTransactions(rpc, instructions, signer.address);
+    const results = await sendAndConfirmTransactions(rpc, transactions);
+    instructions = instructions.flatMap((x, i) => results[i] instanceof Error ? [x] : []);
+  }
 
   console.info();
-  console.info(`Created ${instructions.length} assets`);
-  console.info(`Collection: ${linkAccount(collection)}`);
+  console.info(`Collection:    ${linkAccount(collection)}`);
+  console.info(`Est Cost:      ◎${totalCost.toFixed(2)}`);
 }

@@ -9,9 +9,6 @@ const fonts = Noto_Sans({
   subsets: ["latin"],
 });
 
-// TODO: dynamic from env (from google cloud)
-const rpcUrl = "https://solana-mainnet.g.alchemy.com/v2/cEI9IVd9_paAuyKLsU_zN4UdM-ASnyhq";
-
 export default function Root(props: PropsWithChildren): ReactElement {
   return (
     <html lang="en">
@@ -35,7 +32,6 @@ export default function Root(props: PropsWithChildren): ReactElement {
         <meta property="twitter:title" content="The Mining Company" />
         <meta property="twitter:image" content="/preview" />
         <meta property="twitter:description" content="Keep on digging..." />
-        <meta property="rpc-url" content={rpcUrl} />
       </head>
       <body className={clsx(
         "w-doc h-doc flex flex-col justify-center",

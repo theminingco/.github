@@ -12,6 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "experimentalDecorators": true,

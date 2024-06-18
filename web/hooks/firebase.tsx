@@ -8,9 +8,11 @@ import React, { createContext, useContext, useMemo, useCallback, useState, useEf
 import { logEvent as logFirebaseEvent } from "firebase/analytics";
 import { setUserProperties as setFirebaseProperty } from "firebase/analytics";
 import { setUserId as setFirebaseUserId } from "firebase/analytics";
-import { getFunctions, httpsCallable, HttpsCallable } from "firebase/functions";
+import type { HttpsCallable } from "firebase/functions";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import { getPerformance } from "firebase/performance";
-import { getFirestore, DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, QueryFieldFilterConstraint, collection, query, getDocs } from "firebase/firestore/lite";
+import type { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, QueryFieldFilterConstraint } from "firebase/firestore/lite";
+import { getFirestore, collection, query, getDocs } from "firebase/firestore/lite";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAZ5K_JvltwcyN9C-b7mrmI8xDCN4SM4Cw",
@@ -40,11 +42,11 @@ interface UseFirebase {
   logError: (error: Error) => void;
   identify: (identifier: string) => void;
   setProperties: (properties: Record<string, unknown>) => void;
-  getCallable: (name: string) => HttpsCallable;
-  getDocuments: <T extends DocumentData>(table: string, filter?: QueryFieldFilterConstraint) => Promise<Array<T>>;
+  getCallable: <T extends object, U extends object>(name: string) => HttpsCallable<T, U>;
+  getDocuments: <T extends DocumentData>(table: string, filter?: QueryFieldFilterConstraint) => Promise<T[]>;
 }
 
-const Context = createContext<UseFirebase>({
+const FirebaseContext = createContext<UseFirebase>({
   logEvent: () => { throw new Error("Not implemented"); },
   logError: () => { throw new Error("Not implemented"); },
   identify: () => { throw new Error("Not implemented"); },
@@ -54,7 +56,7 @@ const Context = createContext<UseFirebase>({
 });
 
 export function useFirebase(): UseFirebase {
-  return useContext(Context);
+  return useContext(FirebaseContext);
 }
 
 export default function FirebaseProvider(props: PropsWithChildren): ReactElement {
@@ -75,7 +77,7 @@ export default function FirebaseProvider(props: PropsWithChildren): ReactElement
   }, [app]);
 
   const logError = useCallback((error: Error): void => {
-    // TODO: log to firebase
+    // FIXME: log error to firebase?
     console.error(error);
   }, [logEvent]);
 
@@ -89,10 +91,10 @@ export default function FirebaseProvider(props: PropsWithChildren): ReactElement
     setFirebaseUserId(analytics, identifier);
   }, [app]);
 
-  const getCallable = useCallback((name: string) => {
+  const getCallable = useCallback(<T extends object, U extends object>(name: string) => {
     if (appCheck == null) { setupAppCheck(app); }
     const functions = getFunctions(app);
-    return httpsCallable(functions, name, { limitedUseAppCheckTokens: true });
+    return httpsCallable<T, U>(functions, name, { limitedUseAppCheckTokens: true });
   }, [app, appCheck, setupAppCheck]);
 
   const getDocuments = useCallback(async <T extends DocumentData>(table: string, filter?: QueryFieldFilterConstraint) => {
@@ -105,7 +107,7 @@ export default function FirebaseProvider(props: PropsWithChildren): ReactElement
   }, [app, appCheck, setupAppCheck]);
 
   useEffect(() => {
-    const _performance = getPerformance(app);
+    getPerformance(app);
   }, [app]);
 
   useEffect(() => {
@@ -117,5 +119,9 @@ export default function FirebaseProvider(props: PropsWithChildren): ReactElement
     return { logEvent, logError, identify, setProperties, getCallable, getDocuments };
   }, [logEvent, logError, identify, setProperties, getCallable, getDocuments]);
 
-  return <Context.Provider value={context}>{props.children}</Context.Provider>;
+  return (
+    <FirebaseContext.Provider value={context}>
+      {props.children}
+    </FirebaseContext.Provider>
+  );
 }

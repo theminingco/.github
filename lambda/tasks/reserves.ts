@@ -9,21 +9,16 @@ export default async function checkTask(): Promise<void> {
   const balance = toNumber(lamports, 9);
   const usdEquivalent = balance * 20; // TODO: <-- add sol price from alpaca
 
-  const fields = {
-    "Wallet Balance": `◎${balance.toFixed(2)}`,
-    "USD Equivalent": `$${usdEquivalent.toFixed(2)}`,
-    "Account": linkAccount(signer.address),
-  };
-
-  const block = ["Account"];
-
-  if (usdEquivalent < 2000) {
-    const message = "Consider depositing some.";
-    await sendWarning("Low reserves", message, fields, block);
-  }
-
-  if (usdEquivalent > 5000) {
-    const message = "Consider withdrawing some.";
-    await sendWarning("High reserves", message, fields, block);
+  if (usdEquivalent < 100) {
+    await sendWarning(
+      "Low reserves",
+      "Consider depositing some.",
+      {
+        "Wallet Balance": `◎${balance.toFixed(2)}`,
+        "USD Equivalent": `$${usdEquivalent.toFixed(2)}`,
+        "Account": linkAccount(signer.address),
+      },
+      ["Account"],
+    );
   }
 }

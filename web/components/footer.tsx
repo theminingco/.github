@@ -9,10 +9,10 @@ import { cachedFetch } from "@theminingco/core/lib/cache";
 import { useFirebase } from "../hooks/firebase";
 import Spinner from "./spinner";
 
-const parseMd = async (md: string) => {
+async function parseMd(md: string): Promise<string> {
   const marked = await import("marked");
   const renderer = new marked.Renderer();
-  renderer.link = (href, title, text) => {
+  renderer.link = ({ href, title, text }) => {
     return `<a target="_blank" rel="noreferrer noopener" href="${href}" title="${title}">${text}</a>`;
   };
   return marked.parse(md, { renderer });
@@ -53,7 +53,7 @@ export default function Footer(): ReactElement {
 
   return (
     <div className="text-sm flex justify-center mx-1">
-      <span className="p-1 grow">Copyright © 2023 ⛏ The Mining Company</span>
+      <span className="p-1 max-sm:hidden">Copyright © 2024 iwcapital.xyz</span>
       <span className="grow" />
       <Button href="https://twitter.com/theminingco" outerClassName="p-1 px-2 h-8" aria-label="Twitter">
         <FontIcon className="h-full" icon={faXTwitter} />

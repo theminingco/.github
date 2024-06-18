@@ -4,7 +4,7 @@ export interface StripNonDigitsOptions {
   readonly allowNegative?: boolean;
 }
 
-export function stripCharacters(str: string, allowedCharacters: Set<string> | Array<string> | string): string {
+export function stripCharacters(str: string, allowedCharacters: Set<string> | string[] | string): string {
   const charSet = new Set(allowedCharacters);
   let result = "";
   for (const char of str) {

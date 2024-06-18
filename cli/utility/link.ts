@@ -1,6 +1,6 @@
 import { shortAddress } from "@theminingco/core";
 import { cluster } from "./config";
-import type { Address } from "@solana/web3.js";
+import type { Address, Signature } from "@solana/web3.js";
 
 function clusterQuery(): string {
   if (cluster === "mainnet-beta") { return ""; }
@@ -12,7 +12,7 @@ export function link(url: string, str?: string): string {
   return `\u{1b}]8;;${url}\u{7}${content}\u{1b}]8;;\u{7}`;
 }
 
-export function linkTransaction(hash: string, text?: string): string {
+export function linkTransaction(hash: Signature | string, text?: string): string {
   const content = text ?? shortAddress(hash, 8);
   return link(`https://solscan.io/tx/${hash}${clusterQuery()}`, content);
 }

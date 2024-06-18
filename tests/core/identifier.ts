@@ -1,5 +1,6 @@
 import { describe, it, beforeEach, afterEach } from "mocha";
-import { SinonStub, stub } from "sinon";
+import type { SinonStub } from "sinon";
+import { stub } from "sinon";
 import { randomId } from "../../core/src/identifier";
 import assert from "assert";
 

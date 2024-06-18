@@ -11,12 +11,16 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "node ./run.js && tsc",
-    "clean": "rimraf lib"
+    "build": "node ./kinobi.js && tsc",
+    "clean": "rimraf lib generated"
+  },
+  "peerDependencies": {
+    "@solana/web3.js": "^2.0.0-preview.3"
   },
   "devDependencies": {
     "@kinobi-so/nodes-from-anchor": "^0.20.6",
-    "@kinobi-so/renderers-js": "^0.20.7",
+    "@kinobi-so/renderers-js": "^0.20.9",
+    "@solana/web3.js": "^2.0.0-preview.3",
     "kinobi": "^0.20.4",
     "typescript": "^5.4.5"
   }
