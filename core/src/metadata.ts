@@ -100,7 +100,7 @@ export function unpackMetadata(metadata: unknown): Required<Metadata> {
   return metadata as Required<Metadata>;
 }
 
-const percentageRegex = /(?<number>\d+)%/u;
+const percentageRegex = /(?<number>\d{1,3})%/u;
 
 function validateSingleAllocation(symbol: string, percentage: string, allowedSymbols: Set<string>): [string, bigint] {
   const hasSymbolFilter = allowedSymbols.size > 0;
