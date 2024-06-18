@@ -1,4 +1,4 @@
-import type { Address, FetchAccountConfig, GetMultipleAccountsApi, MaybeAccount, Rpc } from "@solana/web3.js";
+import type { Address, FetchAccountConfig, GetMultipleAccountsApi, Rpc } from "@solana/web3.js";
 import { interval } from "./array";
 
 const batchLimit = 100;

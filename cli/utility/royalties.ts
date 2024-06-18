@@ -14,7 +14,7 @@ export function royaltiesPlugin(config?: { released?: boolean }): PluginAuthorit
         }],
         ruleSet: {
           __kind: isReleased ? "ProgramDenyList" : "ProgramAllowList",
-          fields: [[]]
+          fields: [[]],
         },
       }],
     },

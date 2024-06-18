@@ -4,7 +4,7 @@ import { poolCollection, tokenCollection } from "../utility/firebase";
 import { rpc, signer } from "../utility/solana";
 import type { Account, Address } from "@solana/web3.js";
 import type { DocumentReference } from "firebase-admin/firestore";
-import { fetchMetadata } from "@theminingco/core";;
+import { fetchMetadata } from "@theminingco/core";
 
 async function insertOrUpdatePool(ref: DocumentReference | undefined, pool: Account<CollectionV1>): Promise<void> {
   const metadata = await fetchMetadata(pool.data.uri);

@@ -1,5 +1,5 @@
 import Provider from "../../web/components/provider";
-import { signTransaction, type Address } from "@solana/web3.js";
+import type { Address } from "@solana/web3.js";
 import type { PropsWithChildren, ReactElement, ReactNode } from "react";
 import { createElement, useMemo, useState } from "react";
 import type { RenderOptions, RenderResult } from "@testing-library/react";

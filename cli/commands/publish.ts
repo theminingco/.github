@@ -5,7 +5,7 @@ import { createTransaction, sendAndConfirmTransaction } from "@theminingco/core"
 import { linkAccount } from "../utility/link";
 import { publishCollectionInstructions } from "../utility/publish";
 
-export default async function publishCollection() {
+export default async function publishCollection(): Promise<void> {
   const collectionAddress = await promptText("What is the collection address?");
   const instructions = publishCollectionInstructions(
     address(collectionAddress),
@@ -16,6 +16,6 @@ export default async function publishCollection() {
   await sendAndConfirmTransaction(rpc, transaction);
 
   console.info();
-  console.info(`Published collection`);
+  console.info("Published collection");
   console.info(`Address:       ${linkAccount(collectionAddress)}`);
 }

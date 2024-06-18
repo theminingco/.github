@@ -5,7 +5,7 @@ export function useIsProduction(): boolean {
 
   useEffect(() => {
     setIsProduction(window.location.hostname === "theminingco.xyz");
-  }, [])
+  }, []);
 
   return isProduction;
 }

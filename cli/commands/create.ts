@@ -44,7 +44,7 @@ async function createAssetInstruction(index: number, collection: Address): Promi
     image: assetImage,
     description: assetDescription,
     external_url: assetUrl,
-    attribution: assetAttribution
+    attribution: assetAttribution,
   };
   const metaUri = await uploadData(JSON.stringify(metadata), signer);
 
@@ -78,7 +78,7 @@ export default async function createNftCollection(): Promise<void> {
     flatInstructions.push(instruction);
   }
 
-  let instructions = await splitInstructions(flatInstructions);
+  let instructions = splitInstructions(flatInstructions);
   while (instructions.length > 0) {
     const transactions = await createTransactions(rpc, instructions, signer.address);
     const results = await sendAndConfirmTransactions(rpc, transactions);

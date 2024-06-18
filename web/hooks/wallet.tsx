@@ -57,15 +57,6 @@ export default function WalletProvider(props: PropsWithChildren): ReactElement {
     return () => { listeners.forEach(off => { off(); }); };
   }, [setSupportedWallets]);
 
-  const connect = useCallback(async (selectedWallet: SupportedWallet) => {
-    await disconnect();
-    await selectedWallet.features[StandardConnect].connect();
-    removeChangeListener.current = selectedWallet.features[StandardEvents]?.on("change", (props) => {
-      setChangeKey(key => key + 1);
-    });
-    setWallet(selectedWallet);
-  }, [setWallet]);
-
   const disconnect = useCallback(async () => {
     if (wallet == null) { return; }
     removeChangeListener.current?.();
@@ -75,6 +66,16 @@ export default function WalletProvider(props: PropsWithChildren): ReactElement {
       setWallet(null);
     }
   }, [wallet, setWallet]);
+
+
+  const connect = useCallback(async (selectedWallet: SupportedWallet) => {
+    await disconnect();
+    await selectedWallet.features[StandardConnect].connect();
+    removeChangeListener.current = selectedWallet.features[StandardEvents]?.on("change", () => {
+      setChangeKey(key => key + 1);
+    });
+    setWallet(selectedWallet);
+  }, [setWallet]);
 
   const account = useMemo(() => {
     if (wallet == null) { return null; }

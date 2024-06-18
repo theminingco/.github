@@ -1,13 +1,16 @@
 import { homedir } from "os";
 import { promptText } from "../utility/prompt";
 import { readFile } from "fs/promises";
-import { Metadata, createTransactions, fetchMetadata, sendAndConfirmTransactions, splitInstructions, uploadData } from "@theminingco/core";
+import type { Metadata } from "@theminingco/core";
+import { createTransactions, fetchMetadata, sendAndConfirmTransactions, splitInstructions, uploadData } from "@theminingco/core";
 import { rpc, signer } from "../utility/config";
-import { AssetV1, CollectionV1, fetchAllAssetV1ByCollection, fetchCollectionV1, getUpdateV1Instruction } from "@theminingco/metadata";
-import { Account, IInstruction, address } from "@solana/web3.js";
+import type { AssetV1, CollectionV1 } from "@theminingco/metadata";
+import { fetchAllAssetV1ByCollection, fetchCollectionV1, getUpdateV1Instruction } from "@theminingco/metadata";
+import type { Account, IInstruction } from "@solana/web3.js";
+import { address } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
 
-async function updateCollectionMetadataInstruction(metaPath: string, collection: Account<CollectionV1>) {
+async function updateCollectionMetadataInstruction(metaPath: string, collection: Account<CollectionV1>): Promise<IInstruction> {
   const image = await readFile(`${metaPath}/0.png`);
   const imageUri = await uploadData(image, signer);
   const metaBuffer = await readFile(`${metaPath}/0.json`);
@@ -27,10 +30,10 @@ async function updateCollectionMetadataInstruction(metaPath: string, collection:
     newUri: metaUri,
     newName: metadata.name,
     newUpdateAuthority: null,
-  })
+  });
 }
 
-async function updateAssetMetadataInstruction(metaPath: string, asset: Account<AssetV1>) {
+async function updateAssetMetadataInstruction(metaPath: string, asset: Account<AssetV1>): Promise<IInstruction> {
   const index = asset.data.name.slice(1);
   const image = await readFile(`${metaPath}/${index}.png`);
   const imageUri = await uploadData(image, signer);
@@ -56,10 +59,10 @@ async function updateAssetMetadataInstruction(metaPath: string, asset: Account<A
     newUri: metaUri,
     newName: metadata.name,
     newUpdateAuthority: null,
-  })
+  });
 }
 
-export default async function updateCollection() {
+export default async function updateCollection(): Promise<void> {
   const collectionAddress = await promptText("What is the collection address?");
   const imagesFolder = await promptText("What is the folder containing the metadata?");
   const metaUri = imagesFolder.replace("~", homedir());
@@ -68,7 +71,7 @@ export default async function updateCollection() {
   const assets = await fetchAllAssetV1ByCollection(rpc, collection.address);
 
   const flatInstructions: IInstruction[] = [
-    await updateCollectionMetadataInstruction(metaUri, collection)
+    await updateCollectionMetadataInstruction(metaUri, collection),
   ];
 
   for (const asset of assets) {
@@ -76,7 +79,7 @@ export default async function updateCollection() {
     flatInstructions.push(instruction);
   }
 
-  let instructions = await splitInstructions(flatInstructions);
+  let instructions = splitInstructions(flatInstructions);
   while (instructions.length > 0) {
     const transactions = await createTransactions(rpc, instructions, signer.address);
     const results = await sendAndConfirmTransactions(rpc, transactions);

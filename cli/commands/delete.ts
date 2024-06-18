@@ -1,5 +1,7 @@
-import { Account, IInstruction, address } from "@solana/web3.js";
-import { fetchCollectionV1, fetchAllAssetV1ByCollection, AssetV1, getBurnV1Instruction, getBurnCollectionV1Instruction } from "@theminingco/metadata";
+import type { Account, IInstruction } from "@solana/web3.js";
+import { address } from "@solana/web3.js";
+import type { AssetV1 } from "@theminingco/metadata";
+import { fetchCollectionV1, fetchAllAssetV1ByCollection, getBurnV1Instruction, getBurnCollectionV1Instruction } from "@theminingco/metadata";
 import { costPerToken, rpc, signer } from "../utility/config";
 import { promptText } from "../utility/prompt";
 import { createTransaction, createTransactions, sendAndConfirmTransaction, sendAndConfirmTransactions, splitInstructions } from "@theminingco/core";
@@ -14,11 +16,11 @@ function deleteAssetInstruction(asset: Account<AssetV1>): IInstruction {
     payer: signer,
     asset: asset.address,
     collection,
-    compressionProof: null
+    compressionProof: null,
   });
 }
 
-export default async function deleteCollection() {
+export default async function deleteCollection(): Promise<void> {
   const collectionAddress = await promptText("What is the collection address?");
 
   const collection = await fetchCollectionV1(rpc, address(collectionAddress));
@@ -27,7 +29,7 @@ export default async function deleteCollection() {
   const totalCost = collection.data.currentSize * costPerToken + costPerToken;
 
   const flatInstructions = assets.map(deleteAssetInstruction);
-  let instructions = await splitInstructions(flatInstructions);
+  let instructions = splitInstructions(flatInstructions);
   while (instructions.length > 0) {
     const transactions = await createTransactions(rpc, instructions, signer.address);
     const results = await sendAndConfirmTransactions(rpc, transactions);
@@ -37,13 +39,13 @@ export default async function deleteCollection() {
   const deleteCollectionInstruction = getBurnCollectionV1Instruction({
     payer: signer,
     collection: address(collectionAddress),
-    compressionProof: null
+    compressionProof: null,
   });
   const transaction = await createTransaction(rpc, [deleteCollectionInstruction], signer.address);
   await sendAndConfirmTransaction(rpc, transaction);
 
   console.info();
-  console.info(`Deleted collection`);
+  console.info("Deleted collection");
   console.info(`Address:       ${linkAccount(collectionAddress)}`);
-  console.info(`Reclaimed:     ${totalCost}`)
-};
+  console.info(`Reclaimed:     ${totalCost}`);
+}

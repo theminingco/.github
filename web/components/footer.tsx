@@ -12,7 +12,7 @@ import Spinner from "./spinner";
 async function parseMd(md: string): Promise<string> {
   const marked = await import("marked");
   const renderer = new marked.Renderer();
-  renderer.link = (href, title, text) => {
+  renderer.link = ({ href, title, text }) => {
     return `<a target="_blank" rel="noreferrer noopener" href="${href}" title="${title}">${text}</a>`;
   };
   return marked.parse(md, { renderer });

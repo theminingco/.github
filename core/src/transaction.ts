@@ -12,11 +12,11 @@ const priorityFeePercentile = 0.8;
 
 declare global {
   interface BigInt {
-    toJSON(): string;
+    toJSON: () => string;
   }
 }
 
-BigInt.prototype.toJSON = function() { return this.toString() }
+BigInt.prototype.toJSON = function () { return this.toString(); };
 
 async function prependComputeBudgetInstructions(rpc: CreateTransactionRpc, transactionMessage: TransactionMessageWithFeePayer): Promise<TransactionMessageWithFeePayer> {
   const getComputeUnitEstimateForTransactionMessage = getComputeUnitEstimateForTransactionMessageFactory({ rpc });
@@ -45,7 +45,7 @@ async function prependComputeBudgetInstructions(rpc: CreateTransactionRpc, trans
   );
 }
 
-export async function splitInstructions(instructions: IInstruction[]): Promise<IInstruction[][]> {
+export function splitInstructions(instructions: IInstruction[]): IInstruction[][] {
   let groupedInstructions: IInstruction[][] = [[]];
   let transactionSize = 128;
   for (const instruction of instructions) {

@@ -56,9 +56,9 @@ export default function TokensProvider(props: PropsWithChildren): ReactElement {
   const tokens = useMemo(() => {
     // TODO: filter out if not have a price
     return result?.map(x => ({
-        ...x,
-        price: poolsMap.get(x.address)?.price ?? 0,
-      })) ?? [];
+      ...x,
+      price: poolsMap.get(x.address)?.price ?? 0,
+    })) ?? [];
   }, [result, poolsMap]);
 
   const loading = useMemo(() => {

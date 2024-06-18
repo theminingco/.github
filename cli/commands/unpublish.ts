@@ -5,7 +5,7 @@ import { linkAccount } from "../utility/link";
 import { promptText } from "../utility/prompt";
 import { unpublishCollectionInstructions } from "../utility/publish";
 
-export default async function unpublishCollection() {
+export default async function unpublishCollection(): Promise<void> {
   const collectionAddress = await promptText("What is the collection address?");
   const instructions = unpublishCollectionInstructions(
     address(collectionAddress),
@@ -16,6 +16,6 @@ export default async function unpublishCollection() {
   await sendAndConfirmTransaction(rpc, transaction);
 
   console.info();
-  console.info(`Unpublished collection`);
+  console.info("Unpublished collection");
   console.info(`Address:       ${linkAccount(collectionAddress)}`);
 }
