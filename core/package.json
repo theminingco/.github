@@ -14,10 +14,16 @@
     "build": "tsc",
     "clean": "rimraf lib"
   },
+  "peerDependencies": {
+    "@solana/web3.js": "^2.0.0-preview.3"
+  },
   "dependencies": {
     "@solana-program/compute-budget": "^0.3.2",
-    "@solana/web3.js": "^2.0.0-preview.3.20240524063508.71cba9915ce30b1bac11e4cac1afa0150e96536a",
     "@theminingco/metadata": "*",
+    "arbundles": "^0.11.1",
     "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "@solana/web3.js": "^2.0.0-preview.3"
   }
 }

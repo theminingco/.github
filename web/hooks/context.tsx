@@ -1,11 +1,27 @@
 import type { PropsWithChildren, ReactElement } from "react";
-import React, { useEffect } from "react";
-import { useWallet } from "./wallet";
+import React, { createContext, useEffect, useState } from "react";
+import { useContext as useReactContext } from "react";
 import { useFirebase } from "./firebase";
+import { useWallet } from "./wallet";
+
+export interface UseContext {
+  readonly countryCode?: string;
+  readonly query?: string;
+}
+
+const ContextContext = createContext<UseContext>({
+  countryCode: "",
+  query: "",
+});
+
+export function useContext(): UseContext {
+  return useReactContext(ContextContext);
+}
 
 export default function ContextProvider(props: PropsWithChildren): ReactElement {
+  const { logError, identify, setProperties } = useFirebase();
+  const [context, setContext] = useState<UseContext>({});
   const { publicKey } = useWallet();
-  const { identify, setProperties } = useFirebase();
 
   useEffect(() => {
     if (publicKey == null) { return; }
@@ -14,14 +30,24 @@ export default function ContextProvider(props: PropsWithChildren): ReactElement 
 
   useEffect(() => {
     setProperties({ userAgent: navigator.userAgent });
-  }, []);
+  }, [setProperties]);
 
   useEffect(() => {
-    window.fetch("https://api.ipify.org")
-      .then(async res => res.text())
-      .then(ip => setProperties({ ip }))
-      .catch(() => { /* Empty */ });
+    if (context?.query == null) { return; }
+    setProperties({ ip: context.query });
+  }, [context?.query, setProperties]);
+
+  useEffect(() => {
+    window.fetch("http://ip-api.com/json")
+      .then(async x => x.json())
+      .then(x => x as UseContext)
+      .then(setContext)
+      .catch(logError);
   }, []);
 
-  return <>{props.children}</>;
+  return (
+    <ContextContext.Provider value={context}>
+      {props.children}
+    </ContextContext.Provider>
+  );
 }

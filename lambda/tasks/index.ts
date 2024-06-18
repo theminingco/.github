@@ -9,7 +9,7 @@ const taskSpecs = [
   { file: "heartbeat", schedule: "*/5 * * * *" },
   { file: "reserves", schedule: "0 * * * *" },
   { file: "stats", schedule: "0 9 * * *" },
-  { file: "meta", schedule: "4 0 * * *" },
+  { file: "cache", schedule: "0 0 * * *" },
   { file: "rebalance", schedule: "*/15 * * * *" },
 ];
 

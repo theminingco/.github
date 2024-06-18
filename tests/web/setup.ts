@@ -1,5 +1,5 @@
 import Provider from "../../web/components/provider";
-import type { Address } from "@solana/web3.js";
+import { signTransaction, type Address } from "@solana/web3.js";
 import type { PropsWithChildren, ReactElement, ReactNode } from "react";
 import { createElement, useMemo, useState } from "react";
 import type { RenderOptions, RenderResult } from "@testing-library/react";
@@ -29,6 +29,8 @@ function MockWalletProvider(props: PropsWithChildren): ReactElement {
       publicKey,
       connect: async () => Promise.reject(new Error("Not implemented")),
       disconnect: async () => Promise.reject(new Error("Not implemented")),
+      signTransaction: async () => Promise.reject(new Error("Not implemented")),
+      signMessage: async () => Promise.reject(new Error("Not implemented")),
     };
   }, [publicKey]);
 
@@ -41,7 +43,7 @@ function TestWrapper(props: PropsWithChildren): ReactElement {
   return createElement(Provider, { ...props, providers: testProviders });
 }
 
-export async function startTestRender(element: ReactNode, options?: Omit<RenderOptions, "wrapper">): Promise<void> {
+export function startTestRender(element: ReactNode, options?: Omit<RenderOptions, "wrapper">): void {
   jsdom = new JSDOM("<!doctype html><html><body></body></html>", {
     url: "http://localhost:3000",
     pretendToBeVisual: true,

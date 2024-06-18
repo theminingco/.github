@@ -9,7 +9,7 @@ import tw from "../tailwind.config";
 const tailwindConfig = tw as object;
 type FontSpec = Omit<Font, "data"> & { path: string };
 
-const fontSpec: Array<FontSpec> = [
+const fontSpec: FontSpec[] = [
   { name: "NotoSans", style: "normal", weight: 400, path: "./font/NotoSans-Regular.ttf" },
   { name: "NotoSans", style: "normal", weight: 500, path: "./font/NotoSans-Medium.ttf" },
   { name: "NotoEmoji", style: "normal", weight: 400, path: "./font/NotoEmoji-Regular.ttf" },
@@ -17,7 +17,7 @@ const fontSpec: Array<FontSpec> = [
 
 export async function dynamicImage(element: ReactNode, width: number, height: number): Promise<NextResponse> {
   const fonts = await Promise.all(
-    fontSpec.map(async spec => ({ ...spec, data: await readFile(spec.path) }))
+    fontSpec.map(async spec => ({ ...spec, data: await readFile(spec.path) })),
   );
 
   const svg = await satori(element, { width, height, fonts, tailwindConfig });

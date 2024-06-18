@@ -1,6 +1,6 @@
-import { Address } from "@solana/web3.js";
+import type { Address, Signature } from "@solana/web3.js";
 
-export function shortAddress(publicKey: Address | string, chars = 4): string {
+export function shortAddress(publicKey: Address | string | Signature, chars = 4): string {
   const numChars = Math.max(4, Math.min(chars, 8));
   const key = publicKey.toString();
   const prefix = key.slice(0, numChars);

@@ -2,4 +2,3 @@
 
 *A [NodeJS](https://nodejs.org) command line interface for ⛏ The Mining Company that contains some useful scripts.*
 
-*Copyright © 2023 ⛏ The Mining Company*

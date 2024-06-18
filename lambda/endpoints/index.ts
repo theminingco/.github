@@ -11,9 +11,8 @@ const config: CallableOptions = {
 };
 
 const endpointSpec = [
-  "sell",
-  "buy",
   "update",
+  "send",
 ];
 
 type CallableHandler = (request: CallableRequest) => Promise<unknown>;

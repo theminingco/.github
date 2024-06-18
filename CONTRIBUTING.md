@@ -12,4 +12,6 @@ You can submit your feature requests through [GitHub](https://github.com/themini
 
 If you think you have found a security vulnerability you can report it to us (annonymously). For instructions please refer to our [GitHub](https://github.com/theminingco/.github/security/policy) page. We have a bounty program for reporting security vulnerabilities which can be paid out in a variety of cryptocurrencies.
 
-*Copyright © 2023 ⛏ The Mining Company*
+## Contributor License Agreement
+
+By contributing to this project you thereby grant the project owner a nonexclusive, royalty-free, fully paid-up, irrevocable, perpetual, worldwide license, with the right to grant and authorize sublicenses, to make, have made, modify, use, import, offer for sale, and sell such contributions as part of or in connection with such product, process, service, technology or other work and to practice any method related thereto.

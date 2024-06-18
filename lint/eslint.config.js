@@ -7,7 +7,7 @@ const globals = require("globals");
 
 module.exports = [
   {
-    ignores: ["**/lib/**", "**/node_modules/**", ".yarn/**", ".nx/**", "**/.next/**"],
+    ignores: ["**/lib/**", "**/node_modules/**", ".yarn/**", ".nx/**", "**/.next/**", "**/generated/**"],
   },
   {
     plugins: {
@@ -78,7 +78,7 @@ module.exports = [
       "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
       "@typescript-eslint/explicit-function-return-type": ["error", { allowExpressions: true }],
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" }],
-      "@typescript-eslint/array-type": ["error", { default: "generic", readonly: "generic" }],
+      "@typescript-eslint/array-type": ["error", { default: "array", readonly: "array" }],
       "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/naming-convention": "off",
       "@typescript-eslint/space-before-function-paren": "off",
@@ -96,6 +96,7 @@ module.exports = [
       "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
       "@typescript-eslint/init-declarations": "off",
       "@typescript-eslint/parameter-properties": "off",
+      "@typescript-eslint/consistent-return": "off",
     },
   },
   {
@@ -105,7 +106,12 @@ module.exports = [
     languageOptions: {
       parser,
     },
-    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+    settings: {
+      next: {
+        rootDir: "web",
+      },
+    },
+    files: ["web/**/*.ts", "web/**/*.tsx", "web/**/*.js", "web/**/*.jsx"],
     rules: {
       ...next.configs["recommended"].rules,
       // following rules are disabled because then don't work in eslint 9 yet
@@ -126,6 +132,11 @@ module.exports = [
       },
       globals: {
         ...globals.browser,
+      },
+    },
+    settings: {
+      react: {
+        version: "detect",
       },
     },
     files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
@@ -195,6 +206,26 @@ module.exports = [
       "react/style-prop-object": "off",
       "react/void-dom-elements-no-children": "off",
       "react/sort-default-props": "off",
+    },
+  },
+  {
+    plugins: {
+      "@typescript-eslint": typescript,
+    },
+    languageOptions: {
+      parser,
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
+    },
+    files: ["web/**/*.ts", "web/**/*.tsx"],
+    rules: {
+      "@typescript-eslint/no-restricted-imports": ["error", {
+        paths: [{
+          name: "@theminingco/core",
+          message: "Please use a fully qualified import path instead.",
+        }],
+      }],
     },
   },
 ];

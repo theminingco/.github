@@ -12,20 +12,27 @@ function handler(file: string): Handler {
   };
 }
 
-function subhandler(subcommands: Array<Choice<Handler>>): Handler {
+function subhandler(subcommands: Choice<Handler>[]): Handler {
   return async () => {
     const command = await promptChoice("Select a subinstruction to execute", subcommands);
     await command();
   };
 }
 
-const utilCommands: Array<Choice<Handler>> = [
+const utilCommands: Choice<Handler>[] = [
+  { title: "address", description: "Address utilities.", value: handler("./commands/address") },
+  { title: "signature", description: "Signature utilities.", value: handler("./commands/signature") },
   { title: "keypair", description: "Keypair utilities.", value: handler("./commands/keypair") },
 ];
 
-const commands: Array<Choice<Handler>> = [
+const commands: Choice<Handler>[] = [
   { title: "create", description: "Create a ⛏ The Mining Company collection.", value: handler("./commands/create") },
-  { title: "update", description: "Update the metadata of an existing ⛏ The Mining Company token.", value: handler("./commands/update") },
+  { title: "update", description: "Update the metadata of an existing ⛏ The Mining Company collection.", value: handler("./commands/update") },
+  { title: "publish", description: "Publish a ⛏ The Mining Company collection.", value: handler("./commands/publish") },
+  { title: "list", description: "List all ⛏ The Mining Company collections.", value: handler("./commands/list") },
+  { title: "unpublish", description: "Unpublish a ⛏ The Mining Company collection.", value: handler("./commands/unpublish") },
+  { title: "reset", description: "Reset the allocation of an existing ⛏ The Mining Company token.", value: handler("./commands/reset") },
+  { title: "delete", description: "Delete an existing ⛏ The Mining Company collection.", value: handler("./commands/delete") },
   { title: "utilities", description: "Collection of utilities", value: subhandler(utilCommands) },
 ];
 

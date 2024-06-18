@@ -1,67 +1,77 @@
-import type { Pool } from "@theminingco/core";
+import type { Pool, Token } from "@theminingco/core";
 import { poolCollection, tokenCollection } from "../utility/firebase";
-import { validateMetadata } from "../utility/allocation";
+import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
-async function getAllocations(): Promise<Map<string, Map<string, number>>> {
-  const snapshot = await tokenCollection
-    .select("collection", "uri")
-    .get();
-
-  const collections = snapshot.docs.map(x => x.data().collection);
-  const metadatas = snapshot.docs.map(x => x.data().uri);
-  const attributes = await Promise.all(metadatas.map(x => validateMetadata(x)));
-
-  const allocations = new Map<string, Map<string, number>>();
-  for (let i = 0; i < attributes.length; i++) {
-    const allocation = allocations.get(collections[i]) ?? new Map<string, number>();
-    for (const [trait, percentage] of attributes[i]) {
-      const existing = allocation.get(trait) ?? 0;
-      allocation.set(trait, existing + percentage);
+function getCombinedAllocation(tokens: Token[]): Map<string, bigint> {
+  const allocation = new Map<string, bigint>();
+  for (const token of tokens) {
+    for (const [key, value] of token.allocation) {
+      const current = allocation.get(key) ?? 0n;
+      const percentage = BigInt(value.slice(0, -1));
+      allocation.set(key, current + percentage);
     }
-    allocations.set(collections[i], allocation);
   }
 
-  // TODO: normalize each allocation to [0, 1]
+  if (allocation.size === 0) {
+    return allocation;
+  }
 
-  return allocations;
+  const remainders = new Map<string, bigint>();
+  for (const [key, value] of allocation) {
+    allocation.set(key, value / BigInt(tokens.length));
+    remainders.set(key, value % BigInt(tokens.length));
+  }
+
+  const total = Array.from(allocation.values())
+    .reduce((x, y) => x + y, 0n);
+  const remaining = 100n - total;
+  const queue = Array.from(remainders.entries())
+    .sort((a, b) => Number(b[1] - a[1]))
+    .map(x => x[0]);
+  for (let i = 0; i < remaining; i++) {
+    const key = queue[i % queue.length];
+    const current = allocation.get(key) ?? 0n;
+    allocation.set(key, current + 1n);
+  }
+
+  const empties = Array.from(allocation.entries())
+    .filter(x => x[1] === 0n)
+    .map(x => x[0]);
+  for (const key of empties) {
+    allocation.delete(key);
+  }
+
+  return allocation;
 }
 
-async function rebalancePool(_pool: Partial<Pool>, _allocation: Map<string, number>): Promise<void> {
+async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {
+  const snapshot = await tokenCollection
+    .where("pool", "==", doc.data().address)
+    .get();
+
+  const tokens = snapshot.docs.map(x => x.data());
+  const allocation = getCombinedAllocation(tokens);
+
   // TODO: reblance each pool on alpaca based on allocation
 
   // Cancel all open orders
-  // Create all sell orders
 
-  // TODO: Get current free balance in USD
-  const freeBalance = 0;
+  // Calculate target amounts for each symbol
 
-  // Get amount needed for buy orders in USD
-  const totalBuyOrder = 0;
+  // For each asset in alpaca:
+  // Sell the difference between target and current amount
+  // with some margin (up to 1% more or less is allowed?)
 
-  if (freeBalance < totalBuyOrder) {
-    // Sell SOL to fill the deficit
-  }
+  // For each target amount:
+  // Buy the difference between target and current amount
+  // with some margin (up to 1% more or less is allowed?)
+  // At some point might run out of money for buying? How should this be handled?
 
-  if (freeBalance > totalBuyOrder) {
-    // Buy SOL to spend the excess
-  }
-
-  // Place all buy orders
-  return Promise.resolve();
+  await doc.ref.update({ allocation });
 }
 
 export default async function rebalanceInvestments(): Promise<void> {
-  const snapshot = await poolCollection
-    .select("")
-    .get();
-
-  const allocations = await getAllocations();
-  const promises: Array<Promise<void>> = [];
-
-  for (const doc of snapshot.docs) {
-    const allocation = allocations.get(doc.data().address) ?? new Map<string, number>();
-    promises.push(rebalancePool(doc.data(), allocation));
-  }
-
+  const snapshot = await poolCollection.get();
+  const promises = snapshot.docs.map(rebalancePool);
   await Promise.allResolved(promises);
 }

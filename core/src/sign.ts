@@ -1,4 +1,5 @@
-import { Address, SignatureBytes, address, getBase58Decoder, getBase58Encoder, verifySignature } from "@solana/web3.js";
+import type { Address, SignatureBytes } from "@solana/web3.js";
+import { address, getBase58Decoder, getBase58Encoder, verifySignature } from "@solana/web3.js";
 import { unix } from "./time";
 import { randomId } from "./identifier";
 import { subtle } from "crypto";

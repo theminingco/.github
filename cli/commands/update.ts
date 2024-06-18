@@ -1,101 +1,89 @@
 import { homedir } from "os";
-import { promptChoice, promptText } from "../utility/prompt";
-import { createTransaction, fetchMetadata, getAsset, getCollection, sendAndConfirmTransaction, uploadFile } from "@theminingco/core";
-import { AssetV1, CollectionV1, Key, getAssetV1Decoder, getCollectionV1Decoder, getUpdateCollectionV1Instruction, getUpdateV1Instruction } from "@theminingco/metadata";
-import { assetDescription, assetSymbol, assetUrl, rpc, signer } from "../utility/config";
-import { Address, address, getBase58Encoder, getBase64Encoder } from "@solana/web3.js";
+import { promptText } from "../utility/prompt";
 import { readFile } from "fs/promises";
+import { Metadata, createTransactions, fetchMetadata, sendAndConfirmTransactions, splitInstructions, uploadData } from "@theminingco/core";
+import { rpc, signer } from "../utility/config";
+import { AssetV1, CollectionV1, fetchAllAssetV1ByCollection, fetchCollectionV1, getUpdateV1Instruction } from "@theminingco/metadata";
+import { Account, IInstruction, address } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
 
-async function fetchAssetOrCollection(address: Address): Promise<AssetV1 | CollectionV1 | null> {
-  const accountInfo = await rpc.getAccountInfo(address).send();
-  if (!accountInfo.value) {
-    return null;
-  }
-  const data = getBase58Encoder().encode(accountInfo.value.data[0]);
-  try {
-    return getAssetV1Decoder().decode(data);
-  } catch {
-    return getCollectionV1Decoder().decode(data);
-  }
+async function updateCollectionMetadataInstruction(metaPath: string, collection: Account<CollectionV1>) {
+  const image = await readFile(`${metaPath}/0.png`);
+  const imageUri = await uploadData(image, signer);
+  const metaBuffer = await readFile(`${metaPath}/0.json`);
+  const currentMetadata = await fetchMetadata(collection.data.uri);
+  const newMetadata = JSON.parse(metaBuffer.toString()) as Partial<Metadata>;
+  const metadata: Metadata = {
+    ...currentMetadata,
+    ...newMetadata,
+    image: imageUri,
+  };
+  const metaUri = await uploadData(JSON.stringify(metadata), signer);
+  return getUpdateV1Instruction({
+    asset: collection.address,
+    collection: collection.address,
+    payer: signer,
+    authority: signer,
+    newUri: metaUri,
+    newName: metadata.name,
+    newUpdateAuthority: null,
+  })
 }
 
-export default async function updateNftCollection(): Promise<void> {
-  const accountAddress = await promptText("What is the asset/collection address?");
-  const choice = await promptChoice("What would you like to update?", [
-    { title: "Update Image", description: "Update the asset/collection image", value: "image" },
-    { title: "Update Attributes", description: "Update the asset/collection attributes", value: "attributes" },
-    { title: "Reset Allocation", description: "Reset the asset/collection allocation", value: "allocation" },
-    { title: "Reset Meta", description: "Reset the asset/collection metadata", value: "metadata" },
-  ]);
-
-  let filePath = "";
-  if (choice === "image" || choice === "attributes") {
-    filePath = await promptText("What is the path to the new image/attributes?");
+async function updateAssetMetadataInstruction(metaPath: string, asset: Account<AssetV1>) {
+  const index = asset.data.name.slice(1);
+  const image = await readFile(`${metaPath}/${index}.png`);
+  const imageUri = await uploadData(image, signer);
+  const metaBuffer = await readFile(`${metaPath}/${index}.json`);
+  const currentMetadata = await fetchMetadata(asset.data.uri);
+  const newMetadata = JSON.parse(metaBuffer.toString()) as Partial<Metadata>;
+  const metadata: Metadata = {
+    ...currentMetadata,
+    ...newMetadata,
+    image: imageUri,
+    name: asset.data.name,
+  };
+  if (asset.data.updateAuthority.__kind !== "Collection") {
+    throw new Error("Invalid update authority");
   }
-  const fileUri = filePath.replace("~", homedir());
-  const assetOrCollection = await fetchAssetOrCollection(address(accountAddress));
-  if (!assetOrCollection) {
-    throw new Error("Asset or collection not found");
-  }
-  const currentMetadata = await fetchMetadata(assetOrCollection.uri);
-  let newMetadata = { ...currentMetadata };
+  const collection = asset.data.updateAuthority.fields[0];
+  const metaUri = await uploadData(JSON.stringify(metadata), signer);
+  return getUpdateV1Instruction({
+    asset: asset.address,
+    collection,
+    payer: signer,
+    authority: signer,
+    newUri: metaUri,
+    newName: metadata.name,
+    newUpdateAuthority: null,
+  })
+}
 
-  switch (choice) {
-    case "image":
-      const image = await readFile(fileUri);
-      const imageUri = await uploadFile(rpc, image);
-      Object.assign(newMetadata, { image: imageUri });
-      break;
-    case "attributes":
-      const attributes = await readFile(fileUri);
-      Object.assign(newMetadata, { attributes: JSON.parse(attributes.toString()) });
-      break;
-    case "allocation":
-      Object.assign(newMetadata, { allocation: undefined });
-      break;
-    case "metadata":
-      Object.assign(newMetadata, { symbol: assetSymbol, description: assetDescription, external_url: assetUrl, });
-      break;
-  }
+export default async function updateCollection() {
+  const collectionAddress = await promptText("What is the collection address?");
+  const imagesFolder = await promptText("What is the folder containing the metadata?");
+  const metaUri = imagesFolder.replace("~", homedir());
 
-  const metaUri = await uploadFile(rpc, JSON.stringify(newMetadata));
+  const collection = await fetchCollectionV1(rpc, address(collectionAddress));
+  const assets = await fetchAllAssetV1ByCollection(rpc, collection.address);
 
-  let instructions = [];
-  let type = "";
+  const flatInstructions: IInstruction[] = [
+    await updateCollectionMetadataInstruction(metaUri, collection)
+  ];
 
-  switch (assetOrCollection.key) {
-    case Key.AssetV1:
-      type = "Asset";
-      instructions.push(
-        getUpdateV1Instruction({
-          payer: signer,
-          asset: address(accountAddress),
-          authority: signer,
-          newUri: metaUri,
-          newName: newMetadata.name,
-          newUpdateAuthority: null
-        })
-    );
-      break;
-    case Key.CollectionV1:
-      type = "Collection";
-      instructions.push(
-        getUpdateCollectionV1Instruction({
-          payer: signer,
-          collection: address(accountAddress),
-          authority: signer,
-          newUri: metaUri,
-          newName: newMetadata.name,
-        })
-    );
-      break;
+  for (const asset of assets) {
+    const instruction = await updateAssetMetadataInstruction(metaUri, asset);
+    flatInstructions.push(instruction);
   }
 
-  const transaction = await createTransaction(rpc, instructions, signer.address);
-  await sendAndConfirmTransaction(rpc, transaction);
+  let instructions = await splitInstructions(flatInstructions);
+  while (instructions.length > 0) {
+    const transactions = await createTransactions(rpc, instructions, signer.address);
+    const results = await sendAndConfirmTransactions(rpc, transactions);
+    instructions = instructions.flatMap((x, i) => results[i] instanceof Error ? [x] : []);
+  }
 
   console.info();
-  console.info(`Updated ${type} ${newMetadata.name}`);
-  console.info(`Address: ${linkAccount(address(accountAddress))}`)
+  console.info(`Updated ${instructions.length} assets`);
+  console.info(`Collection:    ${linkAccount(collection.address)}`);
 }

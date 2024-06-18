@@ -1,15 +1,15 @@
-import type { StandardConnectFeature, WalletWithFeatures, StandardDisconnectFeature, WalletIcon } from "@wallet-standard/core";
-import type { SolanaSignTransactionFeature } from "@solana/wallet-standard-features";
+import type { StandardConnectFeature, WalletWithFeatures, StandardDisconnectFeature, StandardEventsFeature, WalletIcon } from "@wallet-standard/core";
+import type { SolanaSignMessageFeature, SolanaSignTransactionFeature } from "@solana/wallet-standard-features";
 import { SOLANA_CHAINS } from "@solana/wallet-standard-chains";
 
-type RequiredFeatures = StandardConnectFeature & Partial<StandardDisconnectFeature> & SolanaSignTransactionFeature;
-export type SupportedWallet = WalletWithFeatures<RequiredFeatures>;
+type WalletFeatures = StandardConnectFeature & Partial<StandardEventsFeature & StandardDisconnectFeature & SolanaSignTransactionFeature & SolanaSignMessageFeature>;
+export type SupportedWallet = WalletWithFeatures<WalletFeatures>;
 
 export class FallbackWallet implements SupportedWallet {
   public readonly version = "1.0.0";
   public readonly chains = SOLANA_CHAINS;
   public readonly accounts = [];
-  public readonly features: RequiredFeatures;
+  public readonly features: WalletFeatures;
 
   public constructor(
     public readonly name: string,
@@ -23,11 +23,6 @@ export class FallbackWallet implements SupportedWallet {
           window.open(url, "_blank");
           return Promise.resolve({ accounts: [] });
         },
-      },
-      "solana:signTransaction": {
-        version: "1.0.0",
-        supportedTransactionVersions: [],
-        signTransaction: async () => Promise.reject(new Error("Not implemented")),
       },
     };
   }

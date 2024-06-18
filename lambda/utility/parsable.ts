@@ -1,4 +1,5 @@
-import { Address, address } from "@solana/web3.js";
+import type { Address } from "@solana/web3.js";
+import { address } from "@solana/web3.js";
 import { HttpsError } from "firebase-functions/v2/https";
 
 export class Parsable {
@@ -38,7 +39,7 @@ export class Parsable {
     return this.parsable;
   }
 
-  public array(): Array<Parsable> {
+  public array(): Parsable[] {
     const object = this.object();
     if (!Array.isArray(object)) { throw new HttpsError("invalid-argument", "Expected argument of type array, found something else."); }
     return object.map(value => new Parsable(value));
@@ -50,10 +51,12 @@ export class Parsable {
     return array[index];
   }
 
-  public map(): Map<string, Parsable> {
+  public map<T = Parsable>(transform?: (parsable: Parsable) => T): Map<string, T> {
     const object = this.object();
     if (Array.isArray(object)) { throw new HttpsError("invalid-argument", "Expected argument of type record, found array."); }
-    const values = Object.entries(object).map(([key, value]) => [key, new Parsable(value)] as [string, Parsable]);
+    const transformFn = transform ?? (value => value as T);
+    const values = Object.entries(object)
+      .map(([key, value]) => [key, transformFn(new Parsable(value))] as const);
     return new Map(values);
   }
 
@@ -72,6 +75,15 @@ export class Parsable {
       return address(str);
     } catch {
       throw new HttpsError("invalid-argument", "Argument is not a valid public key.");
+    }
+  }
+
+  public bigint(): bigint {
+    const str = this.string();
+    try {
+      return BigInt(str);
+    } catch {
+      throw new HttpsError("invalid-argument", "Argument is not a valid bigint.");
     }
   }
 

@@ -6,17 +6,17 @@ import { createElement } from "react";
 
 describe("footer", () => {
 
-  beforeEach(async () => {
-    await startTestRender(createElement(Footer));
+  beforeEach(() => {
+    startTestRender(createElement(Footer));
   });
 
   it("Footer should contain copyright", async () => {
-    const copyright = await context.findByText("Copyright © 2023 ⛏ The Mining Company");
+    const copyright = await context.findByText("Copyright © 2024 iwcapital.xyz");
     assert.ok(copyright);
   });
 
   it("Footer should contain social links", async () => {
-    const links = await context.findAllByRole("link") as Array<HTMLAnchorElement>;
+    const links = await context.findAllByRole("link") as HTMLAnchorElement[];
     assert.strictEqual(links.length, 3);
     assert.strictEqual(links[0].href, "https://twitter.com/theminingco");
     assert.strictEqual(links[1].href, "https://discord.gg/w9DpyG6ddG");
@@ -24,7 +24,7 @@ describe("footer", () => {
   });
 
   it("Footer should contain legal buttons", async () => {
-    const buttons = await context.findAllByRole("button") as Array<HTMLButtonElement>;
+    const buttons = await context.findAllByRole("button") as HTMLButtonElement[];
     assert.strictEqual(buttons.length, 2);
   });
 });

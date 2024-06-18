@@ -26,5 +26,3 @@ Below is a (non-exhaustive) list of available commands:
 
 If you look closely, the commands just call individual commands specified in the component's `package.json` file. These commands should not be run by themselves as it will not resolve the right dependencies and will not execute the prerequisites. Instead you can specify which package to run with `yarn start web`, `yarn start cli`, etc.
 
-*Copyright © 2023 ⛏ The Mining Company*
-

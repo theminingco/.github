@@ -1,71 +1,58 @@
 import { BatchWriter, poolCollection, tokenCollection } from "../utility/firebase";
-import type { Pool } from "@theminingco/core";
-import { unix, getMultipleAssets } from "@theminingco/core";
-import { rpc, signer } from "../utility/solana";
-import type { DocumentData, QueryDocumentSnapshot } from "firebase-admin/firestore";
-import { address } from "@solana/web3.js";
+import { batchFetch, unix } from "@theminingco/core";
+import { rpc } from "../utility/solana";
+import { address, fetchEncodedAccounts } from "@solana/web3.js";
+import { fetchAllMaybeAssetV1 } from "@theminingco/metadata";
+import { extractRoyaltiesPlugin } from "../utility/royalties";
 
-async function transferFundsFromWallet(price: number, amount: number): Promise<void> {
-  // TODO: Transfer SOL to alpaca
-}
-
-async function transferFundsFromInvestment(price: number, amount: number): Promise<void> {
-  // TODO: Transfer SOL from alpaca
-}
-
-async function updateTokensCache(): Promise<void> {
-  const snaphot = await tokenCollection
-    .select("id", "address")
-    .get();
-  const addresses = snaphot.docs.map(x => address(x.data().address));
-  const assets = await getMultipleAssets(rpc, addresses);
-
+async function updateTokenOwners(): Promise<void> {
+  const snapshot = await tokenCollection.get();
+  const addresses = snapshot.docs.map(x => address(x.data().address));
+  const assets = await batchFetch(fetchAllMaybeAssetV1).send(rpc, addresses);
   const batch = new BatchWriter();
 
-  for (let i = 0; i < snaphot.docs.length; i++) {
-    const owner = assets[i]?.owner;
-    const ref = tokenCollection.doc(snaphot.docs[i].id);
-    await batch.update(ref, { owner });
+  for (let i = 0; i < snapshot.docs.length; i++) {
+    const [asset, doc] = [assets[i], snapshot.docs[i]];
+    if (asset.exists) {
+      await batch.update(doc.ref, {
+        owner: asset.data.owner,
+      });
+    } else {
+      await batch.delete(doc.ref);
+    }
   }
 
   await batch.finalize();
 }
 
-async function updatePool(doc: QueryDocumentSnapshot<Partial<Pool>>): Promise<void> {
-  const ref = poolCollection.doc(doc.id);
-  const pool = doc.data();
+async function updatePrices(): Promise<void> {
+  const snapshot = await poolCollection.get();
+  const addresses = snapshot.docs.map(x => address(x.data().address));
+  const collections = await batchFetch(fetchEncodedAccounts).send(rpc, addresses);
+  const batch = new BatchWriter();
 
-  const tokens = await tokenCollection
-    .where("collection", "==", pool.address)
-    .where("owner", "==", signer.address)
-    .count()
-    .get();
+  for (let i = 0; i < snapshot.docs.length; i++) {
+    const [collection, doc] = [collections[i], snapshot.docs[i]];
+    const royalties = collection.exists ? extractRoyaltiesPlugin(collection.data) : null;
+    const isReleased = royalties?.ruleSet.__kind === "ProgramDenyList";
+    // TODO: get actual price in SOL from alpaca
+    // 1. Get portfolio size in usd from alpaca
+    // 2. Calculate in SOL
+    // 3. Divide by (supply)
+    const price = 5;
+    await batch.update(doc.ref, {
+      price,
+      priceTimestamp: unix(),
+      isReleased,
+    });
+  }
 
-  const oldAvailable = pool.available ?? 0;
-  const available = tokens.data().count;
-  const oldPrice = pool.price ?? 0;
-
-  const availableDelta = oldAvailable - available;
-  if (availableDelta > 0) { await transferFundsFromWallet(oldPrice, availableDelta); }
-  if (availableDelta < 0) { await transferFundsFromInvestment(oldPrice, availableDelta); }
-
-  // TODO: get actual price in SOL from alpaca
-  // Get portfolio size from alpaca
-  // Calculate in SOL
-  // Divide by (supply - oldAvailable)
-  const price = 5;
-  await ref.update({ available, price, priceTimestamp: unix() });
-}
-
-async function updatePoolsCache(): Promise<void> {
-  const snaphot = await poolCollection
-    .select("id", "address", "available", "price")
-    .get();
-  const promises = snaphot.docs.map(updatePool);
-  await Promise.allResolved(promises);
+  await batch.finalize();
 }
 
 export default async function heartbeat(): Promise<void> {
-  await updateTokensCache();
-  await updatePoolsCache();
+  await Promise.allResolved([
+    updateTokenOwners(),
+    updatePrices(),
+  ]);
 }

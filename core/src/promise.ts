@@ -13,11 +13,11 @@ function isFulfilled<T>(x: PromiseSettledResult<T>): x is PromiseFulfilledResult
   return x.status === "fulfilled";
 }
 
-Promise.allResolved = async (promises) => {
+Promise.allResolved = async promises => {
   const results = await Promise.allSettled(promises);
   const errors = results
     .filter(isError)
-    .map(x => x.reason);
+    .map(x => x.reason instanceof Error ? x.reason.message : `${x.reason}`);
   if (errors.length > 0) {
     throw new Error(errors.join(","));
   }

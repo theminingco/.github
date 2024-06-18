@@ -1,4 +1,4 @@
-import { createKeyPairFromBytes, generateKeyPair, getAddressFromPublicKey, getBase58Decoder, getBase58Encoder } from "@solana/web3.js";
+import { createKeyPairFromBytes, generateKeyPair, getAddressFromPublicKey, getBase58Decoder } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
 import { promptConfirm, promptText } from "../utility/prompt";
 import { existsSync, readFileSync } from "fs";
@@ -10,25 +10,25 @@ export default async function createKeypair(): Promise<void> {
   const keyfile = keyfileExists ? await promptText("What is the keyfile path?") : null;
   let keypair = {} as CryptoKeyPair;
 
-  console.info();
-
+  let logText = "";
   const keyfilePath = keyfile?.replace("~", homedir());
   if (keyfilePath != null && existsSync(keyfilePath)) {
-    console.info("Using existing keyfile");
+
     const keyfileBuffer = readFileSync(keyfilePath);
-    const decodedKeyfile = JSON.parse(keyfileBuffer.toString()) as Array<number>;
+    const decodedKeyfile = JSON.parse(keyfileBuffer.toString()) as number[];
     const keyfileArray = new Uint8Array(decodedKeyfile);
     keypair = await createKeyPairFromBytes(keyfileArray, true);
+    logText = "Using existing keyfile";
   } else {
-    console.info("Generated a new keypair");
     keypair = await generateKeyPair();
+    logText = "Generated new keypair";
   }
 
   const secretKey = new Uint8Array(await subtle.exportKey("raw", keypair.privateKey));
   const publicKey = await getAddressFromPublicKey(keypair.publicKey);
 
-
-  console.info(`Address: ${linkAccount(publicKey)}`);
-  console.info(`Key: ${getBase58Decoder().decode(secretKey)}`);
-  return Promise.resolve();
+  console.info();
+  console.info(logText);
+  console.info(`Address:       ${linkAccount(publicKey)}`);
+  console.info(`Key:           ${getBase58Decoder().decode(secretKey)}`);
 }

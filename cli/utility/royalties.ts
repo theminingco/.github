@@ -1,7 +1,8 @@
 import { address } from "@solana/web3.js";
-import { PluginAuthorityPair } from "@theminingco/metadata";
+import type { PluginAuthorityPair } from "@theminingco/metadata";
 
-export function royaltiesPlugin(): PluginAuthorityPair {
+export function royaltiesPlugin(config?: { released?: boolean }): PluginAuthorityPair {
+  const isReleased = config?.released ?? false;
   return {
     plugin: {
       __kind: "Royalties",
@@ -9,18 +10,19 @@ export function royaltiesPlugin(): PluginAuthorityPair {
         basisPoints: 100,
         creators: [{
           address: address("GKJ1EV89q9qXw42AiiivcNjbno1j3qfXh4BVk4iJVvA9"),
-          percentage: 100
+          percentage: 100,
         }],
         ruleSet: {
-          __kind: "None"
-        }
-      }]
+          __kind: isReleased ? "ProgramDenyList" : "ProgramAllowList",
+          fields: [[]]
+        },
+      }],
     },
     authority: {
       __option: "Some",
       value: {
         __kind: "UpdateAuthority",
-      }
-    }
-  }
+      },
+    },
+  };
 }

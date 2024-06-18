@@ -1,17 +1,47 @@
-import { GetRecentPrioritizationFeesApi, GetSignatureStatusesApi, Rpc, SendTransactionApi, SimulateTransactionApi } from "@solana/web3.js";
+import { MessagePartialSigner, getBase58Encoder } from "@solana/web3.js";
 import { randomId } from "./identifier";
+import { createData, DataItem, SIG_CONFIG, Signer } from "arbundles";
 
-type UploadRpc = Rpc<GetRecentPrioritizationFeesApi & SimulateTransactionApi & GetSignatureStatusesApi & SendTransactionApi>;
+function getArweaveSigner(signer: MessagePartialSigner): Signer {
+  const publicKey = Buffer.from(
+    getBase58Encoder().encode(signer.address)
+  );
 
-export async function uploadFile(
-  rpc: UploadRpc,
-  buffer: string | Buffer,
+  return {
+    publicKey,
+    signatureType: 2,
+    signatureLength: SIG_CONFIG[2].sigLength,
+    ownerLength: SIG_CONFIG[2].pubLength,
+    sign: async (message: Uint8Array) => {
+      const signatures = await signer.signMessages([{
+        content: message,
+        signatures: {}
+      }]);
+      return Buffer.from(signatures[0][signer.address]);
+    }
+  };
+}
+
+export async function uploadData(
+  data: string | Buffer,
+  signer: Signer | MessagePartialSigner
 ): Promise<string> {
-  const id = randomId();
-  // TODO:
-  // calc upload fee
-  // add to uploader
-  // sign message to upload file
-  // upload file
-  return `https://arweave.net/${id}`;
+  const arSigner = "publicKey" in signer ? signer : getArweaveSigner(signer);
+  const buffer = Buffer.from(data);
+
+  const dataItem = createData(buffer, arSigner, {
+    anchor: `${randomId()}${randomId}`.slice(0, 32)
+  });
+
+  await dataItem.sign(arSigner);
+
+  const response = await fetch("https://node2.irys.xyz/tx/solana", {
+    method: "POST",
+    body: dataItem.getRaw(),
+    headers: { "Content-Type": "application/octet-stream" },
+  });
+
+  const json = await response.json() as { id: string };
+
+  return Promise.resolve(`https://arweave.net/${json.id}`);
 }

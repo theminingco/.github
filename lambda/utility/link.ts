@@ -1,6 +1,6 @@
 import { shortAddress } from "@theminingco/core";
 import { cluster } from "./solana";
-import type { Address, TransactionSigner } from "@solana/web3.js";
+import type { Address } from "@solana/web3.js";
 
 const clusterQuery = (): string => {
   if (cluster === "mainnet-beta") { return ""; }

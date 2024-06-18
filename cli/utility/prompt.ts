@@ -31,7 +31,7 @@ export interface Choice<T> {
   readonly value: T;
 }
 
-export async function promptChoice<T>(message: string, choices: Array<Choice<T>>): Promise<T> {
+export async function promptChoice<T>(message: string, choices: Choice<T>[]): Promise<T> {
   const response = await prompt({
     type: "select",
     name: "choice",

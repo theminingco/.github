@@ -48,5 +48,3 @@ We may update our Privacy Policy from time to time. Thus, you are advised to rev
 ## Contact Us
 
 If you have any questions or suggestions about our Terms of Service, do not hesitate to contact us.
-
-*Copyright © 2023 ⛏ The Mining Company*
