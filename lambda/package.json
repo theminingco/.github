@@ -17,6 +17,6 @@
     "@theminingco/core": "*",
     "firebase-admin": "^12.1.1",
     "firebase-functions": "^5.0.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   }
 }
