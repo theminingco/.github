@@ -15,12 +15,12 @@
     "clean": "rimraf lib generated"
   },
   "peerDependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3"
+    "@solana/web3.js": "^2.0.0-preview.3.20240621085909.06e1f341559da90098acaa5713ade32af6e25e11"
   },
   "devDependencies": {
     "@kinobi-so/nodes-from-anchor": "^0.20.6",
     "@kinobi-so/renderers-js": "^0.20.9",
-    "@solana/web3.js": "^2.0.0-preview.3",
+    "@solana/web3.js": "^2.0.0-preview.3.20240621085909.06e1f341559da90098acaa5713ade32af6e25e11",
     "kinobi": "^0.20.4",
     "typescript": "^5.5.2"
   }
