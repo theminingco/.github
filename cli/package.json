@@ -16,7 +16,7 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3",
+    "@solana/web3.js": "^2.0.0-preview.3.20240621192253.f6678583bdb4e0260a3857ed952e6e354114ea4c",
     "@theminingco/core": "*",
     "@theminingco/metadata": "*",
     "prompts": "^2.4.2",
