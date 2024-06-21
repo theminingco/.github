@@ -15,7 +15,7 @@
     "@solana-program/token": "^0.1.4",
     "@solana/web3.js": "^2.0.0-preview.3",
     "@theminingco/core": "*",
-    "firebase-admin": "^12.1.1",
+    "firebase-admin": "^12.2.0",
     "firebase-functions": "^5.0.1",
     "typescript": "^5.5.2"
   }
