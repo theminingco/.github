@@ -22,7 +22,7 @@
   "functions": {
     "source": "lambda",
     "codebase": "default",
-    "runtime": "nodejs18",
+    "runtime": "nodejs20",
     "ignore": [
       "node_modules",
       ".git",

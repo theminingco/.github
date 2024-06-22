@@ -16,7 +16,7 @@ async function insertOrUpdatePool(ref: DocumentReference | undefined, pool: Acco
       image: metadata.image,
       price: 0,
       priceTimestamp: 0,
-      allocation: new Map(),
+      allocation: {},
       isReleased: false,
     });
   } else {
@@ -63,7 +63,7 @@ async function insertOrUpdateToken(ref: DocumentReference | undefined, token: Ac
       name: token.data.name,
       owner: token.data.owner,
       image: metadata.image,
-      allocation: new Map(),
+      allocation: {},
     });
   } else {
     await ref.update({

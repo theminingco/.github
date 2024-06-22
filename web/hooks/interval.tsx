@@ -14,7 +14,7 @@ interface UseIntervalPropsBase<T> {
 }
 
 export function useInterval<T>(props: UseIntervalPropsBase<T>, deps: DependencyList): UseInterval<T> {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [result, setResult] = useState<T | null>(null);
   const [counter, setCounter] = useState<number>(0);
   const { logError } = useFirebase();
@@ -29,7 +29,9 @@ export function useInterval<T>(props: UseIntervalPropsBase<T>, deps: DependencyL
   const handler = useCallback((initial = false) => {
     const maybePromise = props.callback();
     if (maybePromise instanceof Promise) {
-      setLoading(initial);
+      if (initial) {
+        setLoading(true);
+      }
       maybePromise
         .then(setResult)
         .catch(logError)
@@ -40,7 +42,7 @@ export function useInterval<T>(props: UseIntervalPropsBase<T>, deps: DependencyL
   }, [setLoading, counter, ...deps]);
 
   useEffect(() => {
-    const id = setInterval(handler, interval ?? 1000);
+    const id = setInterval(handler, interval);
     setResult(null);
     handler(true);
     return () => { clearInterval(id); };

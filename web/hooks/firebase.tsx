@@ -39,7 +39,7 @@ function converter<T extends DocumentData>(): FirestoreDataConverter<T> {
 
 interface UseFirebase {
   logEvent: (name: string, params?: Record<string, unknown>) => void;
-  logError: (error: Error) => void;
+  logError: (error: unknown) => void;
   identify: (identifier: string) => void;
   setProperties: (properties: Record<string, unknown>) => void;
   getCallable: <T extends object, U extends object>(name: string) => HttpsCallable<T, U>;
@@ -76,7 +76,7 @@ export default function FirebaseProvider(props: PropsWithChildren): ReactElement
     logFirebaseEvent(analytics, name, params);
   }, [app]);
 
-  const logError = useCallback((error: Error): void => {
+  const logError = useCallback((error: unknown): void => {
     // FIXME: log error to firebase?
     console.error(error);
   }, [logEvent]);

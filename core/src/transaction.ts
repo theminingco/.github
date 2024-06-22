@@ -9,6 +9,7 @@ type TransactionMessageWithFeePayer = ITransactionMessageWithFeePayer & Transact
 const computeLimitMargin = 0.1;
 const minComputeUnitMargin = 10000;
 const priorityFeePercentile = 0.8;
+const minPriorityFeeMicroLamports = 10000n;
 
 declare global {
   interface BigInt {
@@ -30,7 +31,7 @@ async function prependComputeBudgetInstructions(rpc: CreateTransactionRpc, trans
   const addresses = transactionMessageWithComputeUnitLimit.instructions
     .flatMap(x => x.accounts)
     .filter(nonNull)
-    .filter(x => x.role === AccountRole.WRITABLE)
+    .filter(x => x.role === AccountRole.WRITABLE || x.role === AccountRole.WRITABLE_SIGNER)
     .map(x => x.address);
   const recentPrioritizationFees = await rpc.getRecentPrioritizationFees(addresses).send();
   recentPrioritizationFees.sort((a, b) => Number(a.prioritizationFee - b.prioritizationFee));
@@ -38,7 +39,8 @@ async function prependComputeBudgetInstructions(rpc: CreateTransactionRpc, trans
     Math.max(Math.floor(recentPrioritizationFees.length * priorityFeePercentile), 0),
     recentPrioritizationFees.length - 1,
   );
-  const microLamports = recentPrioritizationFees[percentileIndex].prioritizationFee;
+  const priorityFeeSuggestion = recentPrioritizationFees[percentileIndex].prioritizationFee;
+  const microLamports = priorityFeeSuggestion > minPriorityFeeMicroLamports ? priorityFeeSuggestion : minPriorityFeeMicroLamports;
   return prependTransactionMessageInstruction(
     getSetComputeUnitPriceInstruction({ microLamports }),
     transactionMessageWithComputeUnitLimit,
@@ -46,6 +48,9 @@ async function prependComputeBudgetInstructions(rpc: CreateTransactionRpc, trans
 }
 
 export function splitInstructions(instructions: IInstruction[]): IInstruction[][] {
+  if (instructions.length === 0) {
+    return [];
+  }
   let groupedInstructions: IInstruction[][] = [[]];
   let transactionSize = 128;
   for (const instruction of instructions) {
@@ -129,9 +134,9 @@ export async function sendAndConfirmTransactions(rpc: SendTransactionRpc, messag
     }
 
     // Wait one second
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 2500));
 
-    // Check with of the transactions have been confirmed
+    // Check which of the transactions have been confirmed
     for (let i = 0; i < transactionsToSend.size; i += 256) {
       try {
         const signatures = Array.from(transactionsToSend.keys()).slice(i, i + 256);

@@ -114,13 +114,21 @@ function validateSingleAllocation(symbol: string, percentage: string, allowedSym
   return [symbol, number];
 }
 
-interface AllocationObject { allocation: Allocation[] | Map<string, string> }
+interface AllocationObject { allocation: Allocation[] | Map<string, string> | Record<string, string> }
+
+function normalizeAllocation(metadata: AllocationObject): Map<string, string> {
+  if (Array.isArray(metadata.allocation)) {
+    return new Map(metadata.allocation.map(x => [x.symbol, x.percentage]));
+  }
+  if (metadata.allocation instanceof Map) {
+    return metadata.allocation;
+  }
+  return new Map(Object.entries(metadata.allocation));
+}
 
 export function parseAllocation(metadata: AllocationObject, allowedSymbols: Iterable<string> = []): Map<string, bigint> {
   const allowedSymbolsSet = new Set(allowedSymbols);
-  const rawAllocation = Array.isArray(metadata.allocation)
-    ? new Map(metadata.allocation.map(x => [x.symbol, x.percentage]))
-    : metadata.allocation;
+  const rawAllocation = normalizeAllocation(metadata);
   const allocation = Array.from(rawAllocation)
     .map(([symbol, percentage]) => validateSingleAllocation(symbol, percentage, allowedSymbolsSet));
   const map = new Map(allocation);

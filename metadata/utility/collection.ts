@@ -8,8 +8,8 @@ export async function fetchAllCollectionV1ByUpdateAuthority(rpc: Rpc<GetProgramA
   const accountInfos = await rpc.getProgramAccounts(MPL_CORE_PROGRAM_PROGRAM_ADDRESS, {
     encoding: "base64",
     filters: [
-      { offset: 0n, bytes: collectionV1Key.toString(), encoding: "base58" },
-      { offset: 1n, bytes: updateAuthority.toString(), encoding: "base58" },
+      { memcmp: { offset: 0n, bytes: collectionV1Key.toString(), encoding: "base58" } },
+      { memcmp: { offset: 1n, bytes: updateAuthority.toString(), encoding: "base58" } },
     ],
   }).send();
   const encoder = getBase64Encoder();

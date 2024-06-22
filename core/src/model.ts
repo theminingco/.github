@@ -5,7 +5,7 @@ export interface Pool {
   readonly price: number;
   readonly priceTimestamp: number;
   readonly image: string;
-  readonly allocation: Map<string, string>;
+  readonly allocation: Record<string, string>;
   readonly isReleased: boolean;
 }
 
@@ -15,6 +15,6 @@ export interface Token {
   readonly name: string;
   readonly owner: string;
   readonly image: string;
-  readonly allocation: Map<string, string>;
+  readonly allocation: Record<string, string>;
 }
 

@@ -2,10 +2,11 @@ import type { Account, IInstruction } from "@solana/web3.js";
 import { address } from "@solana/web3.js";
 import type { AssetV1 } from "@theminingco/metadata";
 import { fetchCollectionV1, fetchAllAssetV1ByCollection, getBurnV1Instruction, getBurnCollectionV1Instruction } from "@theminingco/metadata";
-import { costPerToken, rpc, signer } from "../utility/config";
+import { reclaimablePerAsset, reclaimablePerCollection, rpc, signer } from "../utility/config";
 import { promptText } from "../utility/prompt";
-import { createTransaction, createTransactions, sendAndConfirmTransaction, sendAndConfirmTransactions, splitInstructions } from "@theminingco/core";
+import { createTransaction, sendAndConfirmTransaction } from "@theminingco/core";
 import { linkAccount } from "../utility/link";
+import { sendAndConfirmWithRetry } from "../utility/retry";
 
 function deleteAssetInstruction(asset: Account<AssetV1>): IInstruction {
   if (asset.data.updateAuthority.__kind !== "Collection") {
@@ -26,15 +27,10 @@ export default async function deleteCollection(): Promise<void> {
   const collection = await fetchCollectionV1(rpc, address(collectionAddress));
   const assets = await fetchAllAssetV1ByCollection(rpc, collection.address);
 
-  const totalCost = collection.data.currentSize * costPerToken + costPerToken;
+  const totalCost = collection.data.currentSize * reclaimablePerAsset + reclaimablePerCollection;
 
-  const flatInstructions = assets.map(deleteAssetInstruction);
-  let instructions = splitInstructions(flatInstructions);
-  while (instructions.length > 0) {
-    const transactions = await createTransactions(rpc, instructions, signer.address);
-    const results = await sendAndConfirmTransactions(rpc, transactions);
-    instructions = instructions.flatMap((x, i) => results[i] instanceof Error ? [x] : []);
-  }
+  const instructions = assets.map(deleteAssetInstruction);
+  await sendAndConfirmWithRetry(instructions);
 
   const deleteCollectionInstruction = getBurnCollectionV1Instruction({
     payer: signer,

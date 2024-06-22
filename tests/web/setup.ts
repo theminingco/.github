@@ -1,43 +1,21 @@
 import Provider from "../../web/components/provider";
-import type { Address } from "@solana/web3.js";
 import type { PropsWithChildren, ReactElement, ReactNode } from "react";
-import { createElement, useMemo, useState } from "react";
+import { createElement } from "react";
 import type { RenderOptions, RenderResult } from "@testing-library/react";
 import { render } from "@testing-library/react";
-import { WalletContext } from "../../web/hooks/wallet";
 import { JSDOM } from "jsdom";
 import googleFont from "next/font/google";
 import { define, fake } from "sinon";
+import { MockWalletProvider } from "../mock/wallet";
+import { MockPopupProvider } from "../mock/popup";
 
 export let jsdom: JSDOM = { } as JSDOM;
 export let context: RenderResult = { } as RenderResult;
-export let setPublicKey: (publicKey: Address | null) => void = () => { /* Empty */ };
 
 define(googleFont, "Noto_Emoji", fake(() => ({ className: "" })));
 define(googleFont, "Noto_Sans", fake(() => ({ className: "" })));
 
-function MockWalletProvider(props: PropsWithChildren): ReactElement {
-  const [publicKey, setMockPublicKey] = useState<Address | null>(null);
-
-  setPublicKey = setMockPublicKey;
-
-  const wallet = useMemo(() => {
-    return {
-      wallets: [],
-      wallet: null,
-      account: null,
-      publicKey,
-      connect: async () => Promise.reject(new Error("Not implemented")),
-      disconnect: async () => Promise.reject(new Error("Not implemented")),
-      signTransaction: async () => Promise.reject(new Error("Not implemented")),
-      signMessage: async () => Promise.reject(new Error("Not implemented")),
-    };
-  }, [publicKey]);
-
-  return createElement(WalletContext.Provider, { ...props, value: wallet });
-}
-
-const testProviders = [MockWalletProvider];
+const testProviders = [MockWalletProvider, MockPopupProvider];
 
 function TestWrapper(props: PropsWithChildren): ReactElement {
   return createElement(Provider, { ...props, providers: testProviders });

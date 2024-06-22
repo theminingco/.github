@@ -11,9 +11,9 @@ export interface UsePopup {
 }
 
 export const PopupContext = createContext<UsePopup>({
-  openPopup: () => { /* Empty */ },
-  closePopup: () => { /* Empty */ },
-  setCloseOnBackground: () => { /* Empty */ },
+  openPopup: () => { throw new Error("not implemented"); },
+  closePopup: () => { throw new Error("not implemented"); },
+  setCloseOnBackground: () => { throw new Error("not implemented"); },
   popup: null,
 });
 
@@ -50,7 +50,7 @@ export default function PopupProvider(props: PropsWithChildren): ReactElement {
           "overflow-y-auto overflow-x-hidden",
           "scrollbar-track-gray-100 scrollbar-thumb-gray-300",
           "bg-slate-800 text-slate-100",
-          "rounded-xl shadow-2xl",
+          "rounded-xl drop-shadow-2xl",
         )}>
           <Suspense fallback={<Spinner className="my-auto" />}>
             {popup}
@@ -59,6 +59,8 @@ export default function PopupProvider(props: PropsWithChildren): ReactElement {
       </>
     );
   }, [popup, closeOnBackground]);
+
+  // TODO: in/out animation
 
   const context = useMemo(() => {
     return { openPopup, closePopup, setCloseOnBackground, popup };
