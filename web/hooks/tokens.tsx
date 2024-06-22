@@ -1,18 +1,13 @@
-import type { Pool, Token } from "@theminingco/core/lib/model";
+import type { Token } from "@theminingco/core/lib/model";
 import { useFirebase } from "./firebase";
 import type { PropsWithChildren, ReactElement } from "react";
 import { createContext, useContext, useMemo } from "react";
 import { useInterval } from "./interval";
 import { where } from "firebase/firestore/lite";
 import { useWallet } from "./wallet";
-import { usePools } from "./pools";
-
-interface AddedPoolData {
-  readonly price: number;
-}
 
 interface UseTokens {
-  readonly tokens: (Token & AddedPoolData)[];
+  readonly tokens: Token[];
   readonly loading: boolean;
   reload: () => void;
 }
@@ -30,17 +25,8 @@ export function useTokens(): UseTokens {
 export default function TokensProvider(props: PropsWithChildren): ReactElement {
   const { publicKey } = useWallet();
   const { getDocuments } = useFirebase();
-  const { pools, loading: l1 } = usePools();
 
-  const poolsMap = useMemo(() => {
-    const map = new Map<string, Pool>();
-    for (const pool of pools) {
-      map.set(pool.address, pool);
-    }
-    return map;
-  }, [pools]);
-
-  const { result, loading: l2, reload } = useInterval({
+  const { result, loading, reload } = useInterval({
     interval: 30, // 30 seconds
     callback: async () => {
       if (!publicKey) {
@@ -48,22 +34,12 @@ export default function TokensProvider(props: PropsWithChildren): ReactElement {
       }
       return getDocuments<Token>(
         "tokens",
-        where("owner", "==", publicKey),
+        where("owner", "==", publicKey.toString()),
       );
     },
-  }, []);
+  }, [publicKey]);
 
-  const tokens = useMemo(() => {
-    // TODO: filter out if not have a price
-    return result?.map(x => ({
-      ...x,
-      price: poolsMap.get(x.address)?.price ?? 0,
-    })) ?? [];
-  }, [result, poolsMap]);
-
-  const loading = useMemo(() => {
-    return l1 || l2;
-  }, [l1, l2]);
+  const tokens = result ?? [];
 
   const context = useMemo(() => {
     return { tokens, loading, reload };

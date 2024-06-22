@@ -9,8 +9,8 @@ export async function fetchAllAssetV1ByCollection(rpc: Rpc<GetProgramAccountsApi
   const accountInfos = await rpc.getProgramAccounts(MPL_CORE_PROGRAM_PROGRAM_ADDRESS, {
     encoding: "base64",
     filters: [
-      { offset: 0n, bytes: assetV1Key.toString(), encoding: "base58" },
-      { offset: 33n, bytes: updateAuthority.toString(), encoding: "base58" },
+      { memcmp: { offset: 0n, bytes: assetV1Key.toString(), encoding: "base58" } },
+      { memcmp: { offset: 33n, bytes: updateAuthority.toString(), encoding: "base58" } },
     ],
   }).send();
   const encoder = getBase64Encoder();

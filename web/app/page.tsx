@@ -13,10 +13,11 @@ import Head from "next/head";
 import ContextProvider from "../hooks/context";
 import { usePathname, useRouter } from "next/navigation";
 import TokensProvider from "../hooks/tokens";
+import ToastProvider from "../hooks/toast";
 
 const providers = [
   FirebaseProvider, WalletProvider, PoolsProvider, TokensProvider,
-  PopupProvider, ContextProvider,
+  ToastProvider, PopupProvider, ContextProvider,
 ];
 
 export default function Page(): ReactElement {

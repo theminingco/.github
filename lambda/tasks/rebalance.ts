@@ -5,7 +5,7 @@ import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 function getCombinedAllocation(tokens: Token[]): Map<string, bigint> {
   const allocation = new Map<string, bigint>();
   for (const token of tokens) {
-    for (const [key, value] of token.allocation) {
+    for (const [key, value] of Object.entries(token.allocation)) {
       const current = allocation.get(key) ?? 0n;
       const percentage = BigInt(value.slice(0, -1));
       allocation.set(key, current + percentage);

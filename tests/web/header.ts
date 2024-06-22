@@ -1,9 +1,10 @@
 import { describe, it, beforeEach } from "mocha";
 import assert from "assert";
 import { generateKeyPairSigner } from "@solana/web3.js";
-import { setPublicKey, startTestRender, context } from "./setup";
+import { startTestRender, context } from "./setup";
 import Header from "../../web/components/header";
 import { createElement } from "react";
+import { setPublicKey } from "../mock/wallet";
 
 describe("header", () => {
 

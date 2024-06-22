@@ -2,13 +2,14 @@ import { homedir } from "os";
 import { promptText } from "../utility/prompt";
 import { readFile } from "fs/promises";
 import type { Metadata } from "@theminingco/core";
-import { createTransactions, fetchMetadata, sendAndConfirmTransactions, splitInstructions, uploadData } from "@theminingco/core";
+import { fetchMetadata, uploadData } from "@theminingco/core";
 import { rpc, signer } from "../utility/config";
 import type { AssetV1, CollectionV1 } from "@theminingco/metadata";
-import { fetchAllAssetV1ByCollection, fetchCollectionV1, getUpdateV1Instruction } from "@theminingco/metadata";
+import { fetchAllAssetV1ByCollection, fetchCollectionV1, getUpdateCollectionV1Instruction, getUpdateV1Instruction } from "@theminingco/metadata";
 import type { Account, IInstruction } from "@solana/web3.js";
 import { address } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
+import { sendAndConfirmWithRetry } from "../utility/retry";
 
 async function updateCollectionMetadataInstruction(metaPath: string, collection: Account<CollectionV1>): Promise<IInstruction> {
   const image = await readFile(`${metaPath}/0.png`);
@@ -22,14 +23,11 @@ async function updateCollectionMetadataInstruction(metaPath: string, collection:
     image: imageUri,
   };
   const metaUri = await uploadData(JSON.stringify(metadata), signer);
-  return getUpdateV1Instruction({
-    asset: collection.address,
+  return getUpdateCollectionV1Instruction({
     collection: collection.address,
     payer: signer,
-    authority: signer,
     newUri: metaUri,
     newName: metadata.name,
-    newUpdateAuthority: null,
   });
 }
 
@@ -55,7 +53,6 @@ async function updateAssetMetadataInstruction(metaPath: string, asset: Account<A
     asset: asset.address,
     collection,
     payer: signer,
-    authority: signer,
     newUri: metaUri,
     newName: metadata.name,
     newUpdateAuthority: null,
@@ -70,21 +67,16 @@ export default async function updateCollection(): Promise<void> {
   const collection = await fetchCollectionV1(rpc, address(collectionAddress));
   const assets = await fetchAllAssetV1ByCollection(rpc, collection.address);
 
-  const flatInstructions: IInstruction[] = [
+  const instructions: IInstruction[] = [
     await updateCollectionMetadataInstruction(metaUri, collection),
   ];
 
   for (const asset of assets) {
     const instruction = await updateAssetMetadataInstruction(metaUri, asset);
-    flatInstructions.push(instruction);
+    instructions.push(instruction);
   }
 
-  let instructions = splitInstructions(flatInstructions);
-  while (instructions.length > 0) {
-    const transactions = await createTransactions(rpc, instructions, signer.address);
-    const results = await sendAndConfirmTransactions(rpc, transactions);
-    instructions = instructions.flatMap((x, i) => results[i] instanceof Error ? [x] : []);
-  }
+  await sendAndConfirmWithRetry(instructions);
 
   console.info();
   console.info(`Updated ${instructions.length} assets`);

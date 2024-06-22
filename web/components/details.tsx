@@ -1,4 +1,3 @@
-import type { Pool, Token } from "@theminingco/core/lib/model";
 import Image from "next/image";
 import type { ReactElement } from "react";
 import { useCallback, useMemo, useState } from "react";
@@ -8,17 +7,28 @@ import { parseAllocation } from "@theminingco/core/lib/metadata";
 import Button from "./button";
 import { useTransaction } from "../hooks/transaction";
 import { address } from "@solana/web3.js";
-import Spinner from "./spinner";
+import { shortAddress } from "@theminingco/core/lib/address";
+import type { Item } from "../hooks/items";
 
 interface DetailsProps {
-  readonly item: Pool | Token;
+  readonly item: Item;
+}
+
+function magicedenLink(item: Item): string {
+  return `https://magiceden.io/marketplace/${item.address}`;
+}
+
+function tensorLink(item: Item): string {
+  const slug = "owner" in item ? "item" : "trade";
+  return `https://tensor.trade/${slug}/${item.address}`;
 }
 
 export default function Details(props: DetailsProps): ReactElement {
   const initialDonutData = useMemo(() => parseAllocation(props.item), [props.item]);
   const [donutData, setDonutData] = useState(initialDonutData);
   const { publicKey } = useWallet();
-  const { commit, loading, result } = useTransaction();
+  const { commit, loading } = useTransaction();
+  const [copied, setCopied] = useState(false);
 
   const isEditable = useMemo(() => {
     return "owner" in props.item && props.item.owner === publicKey;
@@ -35,32 +45,51 @@ export default function Details(props: DetailsProps): ReactElement {
     );
     const tokenAddress = address(props.item.address);
     commit(tokenAddress, allocation);
-  }, [donutData]);
+  }, [props.item, donutData, commit]);
 
   const saveButton = useMemo(() => {
     if (!isEditable) {
       return null;
     }
-    if (result != null) {
-      return <div>{result.toString()}</div>;
-    }
     return (
       <Button
         onClick={saveAllocation}
-        disabled={donutData === initialDonutData}
+        disabled={donutData !== initialDonutData || loading}
       >
         Save
       </Button>
     );
-  }, [isEditable, result, donutData, saveAllocation, initialDonutData]);
+  }, [isEditable, donutData, saveAllocation, initialDonutData, loading]);
 
-  // TODO: styling
+  const title = useMemo(() => {
+    return "pool" in props.item ? `${props.item.pool.name} (${props.item.name})` : props.item.name;
+  }, [props.item]);
+
+  const copyText = useMemo(() => {
+    return copied ? "copied" : shortAddress(props.item.address);
+  }, [copied, props.item]);
+
+  const copyToClipboard = useCallback(() => {
+    void navigator.clipboard.writeText(props.item.address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1000);
+  }, [props.item.address, setCopied]);
 
   return (
-    <div>
-      <Image src={props.item.image} alt={props.item.name} width={100} height={100} />
-      {props.item.name}
-      {loading ? <Spinner type="hourglass" /> : <Donut data={donutData} onUpdate={onDonutUpdate} />}
+    <div className="flex flex-col w-full h-full">
+      <div className="flex gap-2 h-8 w-full items-center">
+        <Image className="rounded" src={props.item.image} alt={props.item.name} width={32} height={32} />
+        <span>{title}</span>
+        <Button className="text-slate-500" onClick={copyToClipboard}>{copyText}</Button>
+        <span className="grow" />
+        <Button href={tensorLink(props.item)}>
+          <Image src="/tensor.png" alt="Tensor logo" height={32} width={32} />
+        </Button>
+        <Button href={magicedenLink(props.item)}>
+          <Image src="/magiceden.png" alt="MagicEden logo" height={32} width={32} />
+        </Button>
+      </div>
+      <Donut data={donutData} onUpdate={onDonutUpdate} />
       {saveButton}
     </div>
   );

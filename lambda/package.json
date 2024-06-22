@@ -6,7 +6,7 @@
   "types": "./lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node run.js",
+    "start": "cd .. && firebase functions:shell",
     "clean": "rimraf lib"
   },
   "dependencies": {

@@ -1,12 +1,14 @@
-import { assetAttribution, assetDescription, assetImage, assetSymbol, assetUrl, costPerToken, rpc, signer } from "../utility/config";
+import { assetAttribution, assetDescription, assetImage, assetSymbol, assetUrl, costPerAsset, costPerCollection, rpc, signer } from "../utility/config";
 import { promptConfirm, promptNumber, promptText } from "../utility/prompt";
 import type { Address, IInstruction } from "@solana/web3.js";
 import { generateKeyPairSigner } from "@solana/web3.js";
 import { linkAccount } from "../utility/link";
 import type { Metadata } from "@theminingco/core";
-import { createTransaction, createTransactions, sendAndConfirmTransactions, sendAndConfirmTransaction, uploadData, splitInstructions } from "@theminingco/core";
+import { createTransaction, sendAndConfirmTransaction, uploadData } from "@theminingco/core";
 import { DataState, getCreateCollectionV2Instruction, getCreateV2Instruction } from "@theminingco/metadata";
 import { royaltiesPlugin } from "../utility/royalties";
+import { burnPlugin } from "../utility/burn";
+import { sendAndConfirmWithRetry } from "../utility/retry";
 
 async function createCollection(collectionName: string): Promise<Address> {
   const collectionSigner = await generateKeyPairSigner();
@@ -26,7 +28,7 @@ async function createCollection(collectionName: string): Promise<Address> {
     payer: signer,
     name: collectionName,
     uri: metaUri,
-    plugins: [royaltiesPlugin()],
+    plugins: [royaltiesPlugin(), burnPlugin()],
     externalPluginAdapters: null,
   });
 
@@ -52,7 +54,6 @@ async function createAssetInstruction(index: number, collection: Address): Promi
     asset: assetSigner,
     collection,
     authority: signer,
-    updateAuthority: signer.address,
     payer: signer,
     dataState: DataState.AccountState,
     name: metadata.name,
@@ -62,28 +63,23 @@ async function createAssetInstruction(index: number, collection: Address): Promi
   });
 }
 
-export default async function createNftCollection(): Promise<void> {
+export default async function createNewCollection(): Promise<void> {
   const poolName = await promptText("What is the collection name?");
   const tokenCount = await promptNumber("How many tokens are in the collection?", 100);
 
-  const totalCost = tokenCount * costPerToken + costPerToken;
+  const totalCost = tokenCount * costPerAsset + costPerCollection;
   const confirm = await promptConfirm(`Esimated cost for this action is at least ◎${totalCost.toFixed(2)}. Continue?`);
   if (!confirm) { return; }
 
   const collection = await createCollection(poolName);
 
-  const flatInstructions: IInstruction[] = [];
+  const instructions: IInstruction[] = [];
   for (let i = 1; i <= tokenCount; i++) {
     const instruction = await createAssetInstruction(i, collection);
-    flatInstructions.push(instruction);
+    instructions.push(instruction);
   }
 
-  let instructions = splitInstructions(flatInstructions);
-  while (instructions.length > 0) {
-    const transactions = await createTransactions(rpc, instructions, signer.address);
-    const results = await sendAndConfirmTransactions(rpc, transactions);
-    instructions = instructions.flatMap((x, i) => results[i] instanceof Error ? [x] : []);
-  }
+  await sendAndConfirmWithRetry(instructions);
 
   console.info();
   console.info(`Collection:    ${linkAccount(collection)}`);

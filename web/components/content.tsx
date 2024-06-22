@@ -42,7 +42,7 @@ export default function Content(): ReactElement {
 
   return (
     <div className="flex flex-1 items-center justify-center w-screen">
-      <div className="relative max-w-lg w-screen grow flex flex-col items-center justify-center gap-4">
+      <div className="relative max-w-lg w-screen h-full grow flex flex-col items-center justify-center gap-4">
         <div className={clsx("flex gap-4 w-full px-4", isBlocked ? "hidden" : "")}>
           {tabs}
         </div>
