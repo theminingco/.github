@@ -13,7 +13,7 @@ const taskSpecs = [
 
 type ScheduleHandler = () => Promise<void>;
 
-export const tasks = taskSpecs
+export = taskSpecs
   .map(spec => {
     const handler = onSchedule({ schedule: spec.schedule, secrets }, async () => {
       await initializeConnection();

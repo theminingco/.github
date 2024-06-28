@@ -1,3 +1,4 @@
+import { SYSTEM_PROGRAM_ADDRESS } from "@solana-program/system";
 import { address } from "@solana/web3.js";
 import type { PluginAuthorityPair } from "@theminingco/metadata";
 
@@ -14,7 +15,7 @@ export function royaltiesPlugin(config?: { released?: boolean }): PluginAuthorit
         }],
         ruleSet: {
           __kind: isReleased ? "ProgramDenyList" : "ProgramAllowList",
-          fields: [[]],
+          fields: [isReleased ? [] : [SYSTEM_PROGRAM_ADDRESS]],
         },
       }],
     },

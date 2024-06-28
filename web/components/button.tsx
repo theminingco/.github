@@ -3,8 +3,8 @@ import React from "react";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, PropsWithChildren, ReactElement } from "react";
 
 interface BaseProps extends PropsWithChildren {
-  className?: string;
-  outerClassName?: string;
+  readonly className?: string;
+  readonly outerClassName?: string;
 }
 
 type ButtonProps = BaseProps & ButtonHTMLAttributes<HTMLButtonElement>;

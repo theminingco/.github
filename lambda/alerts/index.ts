@@ -12,7 +12,7 @@ const alertsSpec = [
   { file: "uptime", topic: "uptime-alert" },
 ];
 
-export const alerts = alertsSpec
+export = alertsSpec
   .map(spec => {
     const handler = onMessagePublished({ topic: spec.topic, secrets }, async event => {
       await initializeConnection();

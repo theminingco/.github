@@ -11,7 +11,6 @@ import PoolsProvider from "../hooks/pools";
 import Content from "../components/content";
 import Head from "next/head";
 import ContextProvider from "../hooks/context";
-import { usePathname, useRouter } from "next/navigation";
 import TokensProvider from "../hooks/tokens";
 import ToastProvider from "../hooks/toast";
 
@@ -22,12 +21,6 @@ const providers = [
 
 export default function Page(): ReactElement {
   const [robots, setRobots] = useState("noindex,follow");
-  const router = useRouter();
-  const path = usePathname();
-
-  useEffect(() => {
-    router.replace(path);
-  }, [path]);
 
   useEffect(() => {
     if (window.location.hostname === "theminingco.xyz") {

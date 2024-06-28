@@ -5,11 +5,11 @@ import type { Address } from "@solana/web3.js";
 import { useFirebase } from "./firebase";
 import type { ToastProps } from "./toast";
 import { useToast } from "./toast";
-import { humanReadable } from "../utility/error";
 import { faUpRightFromSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { humanReadable } from "../utility/error";
 
 interface UseTransaction {
-  commit: (tokenAddress: Address, allocation: Map<string, string>) => void;
+  commit: (tokenAddress: Address, allocation: Record<string, string>) => void;
   loading: boolean;
   result?: string | Error;
 }
@@ -44,8 +44,8 @@ function successToast(hash: string, clearToast: () => void): ToastProps {
     message: "Successfully landed transaction in a block.",
     type: "success",
     actions: [
-      { icon: faXmark, onClick: clearToast },
       { icon: faUpRightFromSquare, href: `https://solscan.io/tx/${hash}` },
+      { icon: faXmark, onClick: clearToast },
     ],
   };
 }
@@ -68,7 +68,7 @@ export function useTransaction(): UseTransaction {
   const { logError } = useFirebase();
   const { setToast, clearToast } = useToast();
 
-  const asyncCommit = useCallback(async (tokenAddress: Address, allocation: Map<string, string>) => {
+  const asyncCommit = useCallback(async (tokenAddress: Address, allocation: Record<string, string>) => {
     if (publicKey == null) {
       return;
     }
@@ -90,7 +90,7 @@ export function useTransaction(): UseTransaction {
     }
   }, [publicKey, update, send, signTransaction, setToast, clearToast, setLoading, logError]);
 
-  const commit = useCallback((tokenAddress: Address, allocation: Map<string, string>) => {
+  const commit = useCallback((tokenAddress: Address, allocation: Record<string, string>) => {
     void asyncCommit(tokenAddress, allocation);
   }, [asyncCommit]);
 

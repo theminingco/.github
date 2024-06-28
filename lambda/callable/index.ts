@@ -10,14 +10,14 @@ const config: CallableOptions = {
   consumeAppCheckToken: true,
 };
 
-const endpointSpec = [
+const callableSpec = [
   "update",
   "send",
 ];
 
 type CallableHandler = (request: CallableRequest) => Promise<unknown>;
 
-export const endpoints = endpointSpec
+export = callableSpec
   .map(spec => {
     const handler = onCall(config, async request => {
       await initializeConnection();
@@ -26,3 +26,4 @@ export const endpoints = endpointSpec
     });
     return [spec, handler] as [string, CallableFunction];
   }).reduce<Record<string, CallableFunction>>((a, b) => ({ ...a, [b[0]]: b[1] }), {});
+

@@ -3,8 +3,8 @@ import type { IconDefinition } from "@fortawesome/fontawesome-common-types";
 import type { ReactElement } from "react";
 
 interface IconProps {
-  icon: IconDefinition;
-  className?: string;
+  readonly icon: IconDefinition;
+  readonly className?: string;
 }
 
 export default function FontIcon(props: IconProps): ReactElement {

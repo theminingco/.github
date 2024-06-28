@@ -31,7 +31,6 @@ describe("transaction", () => {
       instr(10),
     ];
     const transactions = splitInstructions(instructions);
-    console.log(transactions);
     assert.deepStrictEqual(transactions, [
       instructions.slice(0, 3),
       instructions.slice(3, 6),

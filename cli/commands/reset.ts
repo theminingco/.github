@@ -10,13 +10,17 @@ export default async function resetAssetAllocation(): Promise<void> {
   const asset = await fetchAssetV1(rpc, address(accountAddress));
   const metadata = await fetchMetadata(asset.data.uri);
 
+  const updateAuthority = asset.data.updateAuthority;
+  if (updateAuthority.__kind !== "Collection") { throw new Error("Invalid update authority"); }
+  const collectionAddress = updateAuthority.fields[0];
+
   Object.assign(metadata, { allocation: undefined });
   const metaUri = await uploadData(JSON.stringify(metadata), signer);
 
   const instruction = getUpdateV1Instruction({
     payer: signer,
     asset: address(accountAddress),
-    authority: signer,
+    collection: collectionAddress,
     newUri: metaUri,
     newName: metadata.name,
     newUpdateAuthority: null,
