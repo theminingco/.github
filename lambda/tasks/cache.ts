@@ -72,7 +72,7 @@ async function insertOrUpdateToken(ref: DocumentReference | undefined, token: Ac
       name: token.data.name,
       owner: token.data.owner,
       image: metadata.image,
-      allocation
+      allocation,
     });
   }
 }

@@ -35,7 +35,7 @@ export function useContent(): UseContent {
   const [selectedPage, setPage] = useState<Page>();
 
   useEffect(() => {
-    const onHashChange = () => setPage(readPageFromHash());
+    const onHashChange = (): void => setPage(readPageFromHash());
     window.addEventListener("hashchange", onHashChange);
     onHashChange();
     return () => window.removeEventListener("hashchange", onHashChange);

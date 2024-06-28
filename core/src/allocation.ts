@@ -1,22 +1,22 @@
-import { Allocation } from "./metadata";
+import type { Allocation } from "./metadata";
 
 type ContainerOption = "allocation" | "map" | "record" | "array";
 type TypeOption = "bps" | "percent" | "number" | "bigint";
 
 interface AllocationObject { allocation: Allocation<string | number | bigint>[] | Map<string, string | number | bigint> | Record<string, string | number | bigint> }
 
-type ReturnContainer<T extends string | number | bigint> = {
+interface ReturnContainer<T extends string | number | bigint> {
   allocation: Allocation<T>[];
   map: Map<string, T>;
   record: Record<string, T>;
   array: [string, T][];
-};
+}
 
-type ReturnType = {
-  "bps": string;
-  "percent": string;
-  "number": number;
-  "bigint": bigint;
+interface ReturnType {
+  bps: string;
+  percent: string;
+  number: number;
+  bigint: bigint;
 }
 
 function mapAllocation<U extends TypeOption>(amount: bigint, value: U): ReturnType[U] {
@@ -33,25 +33,25 @@ function packAlloction<T extends ContainerOption, U extends TypeOption>(allocati
     case "allocation": {
       return allocation.map(([symbol, amount]) => ({
         symbol,
-        amount: mapAllocation(amount, value)
+        amount: mapAllocation(amount, value),
       })) as ReturnContainer<ReturnType[U]>[T];
     }
     case "map": {
       return new Map(allocation.map(([symbol, amount]) => [
         symbol,
-        mapAllocation(amount, value)
+        mapAllocation(amount, value),
       ])) as ReturnContainer<ReturnType[U]>[T];
     }
     case "record": {
       return Object.fromEntries(allocation.map(([symbol, amount]) => [
         symbol,
-        mapAllocation(amount, value)
+        mapAllocation(amount, value),
       ])) as ReturnContainer<ReturnType[U]>[T];
     }
     default: {
       return allocation.map(([symbol, amount]) => [
         symbol,
-        mapAllocation(amount, value)
+        mapAllocation(amount, value),
       ]) as ReturnContainer<ReturnType[U]>[T];
     }
   }
@@ -59,12 +59,12 @@ function packAlloction<T extends ContainerOption, U extends TypeOption>(allocati
 
 export function allocationParser<
   T extends ContainerOption = "map",
-  U extends TypeOption = "bigint"
+  U extends TypeOption = "bigint",
 >({
   container = "map" as T,
   value = "bigint" as U,
   allowedSymbols = [],
-} : {
+}: {
   container?: T;
   value?: U;
   allowedSymbols?: Iterable<string>;
@@ -115,16 +115,10 @@ function validateAllocationAmount(value: string | number | bigint): bigint {
 
 function validateAllocation(metadata: AllocationObject, allowedSymbols: Set<string>): [string, bigint][] {
   if (Array.isArray(metadata.allocation)) {
-    return metadata.allocation.map(({ symbol, amount }) =>
-      [validateAllocationSymbol(symbol, allowedSymbols), validateAllocationAmount(amount)]
-    );
+    return metadata.allocation.map(({ symbol, amount }) => [validateAllocationSymbol(symbol, allowedSymbols), validateAllocationAmount(amount)]);
   }
   if (metadata.allocation instanceof Map) {
-    return Array.from(metadata.allocation).map(([symbol, amount]) =>
-      [validateAllocationSymbol(symbol, allowedSymbols), validateAllocationAmount(amount)]
-    );
+    return Array.from(metadata.allocation).map(([symbol, amount]) => [validateAllocationSymbol(symbol, allowedSymbols), validateAllocationAmount(amount)]);
   }
-  return Object.entries(metadata.allocation).map(([symbol, amount]) =>
-    [validateAllocationSymbol(symbol, allowedSymbols), validateAllocationAmount(amount)]
-  );
+  return Object.entries(metadata.allocation).map(([symbol, amount]) => [validateAllocationSymbol(symbol, allowedSymbols), validateAllocationAmount(amount)]);
 }

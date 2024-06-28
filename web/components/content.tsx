@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import React, { useMemo} from "react";
+import React, { useMemo } from "react";
 import Button from "./button";
 import clsx from "clsx";
 import { pages, useContent } from "../hooks/content";
@@ -23,6 +23,7 @@ export default function Content(): ReactElement {
         return <List />;
       case "portfolio":
         return <List owned />;
+      default: break;
     }
     return fallback;
   }, [isBlocked, selectedPage]);

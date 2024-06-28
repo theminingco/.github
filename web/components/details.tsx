@@ -27,7 +27,7 @@ export default function Details(props: DetailsProps): ReactElement {
 
   const saveAllocation = useCallback((data: Map<string, bigint>) => {
     const tokenAddress = address(props.item.address);
-    const allocation = allocationParser({ container: "record", value: "percent" }).parse({ allocation: data })
+    const allocation = allocationParser({ container: "record", value: "percent" }).parse({ allocation: data });
     commit(tokenAddress, allocation);
   }, [props.item, commit]);
 

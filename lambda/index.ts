@@ -6,4 +6,4 @@ import callables from "./callable";
 import endpoints from "./endpoint";
 import tasks from "./tasks";
 
-export = { ...alerts, ...callables, ...endpoints, ...tasks }
+export = { ...alerts, ...callables, ...endpoints, ...tasks };

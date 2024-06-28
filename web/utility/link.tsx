@@ -1,4 +1,4 @@
-import { Item } from "../hooks/items";
+import type { Item } from "../hooks/items";
 
 export function magicedenLink(item: Item): string {
   return `https://magiceden.io/marketplace/${item.address}`;

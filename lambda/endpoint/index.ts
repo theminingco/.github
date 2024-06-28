@@ -1,4 +1,5 @@
-import { HttpsOptions, onRequest } from "firebase-functions/v2/https";
+import type { HttpsOptions } from "firebase-functions/v2/https";
+import { onRequest } from "firebase-functions/v2/https";
 import type { Request, Response } from "express";
 import { initializeConnection } from "../utility/solana";
 import { secrets } from "../utility/secrets";
@@ -6,7 +7,7 @@ import { secrets } from "../utility/secrets";
 const opts: HttpsOptions = {
   cors: false,
   secrets,
-}
+};
 
 const endpointSpec = [
   "price",

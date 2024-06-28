@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import { Dispatch, ReactElement, SetStateAction, useCallback, useMemo, useState } from "react";
+import type { Dispatch, ReactElement, SetStateAction } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Button from "./button";
 import Input from "./input";
 import { getColor } from "../utility/color";
@@ -64,7 +65,7 @@ function EditableItem(props: LegendItemProps): ReactElement {
     }
 
     // TODO: check against allowed symbols from alpaca
-    const hasDuplicate = props.data?.some(([symbol], index) => symbol === label && index !== props.index);
+    const hasDuplicate = props.data?.some(([symbol], index) => symbol === label && index !== props.index) ?? false;
     if (label === "" || hasDuplicate) {
       setLabelValid(false);
       return;
@@ -77,25 +78,27 @@ function EditableItem(props: LegendItemProps): ReactElement {
     <div className="flex gap-1 items-center">
       <div className="w-4 h-4 bg-current rounded-sm" style={{ backgroundColor }} />
       <Input
-          type="text"
-          value={label}
-          outerClassName={clsx("w-32", labelValid ? "" : "!border-red-500")}
-          placeholder="SPY"
-          onChange={event => setLabel(event.target.value)}
-          onFocus={() => setLabelValid(true)}
-          onBlur={onBlur}
-        />
-        <Input
-          type="text"
-          value={value}
-          outerClassName={clsx("w-16", valueValid ? "" : "!border-red-500")}
-          suffix="%"
-          placeholder="0"
-          onChange={event => setValue(event.target.value)}
-          onFocus={() => setValueValid(true)}
-          onBlur={onBlur}
-        />
-        {props.index === props.data?.length ? null : (
+        type="text"
+        value={label}
+        outerClassName={clsx("w-32", labelValid ? "" : "!border-red-500")}
+        placeholder="SPY"
+        onChange={event => setLabel(event.target.value)}
+        onFocus={() => setLabelValid(true)}
+        onBlur={onBlur}
+      />
+      <Input
+        type="text"
+        value={value}
+        outerClassName={clsx("w-16", valueValid ? "" : "!border-red-500")}
+        suffix="%"
+        placeholder="0"
+        onChange={event => setValue(event.target.value)}
+        onFocus={() => setValueValid(true)}
+        onBlur={onBlur}
+      />
+      {props.index === props.data?.length
+        ? null
+        : (
           <Button outerClassName="h-8 w-8" onClick={removeItem}>
             <FontIcon className="p-2.5" icon={faTrashCan} />
           </Button>
