@@ -15,7 +15,7 @@
     "@next/eslint-plugin-next": "^14.2.4",
     "@solana/wallet-standard-chains": "^1.1.0",
     "@solana/wallet-standard-features": "^1.2.0",
-    "@solana/web3.js": "^2.0.0-preview.3",
+    "@solana/web3.js": "^2.0.0-preview.3.20240628172128.abecbe48275c2ce30598c73317b32870bbbf0c7a",
     "@theminingco/core": "*",
     "@wallet-standard/core": "^1.0.3",
     "autoprefixer": "^10.4.19",

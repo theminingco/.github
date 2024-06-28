@@ -15,7 +15,7 @@
     "clean": "rimraf lib"
   },
   "peerDependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3"
+    "@solana/web3.js": "^2.0.0-preview.3.20240628172128.abecbe48275c2ce30598c73317b32870bbbf0c7a"
   },
   "dependencies": {
     "@solana-program/compute-budget": "^0.3.2",
@@ -25,6 +25,6 @@
     "typescript": "^5.5.2"
   },
   "devDependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3"
+    "@solana/web3.js": "^2.0.0-preview.3.20240628172128.abecbe48275c2ce30598c73317b32870bbbf0c7a"
   }
 }
