@@ -7,8 +7,8 @@ function getCombinedAllocation(tokens: Token[]): Map<string, bigint> {
   for (const token of tokens) {
     for (const [key, value] of Object.entries(token.allocation)) {
       const current = allocation.get(key) ?? 0n;
-      const percentage = BigInt(value.slice(0, -1));
-      allocation.set(key, current + percentage);
+      const bps = BigInt(value.slice(0, -3));
+      allocation.set(key, current + bps);
     }
   }
 
@@ -24,7 +24,7 @@ function getCombinedAllocation(tokens: Token[]): Map<string, bigint> {
 
   const total = Array.from(allocation.values())
     .reduce((x, y) => x + y, 0n);
-  const remaining = 100n - total;
+  const remaining = 10000n - total;
   const queue = Array.from(remainders.entries())
     .sort((a, b) => Number(b[1] - a[1]))
     .map(x => x[0]);

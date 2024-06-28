@@ -5,7 +5,7 @@ import { getUpdateV1InstructionDataDecoder } from "@theminingco/metadata";
 import { rpc, signer } from "../utility/solana";
 import { tokenCollection } from "../utility/firebase";
 import { getBase64Encoder, getCompiledTransactionMessageDecoder, getTransactionDecoder } from "@solana/web3.js";
-import { fetchMetadata, sendAndConfirmTransaction } from "@theminingco/core";
+import { allocationParser, fetchMetadata, sendAndConfirmTransaction } from "@theminingco/core";
 
 export default async function sendUpdateTokenTransaction(request: CallableRequest): Promise<unknown> {
   const parsable = new Parsable(request.data);
@@ -15,7 +15,7 @@ export default async function sendUpdateTokenTransaction(request: CallableReques
   if (transaction.signatures[signer.address] == null) { throw new HttpsError("failed-precondition", "Invalid transaction signer"); }
 
   const message = getCompiledTransactionMessageDecoder().decode(transaction.messageBytes);
-  const updateInstruction = message.instructions[0];
+  const updateInstruction = message.instructions[2];
   if (updateInstruction == null) { throw new HttpsError("failed-precondition", "Invalid transaction"); }
   if (updateInstruction.data == null) { throw new HttpsError("failed-precondition", "Invalid transaction"); }
   const updateInstructionData = getUpdateV1InstructionDataDecoder().decode(updateInstruction.data);
@@ -32,7 +32,7 @@ export default async function sendUpdateTokenTransaction(request: CallableReques
   const doc = snapshot.docs[0];
 
   const metadata = await fetchMetadata(updateInstructionData.newUri.value);
-  const allocation = new Map(metadata.allocation.map(({ symbol, percentage }) => [symbol, percentage]));
+  const allocation = allocationParser({ container: "record", value: "bps" }).parse(metadata);
   const signature = await sendAndConfirmTransaction(rpc, transaction);
   await doc.ref.update({ allocation });
   return { signature };

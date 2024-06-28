@@ -7,11 +7,11 @@
     "format": "cd .. && eslint -c lint/eslint.config.js --fix"
   },
   "dependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3.20240622004331.91732c88fcb90b191a74658779d7f335aad31e31",
+    "@solana/web3.js": "^2.0.0-preview.3",
     "@stylistic/eslint-plugin": "^2.2.2",
     "@theminingco/core": "*",
-    "@typescript-eslint/eslint-plugin": "^7.13.1",
-    "@typescript-eslint/parser": "^7.13.1",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
     "eslint": "^9.5.0",
     "eslint-plugin-react": "^7.34.3",
     "typescript": "^5.5.2"

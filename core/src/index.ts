@@ -1,5 +1,6 @@
 export * from "./accounts";
 export * from "./address";
+export * from "./allocation";
 export * from "./array";
 export * from "./cache";
 export * from "./cluster";

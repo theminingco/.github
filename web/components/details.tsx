@@ -3,29 +3,20 @@ import type { ReactElement } from "react";
 import { useCallback, useMemo, useState } from "react";
 import Donut from "./donut";
 import { useWallet } from "../hooks/wallet";
-import { parseAllocation } from "@theminingco/core/lib/metadata";
+import { allocationParser } from "@theminingco/core/lib/allocation";
 import Button from "./button";
 import { useTransaction } from "../hooks/transaction";
 import { address } from "@solana/web3.js";
 import { shortAddress } from "@theminingco/core/lib/address";
 import type { Item } from "../hooks/items";
+import { tensorLink, magicedenLink } from "../utility/link";
 
 interface DetailsProps {
   readonly item: Item;
 }
 
-function magicedenLink(item: Item): string {
-  return `https://magiceden.io/marketplace/${item.address}`;
-}
-
-function tensorLink(item: Item): string {
-  const slug = "owner" in item ? "item" : "trade";
-  return `https://tensor.trade/${slug}/${item.address}`;
-}
-
 export default function Details(props: DetailsProps): ReactElement {
-  const initialDonutData = useMemo(() => parseAllocation(props.item), [props.item]);
-  const [donutData, setDonutData] = useState(initialDonutData);
+  const donutData = useMemo(() => allocationParser().parse(props.item), [props.item]);
   const { publicKey } = useWallet();
   const { commit, loading } = useTransaction();
   const [copied, setCopied] = useState(false);
@@ -34,32 +25,11 @@ export default function Details(props: DetailsProps): ReactElement {
     return "owner" in props.item && props.item.owner === publicKey;
   }, [props.item, publicKey]);
 
-  const onDonutUpdate = useMemo(() => {
-    return isEditable ? setDonutData : undefined;
-  }, [isEditable, setDonutData]);
-
-  const saveAllocation = useCallback(() => {
-    const allocation = new Map(
-      Array.from(donutData.entries())
-        .map(([symbol, value]) => [symbol, value.toString()]),
-    );
+  const saveAllocation = useCallback((data: Map<string, bigint>) => {
     const tokenAddress = address(props.item.address);
+    const allocation = allocationParser({ container: "record", value: "percent" }).parse({ allocation: data })
     commit(tokenAddress, allocation);
-  }, [props.item, donutData, commit]);
-
-  const saveButton = useMemo(() => {
-    if (!isEditable) {
-      return null;
-    }
-    return (
-      <Button
-        onClick={saveAllocation}
-        disabled={donutData !== initialDonutData || loading}
-      >
-        Save
-      </Button>
-    );
-  }, [isEditable, donutData, saveAllocation, initialDonutData, loading]);
+  }, [props.item, commit]);
 
   const title = useMemo(() => {
     return "pool" in props.item ? `${props.item.pool.name} (${props.item.name})` : props.item.name;
@@ -89,8 +59,11 @@ export default function Details(props: DetailsProps): ReactElement {
           <Image src="/magiceden.png" alt="MagicEden logo" height={32} width={32} />
         </Button>
       </div>
-      <Donut data={donutData} onUpdate={onDonutUpdate} />
-      {saveButton}
+      <Donut
+        data={donutData}
+        onSave={isEditable ? saveAllocation : undefined}
+        disabled={loading}
+      />
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { poolCollection, tokenCollection } from "../utility/firebase";
 import { rpc, signer } from "../utility/solana";
 import type { Account, Address } from "@solana/web3.js";
 import type { DocumentReference } from "firebase-admin/firestore";
-import { fetchMetadata } from "@theminingco/core";
+import { allocationParser, fetchMetadata } from "@theminingco/core";
 
 async function insertOrUpdatePool(ref: DocumentReference | undefined, pool: Account<CollectionV1>): Promise<void> {
   const metadata = await fetchMetadata(pool.data.uri);
@@ -54,6 +54,7 @@ async function reloadPoolsCache(): Promise<Address[]> {
 
 async function insertOrUpdateToken(ref: DocumentReference | undefined, token: Account<AssetV1>): Promise<void> {
   const metadata = await fetchMetadata(token.data.uri);
+  const allocation = allocationParser({ container: "record", value: "bps" }).parse(metadata);
   const updateAuthority = token.data.updateAuthority.__kind === "Collection" ? token.data.updateAuthority : { fields: [""] };
   const pool = updateAuthority.fields[0];
   if (ref == null) {
@@ -63,7 +64,7 @@ async function insertOrUpdateToken(ref: DocumentReference | undefined, token: Ac
       name: token.data.name,
       owner: token.data.owner,
       image: metadata.image,
-      allocation: {},
+      allocation,
     });
   } else {
     await ref.update({
@@ -71,6 +72,7 @@ async function insertOrUpdateToken(ref: DocumentReference | undefined, token: Ac
       name: token.data.name,
       owner: token.data.owner,
       image: metadata.image,
+      allocation
     });
   }
 }

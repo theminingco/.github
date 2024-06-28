@@ -4,7 +4,7 @@ import { useFirebase } from "./firebase";
 interface UpdateRequest {
   publicKey: string;
   tokenAddress: string;
-  allocation: Map<string, string>;
+  allocation: Record<string, string>;
 }
 
 interface SendRequest {

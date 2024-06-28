@@ -1,112 +1,93 @@
 import type { ReactElement } from "react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import clsx from "clsx";
+import Button from "./button";
+import Legend from "./legend";
+import { getColor } from "../utility/color";
 import { interval } from "@theminingco/core/lib/array";
 
-interface DonutProps<T extends number | bigint> {
-  data: Map<string, T>;
-  maxItems?: number;
-  thickness?: number;
-  hideLegend?: boolean;
-  className?: string;
-  onUpdate?: (data: Map<string, T>) => void;
+interface DonutProps {
+  readonly data: Map<string, bigint>;
+  readonly maxItems?: number;
+  readonly thickness?: number;
+  readonly hideLegend?: boolean;
+  readonly className?: string;
+  readonly disabled?: boolean;
+  readonly onSave?: (data: Map<string, bigint>) => void;
 }
 
-// TODO: colors:
-const colors = [
-  "#16a34a", "#a1ca62", "#fff095", "#f49b59", "#d43d51",
-  "#56b04f", "#c2d771", "#fdd47b", "#ed7d51", "#7ebd57",
-  "#e1e382", "#f9b867", "#e25e4f",
-];
-
-export default function Donut<T extends number | bigint>(props: DonutProps<T>): ReactElement {
+export default function Donut(props: DonutProps): ReactElement {
+  const initialDonutData = useMemo(() => Array.from(props.data.entries()), [props.data]);
+  const [donutData, setDonutData] = useState(initialDonutData);
   const thickness = props.thickness ?? 12;
-  const maxItems = props.maxItems ?? 7;
   const radius = 50 - thickness;
   const circumference = 2 * Math.PI * radius;
+  const editable = props.onSave != null;
   const hideLegend = props.hideLegend ?? false;
 
-  // TODO: editable if props.setData is defined
-
-  const data = useMemo(() => {
-    if (props.data.size === 0) {
-      return [["Other", 1]] as const;
-    }
-    const items = Array.from(props.data.entries())
-      .sort((a, b) => Number(b[1] - a[1]));
-    if (items.length <= maxItems) {
-      return items;
-    }
-
-    const otherAmount = items
-      .slice(maxItems - 1)
-      .reduce((acc, [_, value]) => acc + Number(value), 0);
-
-    return [
-      ...items.slice(0, maxItems - 1),
-      ["Other", otherAmount],
-    ] as const;
-  }, [props.data, props.maxItems]);
-
-  const total = useMemo(() => {
-    return data.reduce((acc, [_, value]) => acc + Number(value), Number.EPSILON);
-  }, [data]);
-
   const arcs = useMemo(() => {
-    let remaining = circumference;
+    let cumlative = 0;
     const values: string[] = [];
-    for (const [_, value] of data) {
-      values.push(`${remaining} ${circumference}`);
-      remaining -= Number(value) / total * circumference;
+    for (const [_, value] of donutData) {
+      const segment = Number(value) / 10000 * circumference;
+      const remaining = Math.max(circumference - cumlative - segment, 0);
+      values.push(`0 ${cumlative} ${segment} ${remaining}`);
+      cumlative += segment;
     }
     return values;
-  }, [data, total]);
+  }, [donutData]);
 
   const circles = useMemo(() => {
-    return interval(data.length).map(index => {
+    return interval(donutData.length).map(index => {
       return (
         <circle
           key={index}
           cx="50" cy="50"
           r={radius}
-          stroke={colors[index % colors.length]}
+          stroke={getColor(index)}
           strokeWidth={thickness}
           fill="none"
           strokeDasharray={arcs[index]}
         />
       );
     });
-  }, [data, arcs, colors]);
+  }, [donutData, arcs]);
 
-  const legendItems = useMemo(() => {
-    return data.map(([label, value], index) => {
-      const percentage = Number(value) / total * 100;
-      return (
-        <div key={index} className="flex gap-1 items-center">
-          <div className="w-4 h-4 bg-current rounded-sm" style={{ backgroundColor: colors[index % colors.length] }} />
-          <span>{label} ({percentage.toFixed(0)}%)</span>
-        </div>
-      );
-    });
-  }, [data, colors]);
-
-  const legend = useMemo(() => {
-    if (hideLegend) {
+  const saveButton = useMemo(() => {
+    if (!editable) {
       return null;
     }
+    const saveData = donutData.filter(([_, value]) => value > 0);
     return (
-      <div className="flex flex-wrap px-4 gap-x-4 justify-center">
-        {legendItems}
-      </div>
+      <Button
+        onClick={() => props.onSave?.(new Map(saveData))}
+        disabled={props.disabled}
+        outerClassName="mt-4 w-32"
+        className="py-2 bg-sky-500 rounded-full"
+      >
+        Save
+      </Button>
     );
-  }, [hideLegend, legendItems]);
+  }, [editable, initialDonutData, donutData, props.data, props.disabled, props.onSave]);
 
   return (
     <div className={clsx("flex flex-col items-center", props.className)}>
-      <svg viewBox="0 0 100 100">
+      <svg viewBox="0 0 100 100" className="-rotate-90">
+        <circle
+          cx="50" cy="50"
+          r={radius}
+          stroke="#cccccc"
+          strokeWidth={thickness}
+          fill="none"
+        />
         {circles}
       </svg>
-      {legend}
+      <Legend
+        data={donutData}
+        setData={editable ? setDonutData : undefined}
+        className={hideLegend ? "hidden" : ""}
+      />
+      {saveButton}
     </div>
   );
 }

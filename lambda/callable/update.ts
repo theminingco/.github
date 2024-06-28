@@ -2,17 +2,10 @@ import type { CallableRequest } from "firebase-functions/v2/https";
 import { HttpsError } from "firebase-functions/v2/https";
 import { Parsable } from "../utility/parsable";
 import { signer, rpc } from "../utility/solana";
-import type { Allocation } from "@theminingco/core";
-import { createTransaction, fetchMetadata, parseAllocation, randomId, uploadData } from "@theminingco/core";
+import { allocationParser, createTransaction, fetchMetadata, randomId, uploadData } from "@theminingco/core";
 import { getAddMemoInstruction } from "@solana-program/memo";
 import { createNoopSigner, getBase64EncodedWireTransaction } from "@solana/web3.js";
 import { fetchMaybeAssetV1, getTransferV1Instruction, getUpdateV1Instruction } from "@theminingco/metadata";
-
-function unpackAllocation(allocation: Map<string, string>): Allocation[] {
-  // TODO: insert allowed instruments from alpaca
-  return Array.from(parseAllocation({ allocation }, []).entries())
-    .map(([symbol, value]) => ({ symbol, percentage: `${value.toString()}%` }));
-}
 
 export default async function getUpdateTokenTransaction(request: CallableRequest): Promise<unknown> {
   const parsable = new Parsable(request.data);
@@ -27,17 +20,19 @@ export default async function getUpdateTokenTransaction(request: CallableRequest
   const poolAddress = token.data.updateAuthority.fields[0];
 
   const metadata = await fetchMetadata(token.data.uri);
-  metadata.allocation = unpackAllocation(allocation);
+  // TODO: insert allowed instruments from alpaca
+  metadata.allocation = allocationParser({ container: "allocation", value: "percent" }).parse({ allocation });
   const metaUri = await uploadData(JSON.stringify(metadata), signer);
 
   const publicKeySigner = createNoopSigner(publicKey);
+  const authoritySigner = publicKey === signer.address ? publicKeySigner : signer;
 
   const instructions = [
     getUpdateV1Instruction({
       asset: tokenAddress,
       collection: poolAddress,
       payer: publicKeySigner,
-      authority: signer,
+      authority: authoritySigner,
       newUri: metaUri,
       newName: null,
       newUpdateAuthority: null,
@@ -46,16 +41,15 @@ export default async function getUpdateTokenTransaction(request: CallableRequest
     getTransferV1Instruction({
       payer: publicKeySigner,
       newOwner: publicKey,
-      asset: token.address,
+      asset: tokenAddress,
       collection: poolAddress,
-      authority: publicKeySigner,
       compressionProof: {
         __option: "None",
       },
     }),
     getAddMemoInstruction({
       memo: randomId(),
-      signers: [signer, publicKeySigner],
+      signers: [authoritySigner, publicKeySigner],
     }),
   ];
 

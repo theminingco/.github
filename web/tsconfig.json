@@ -20,6 +20,5 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
-    "lib/types/**/*.ts"
   ]
 }

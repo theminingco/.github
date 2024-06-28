@@ -5,7 +5,6 @@ const parsedErrors = [
   "INSUFFICIENT_TOKEN",
   "USER_REJECTED",
   "WALLET_REJECTED",
-  "UNKNOWN",
 ] as const;
 
 type ParsedError = typeof parsedErrors[number];
@@ -20,7 +19,7 @@ function getRawErrorMessage(err: unknown): string {
   return JSON.stringify(err);
 }
 
-export function parseError(error: unknown): ParsedError {
+export function parseError(error: unknown): ParsedError | `UNKNOWN ${string}` {
   const message = getRawErrorMessage(error);
 
   if (parsedErrors.includes(error as ParsedError)) {
@@ -50,14 +49,12 @@ export function parseError(error: unknown): ParsedError {
 
   if (
     message.includes("User rejected the request") ||
-    message.includes("Transaktion storniert") ||
-    message.includes("交易已取消") ||
     message.includes("Transaction canceled") ||
     message.includes("User denied request signature") ||
-    message.includes("Транзакция отменена") ||
     message.includes("Approval Denied") ||
     message.includes("reject") ||
-    message.includes("sign request declined")
+    message.includes("sign request declined") ||
+    message.includes("User aborted")
   ) {
     return "USER_REJECTED";
   }
@@ -69,7 +66,7 @@ export function parseError(error: unknown): ParsedError {
     return "WALLET_REJECTED";
   }
 
-  return "UNKNOWN";
+  return `UNKNOWN ${message}`;
 }
 
 export function humanReadable(error: unknown): string {

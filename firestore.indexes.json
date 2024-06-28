@@ -1,4 +1,15 @@
 {
   "indexes": [],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "pools",
+      "fieldPath": "allocation",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "tokens",
+      "fieldPath": "allocation",
+      "indexes": []
+    }
+  ]
 }

@@ -4,9 +4,9 @@ export interface Attribute {
   value: string;
 }
 
-export interface Allocation {
+export interface Allocation<T extends string | number | bigint = string> {
   symbol: string;
-  percentage: string;
+  amount: T;
 }
 
 export interface Metadata {
@@ -77,8 +77,8 @@ export function unpackMetadata(metadata: unknown): Required<Metadata> {
       if (!("symbol" in item) || typeof item.symbol !== "string") {
         throw new Error("Invalid or missing symbol");
       }
-      if (!("percentage" in item) || typeof item.percentage !== "string") {
-        throw new Error("Invalid or missing percentage");
+      if (!("amount" in item) || typeof item.amount !== "string") {
+        throw new Error("Invalid or missing amount");
       }
       if (Object.keys(item).length !== 2) {
         throw new Error("Invalid allocation keys");
@@ -100,39 +100,4 @@ export function unpackMetadata(metadata: unknown): Required<Metadata> {
   return metadata as Required<Metadata>;
 }
 
-const percentageRegex = /(?<number>\d{1,3})%/u;
 
-function validateSingleAllocation(symbol: string, percentage: string, allowedSymbols: Set<string>): [string, bigint] {
-  const hasSymbolFilter = allowedSymbols.size > 0;
-  const isSymbolAllowed = allowedSymbols.has(symbol);
-  if (hasSymbolFilter && !isSymbolAllowed) { throw new Error("Metadata allocation symbol must be one of the allowed symbols."); }
-  const match = percentageRegex.exec(percentage);
-  if (match == null) { throw new Error("Metadata allocation value must be a percentage."); }
-  if (match[0] !== percentage) { throw new Error("Metadata allocation cannot have extraneous characters."); }
-  const number = BigInt(match.groups?.number ?? "0");
-  if (number <= 0) { throw new Error("Metadata allocation percentage must be greater than 0."); }
-  return [symbol, number];
-}
-
-interface AllocationObject { allocation: Allocation[] | Map<string, string> | Record<string, string> }
-
-function normalizeAllocation(metadata: AllocationObject): Map<string, string> {
-  if (Array.isArray(metadata.allocation)) {
-    return new Map(metadata.allocation.map(x => [x.symbol, x.percentage]));
-  }
-  if (metadata.allocation instanceof Map) {
-    return metadata.allocation;
-  }
-  return new Map(Object.entries(metadata.allocation));
-}
-
-export function parseAllocation(metadata: AllocationObject, allowedSymbols: Iterable<string> = []): Map<string, bigint> {
-  const allowedSymbolsSet = new Set(allowedSymbols);
-  const rawAllocation = normalizeAllocation(metadata);
-  const allocation = Array.from(rawAllocation)
-    .map(([symbol, percentage]) => validateSingleAllocation(symbol, percentage, allowedSymbolsSet));
-  const map = new Map(allocation);
-  const total = allocation.reduce((x, y) => x + y[1], 0n);
-  if (total > 100n) { throw new Error("Metadata allocations must not exceed 100."); }
-  return map;
-}
