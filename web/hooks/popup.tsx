@@ -49,8 +49,8 @@ export default function PopupProvider(props: PropsWithChildren): ReactElement {
           "min-h-60 max-h-[90%] w-11/12 max-w-lg",
           "overflow-y-auto overflow-x-hidden",
           "scrollbar-track-gray-100 scrollbar-thumb-gray-300",
-          "bg-slate-800 text-slate-100",
-          "rounded-xl drop-shadow-2xl",
+          "bg-slate-100/5 backdrop-blur-xl shadow-2xl text-slate-100",
+          "border border-slate-100/5 rounded-xl",
         )}>
           <Suspense fallback={<Spinner className="my-auto" />}>
             {popup}

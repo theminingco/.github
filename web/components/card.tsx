@@ -41,9 +41,9 @@ export default function Card(props: CardProps): ReactElement {
     <Button
       key={props.item.address}
       onClick={() => openPopup(<Details item={props.item} />)}
-      className="rounded bg-slate-800 p-2"
+      className="rounded-xl bg-slate-100/5 backdrop-blur shadow-2xl border border-slate-100/5 p-2"
     >
-      <Image className="rounded" src={props.item.image} alt={props.item.name} width={256} height={256} />
+      <Image className="rounded-xl" src={props.item.image} alt={props.item.name} width={256} height={256} />
       <div className="flex justify-between px-1">
         <span>{title}</span>
         <span className="text-slate-400">{subtitle}</span>
