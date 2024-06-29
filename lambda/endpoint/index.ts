@@ -5,7 +5,7 @@ import { initializeConnection } from "../utility/solana";
 import { secrets } from "../utility/secrets";
 
 const opts: HttpsOptions = {
-  cors: false,
+  cors: true,
   secrets,
 };
 

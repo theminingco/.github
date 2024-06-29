@@ -2,6 +2,7 @@ import type { Pool, Token } from "@theminingco/core/lib/model";
 import { usePools } from "./pools";
 import { useTokens } from "./tokens";
 import { useMemo } from "react";
+import type { Page } from "./content";
 
 type MetaToken = Token & { pool: Pool };
 type MetaPool = Pool & { tokens: Token[] };
@@ -14,7 +15,7 @@ interface UseItems {
   reload: () => void;
 }
 
-export function useItems(owned: boolean): UseItems {
+export function useItems(page?: Page): UseItems {
   const { tokens: t1, loading: l1, reload: r1 } = useTokens();
   const { pools: p1, loading: l2, reload: r2 } = usePools();
 
@@ -41,7 +42,7 @@ export function useItems(owned: boolean): UseItems {
       .map(x => x as MetaToken);
   }, [t1, poolsMap]);
 
-  const items = useMemo(() => owned ? tokens : pools, [owned, tokens, pools]);
+  const items = useMemo(() => page === "portfolio" ? tokens : pools, [page, tokens, pools]);
   const loading = useMemo(() => l1 || l2, [l1, l2]);
   const reload = useMemo(() => () => [r1, r2].forEach(x => x()), [r1, r2]);
 

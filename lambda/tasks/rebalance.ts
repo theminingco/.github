@@ -2,7 +2,7 @@ import type { Pool, Token } from "@theminingco/core";
 import { poolCollection, tokenCollection } from "../utility/firebase";
 import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
-function getCombinedAllocation(tokens: Token[]): Map<string, bigint> {
+function getCombinedAllocation(tokens: Token[]): Record<string, bigint> {
   const allocation = new Map<string, bigint>();
   for (const token of tokens) {
     for (const [key, value] of Object.entries(token.allocation)) {
@@ -13,7 +13,7 @@ function getCombinedAllocation(tokens: Token[]): Map<string, bigint> {
   }
 
   if (allocation.size === 0) {
-    return allocation;
+    return Object.fromEntries(allocation);
   }
 
   const remainders = new Map<string, bigint>();
@@ -41,7 +41,7 @@ function getCombinedAllocation(tokens: Token[]): Map<string, bigint> {
     allocation.delete(key);
   }
 
-  return allocation;
+  return Object.fromEntries(allocation);
 }
 
 async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {

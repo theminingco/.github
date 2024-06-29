@@ -6,12 +6,12 @@ import { useWallet } from "./wallet";
 
 export interface UseContext {
   readonly countryCode?: string;
-  readonly query?: string;
+  readonly ipAddress?: string;
 }
 
 const ContextContext = createContext<UseContext>({
   countryCode: "",
-  query: "",
+  ipAddress: "",
 });
 
 export function useContext(): UseContext {
@@ -33,12 +33,12 @@ export default function ContextProvider(props: PropsWithChildren): ReactElement 
   }, [setProperties]);
 
   useEffect(() => {
-    if (context?.query == null) { return; }
-    setProperties({ ip: context.query });
-  }, [context?.query, setProperties]);
+    if (context?.ipAddress == null) { return; }
+    setProperties({ ip: context.ipAddress });
+  }, [context?.ipAddress, setProperties]);
 
   useEffect(() => {
-    window.fetch("http://ip-api.com/json")
+    window.fetch("https://freeipapi.com/api/json")
       .then(async x => x.json())
       .then(x => x as UseContext)
       .then(setContext)

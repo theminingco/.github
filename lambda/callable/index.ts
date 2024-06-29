@@ -4,10 +4,11 @@ import { secrets } from "../utility/secrets";
 import { initializeConnection } from "../utility/solana";
 
 const config: CallableOptions = {
-  cors: false,
+  cors: true,
   secrets,
   enforceAppCheck: true,
   consumeAppCheckToken: true,
+  invoker: "public",
 };
 
 const callableSpec = [
