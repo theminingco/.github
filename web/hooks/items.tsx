@@ -2,7 +2,7 @@ import type { Pool, Token } from "@theminingco/core/lib/model";
 import { usePools } from "./pools";
 import { useTokens } from "./tokens";
 import { useMemo } from "react";
-import { Page } from "./content";
+import type { Page } from "./content";
 
 type MetaToken = Token & { pool: Pool };
 type MetaPool = Pool & { tokens: Token[] };

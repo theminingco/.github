@@ -8,7 +8,7 @@ const config: CallableOptions = {
   secrets,
   enforceAppCheck: true,
   consumeAppCheckToken: true,
-  invoker: "public"
+  invoker: "public",
 };
 
 const callableSpec = [

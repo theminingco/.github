@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import Spinner from "./spinner";
 import { useItems } from "../hooks/items";
 import Card from "./card";
-import { Page } from "../hooks/content";
+import type { Page } from "../hooks/content";
 
 interface ListProps {
   type?: Page;
