@@ -4,7 +4,7 @@ import { getAnalytics } from "firebase/analytics";
 import type { AppCheck } from "firebase/app-check";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import type { PropsWithChildren, ReactElement } from "react";
-import React, { createContext, useContext, useMemo, useCallback, useState, useEffect } from "react";
+import React, { createContext, useContext, useMemo, useCallback, useEffect, useRef } from "react";
 import { logEvent as logFirebaseEvent } from "firebase/analytics";
 import { setUserProperties as setFirebaseProperty } from "firebase/analytics";
 import { setUserId as setFirebaseUserId } from "firebase/analytics";
@@ -60,7 +60,7 @@ export function useFirebase(): UseFirebase {
 }
 
 export default function FirebaseProvider(props: PropsWithChildren): ReactElement {
-  const [appCheck, setAppCheck] = useState<AppCheck>();
+  const appCheck = useRef<AppCheck>();
 
   const app = useMemo(() => {
     return initializeApp(firebaseConfig);
@@ -68,7 +68,7 @@ export default function FirebaseProvider(props: PropsWithChildren): ReactElement
 
   const setupAppCheck = useCallback((firebaseApp: FirebaseApp) => {
     const check = initializeAppCheck(firebaseApp, appCheckConfig);
-    setAppCheck(check);
+    appCheck.current = check;
   }, []);
 
   const logEvent = useCallback((name: string, params?: Record<string, unknown>): void => {
@@ -92,19 +92,19 @@ export default function FirebaseProvider(props: PropsWithChildren): ReactElement
   }, [app]);
 
   const getCallable = useCallback(<T extends object, U extends object>(name: string) => {
-    if (appCheck == null) { setupAppCheck(app); }
+    if (appCheck.current == null) { setupAppCheck(app); }
     const functions = getFunctions(app);
     return httpsCallable<T, U>(functions, name, { limitedUseAppCheckTokens: true });
-  }, [app, appCheck, setupAppCheck]);
+  }, [app, setupAppCheck]);
 
   const getDocuments = useCallback(async <T extends DocumentData>(table: string, filter?: QueryFieldFilterConstraint) => {
-    if (appCheck == null) { setupAppCheck(app); }
+    if (appCheck.current == null) { setupAppCheck(app); }
     const firestore = getFirestore(app);
     const c = collection(firestore, table).withConverter(converter<T>());
     const q = filter == null ? c : query(c, filter);
     const snapshot = await getDocs(q);
     return snapshot.docs.map(x => x.data());
-  }, [app, appCheck, setupAppCheck]);
+  }, [app, setupAppCheck]);
 
   useEffect(() => {
     getPerformance(app);

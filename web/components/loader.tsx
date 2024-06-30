@@ -6,7 +6,7 @@ import { faCheckCircle, faCircleXmark } from "@fortawesome/free-regular-svg-icon
 import { faCircleNotch, faHourglass3 } from "@fortawesome/free-solid-svg-icons";
 import FontIcon from "./font";
 
-interface SpinnerProps {
+interface LoaderProps {
   readonly state?: "loading" | "success" | "failure";
   readonly size?: "nano" | "mini" | "small" | "medium" | "large" | "huge";
   readonly type?: "hourglass" | "circle";
@@ -14,21 +14,21 @@ interface SpinnerProps {
   readonly className?: string;
 }
 
-function animationForType(type: SpinnerProps["type"]): string {
+function animationForType(type: LoaderProps["type"]): string {
   switch (type) {
     case "hourglass": return "animate-hourglass";
     default: return "animate-spin";
   }
 }
 
-function iconForType(type: SpinnerProps["type"]): IconDefinition {
+function iconForType(type: LoaderProps["type"]): IconDefinition {
   switch (type) {
     case "hourglass": return faHourglass3;
     default: return faCircleNotch;
   }
 }
 
-export default function Spinner(props: SpinnerProps): ReactElement {
+export default function Loader(props: LoaderProps): ReactElement {
 
   const size = useMemo(() => {
     switch (props.size) {
@@ -57,7 +57,7 @@ export default function Spinner(props: SpinnerProps): ReactElement {
 
   return (
     <div role="status" className={clsx("flex flex-col items-center gap-1", props.className)}>
-      <FontIcon icon={icon} className={clsx("text-sky-500", size, animation)} />
+      <FontIcon icon={icon} className={clsx("text-sky-500/50", size, animation)} />
       {props.message != null ? <span className="m-2">{props.message}</span> : null}
     </div>
   );

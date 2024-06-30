@@ -12,11 +12,11 @@ import Content from "../components/content";
 import Head from "next/head";
 import ContextProvider from "../hooks/context";
 import TokensProvider from "../hooks/tokens";
-import ToastProvider from "../hooks/toast";
+import AlertProvider from "../hooks/alert";
 
 const providers = [
   FirebaseProvider, WalletProvider, PoolsProvider, TokensProvider,
-  ToastProvider, PopupProvider, ContextProvider,
+  AlertProvider, PopupProvider, ContextProvider,
 ];
 
 export default function Page(): ReactElement {

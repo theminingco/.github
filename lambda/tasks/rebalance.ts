@@ -1,25 +1,25 @@
-import type { Pool, Token } from "@theminingco/core";
+import type { Pool } from "@theminingco/core";
+import { allocationParser } from "@theminingco/core";
 import { poolCollection, tokenCollection } from "../utility/firebase";
 import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
-function getCombinedAllocation(tokens: Token[]): Record<string, bigint> {
+function combineAllocations(allocations: Map<string, bigint>[]): Map<string, bigint> {
   const allocation = new Map<string, bigint>();
-  for (const token of tokens) {
-    for (const [key, value] of Object.entries(token.allocation)) {
+  for (const alloc of allocations) {
+    for (const [key, value] of alloc) {
       const current = allocation.get(key) ?? 0n;
-      const bps = BigInt(value.slice(0, -3));
-      allocation.set(key, current + bps);
+      allocation.set(key, current + value);
     }
   }
 
   if (allocation.size === 0) {
-    return Object.fromEntries(allocation);
+    return allocation;
   }
 
   const remainders = new Map<string, bigint>();
   for (const [key, value] of allocation) {
-    allocation.set(key, value / BigInt(tokens.length));
-    remainders.set(key, value % BigInt(tokens.length));
+    allocation.set(key, value / BigInt(allocations.length));
+    remainders.set(key, value % BigInt(allocations.length));
   }
 
   const total = Array.from(allocation.values())
@@ -41,7 +41,7 @@ function getCombinedAllocation(tokens: Token[]): Record<string, bigint> {
     allocation.delete(key);
   }
 
-  return Object.fromEntries(allocation);
+  return allocation;
 }
 
 async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {
@@ -50,7 +50,8 @@ async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {
     .get();
 
   const tokens = snapshot.docs.map(x => x.data());
-  const allocation = getCombinedAllocation(tokens);
+  const individualAllocations = tokens.map(allocationParser().parse);
+  const combinedAllocation = combineAllocations(individualAllocations);
 
   // TODO: reblance each pool on alpaca based on allocation
 
@@ -67,6 +68,7 @@ async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {
   // with some margin (up to 1% more or less is allowed?)
   // At some point might run out of money for buying? How should this be handled?
 
+  const allocation = allocationParser({ container: "record", value: "bps" }).parse({ allocation: combinedAllocation });
   await doc.ref.update({ allocation });
 }
 
