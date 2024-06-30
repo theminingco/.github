@@ -13,7 +13,7 @@ export default function Input(props: InputProps): ReactElement {
   return (
     <div className={clsx(
       "flex gap-1 p-1 rounded-md",
-      "border border-slate-200/50 focus-within:border-sky-500",
+      "border border-slate-200/20 focus-within:border-sky-500/50",
       props.outerClassName,
     )}>
       {props.prefix != null ? <span className="mr-2">{props.prefix}</span> : null}

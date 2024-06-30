@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function useIsProduction(): boolean {
-  const [isProduction, setIsProduction] = useState(true);
+  const isProduction = useRef(true);
 
   useEffect(() => {
-    setIsProduction(window.location.hostname === "theminingco.xyz");
+    isProduction.current = window.location.hostname === "theminingco.xyz";
   }, []);
 
-  return isProduction;
+  return isProduction.current;
 }

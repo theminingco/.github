@@ -46,7 +46,7 @@ export default function Details(props: DetailsProps): ReactElement {
   }, [props.item.address, setCopied]);
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-full h-full items-center">
       <div className="flex gap-2 h-8 w-full items-center">
         <Image className="rounded" src={props.item.image} alt={props.item.name} width={32} height={32} />
         <span>{title}</span>
@@ -60,6 +60,7 @@ export default function Details(props: DetailsProps): ReactElement {
         </Button>
       </div>
       <Donut
+        className="px-4 max-w-[360px] w-full"
         data={donutData}
         onSave={isEditable ? saveAllocation : undefined}
         disabled={loading}

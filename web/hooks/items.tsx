@@ -19,6 +19,8 @@ export function useItems(page?: Page): UseItems {
   const { tokens: t1, loading: l1, reload: r1 } = useTokens();
   const { pools: p1, loading: l2, reload: r2 } = usePools();
 
+  // FIXME: sorting
+
   const poolsMap = useMemo(() => new Map(p1.map(x => [x.address, x])), [p1]);
   const tokensMap = useMemo(() => {
     const map = new Map<string, Token[]>();

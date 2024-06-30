@@ -5,6 +5,7 @@ import Button from "./button";
 import Legend from "./legend";
 import { getColor } from "../utility/color";
 import { interval } from "@theminingco/core/lib/array";
+import { usePopup } from "../hooks/popup";
 
 interface DonutProps {
   readonly data: Map<string, bigint>;
@@ -19,6 +20,7 @@ interface DonutProps {
 export default function Donut(props: DonutProps): ReactElement {
   const initialDonutData = useMemo(() => Array.from(props.data.entries()), [props.data]);
   const [donutData, setDonutData] = useState(initialDonutData);
+  const { closePopup } = usePopup();
   const thickness = props.thickness ?? 12;
   const radius = 50 - thickness;
   const circumference = 2 * Math.PI * radius;
@@ -53,22 +55,37 @@ export default function Donut(props: DonutProps): ReactElement {
     });
   }, [donutData, arcs]);
 
-  const saveButton = useMemo(() => {
-    if (!editable) {
-      return null;
+  const hasChanges = useMemo(() => {
+    if (donutData.length !== initialDonutData.length) {
+      return true;
     }
+    return !donutData.every(([key, value], index) => key === initialDonutData[index][0] && value === initialDonutData[index][1]);
+  }, [donutData, initialDonutData]);
+
+  const actionButtons = useMemo(() => {
     const saveData = donutData.filter(([_, value]) => value > 0);
     return (
-      <Button
-        onClick={() => props.onSave?.(new Map(saveData))}
-        disabled={props.disabled}
-        outerClassName="mt-4 w-32"
-        className="py-2 bg-sky-500 rounded-full"
-      >
-        Save
-      </Button>
+      <div className="flex gap-2">
+        {editable ? (
+          <Button
+            onClick={() => props.onSave?.(new Map(saveData))}
+            disabled={props.disabled || !hasChanges}
+            outerClassName="mt-4 w-32"
+            className="py-2 bg-sky-500/50 rounded"
+          >
+            Save
+          </Button>
+        ) : null}
+        <Button
+          onClick={() => closePopup()}
+          outerClassName="mt-4 w-32"
+          className="py-2 bg-slate-100/10 rounded"
+        >
+          {hasChanges ? "Cancel" : "Close"}
+        </Button>
+      </div>
     );
-  }, [editable, initialDonutData, donutData, props.data, props.disabled, props.onSave]);
+  }, [editable, hasChanges, donutData, props.disabled, props.onSave, closePopup]);
 
   return (
     <div className={clsx("flex flex-col items-center", props.className)}>
@@ -87,7 +104,7 @@ export default function Donut(props: DonutProps): ReactElement {
         setData={editable ? setDonutData : undefined}
         className={hideLegend ? "hidden" : ""}
       />
-      {saveButton}
+      {actionButtons}
     </div>
   );
 }

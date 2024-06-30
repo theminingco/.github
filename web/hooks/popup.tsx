@@ -1,7 +1,7 @@
 import type { PropsWithChildren, ReactElement } from "react";
 import React, { Suspense, createContext, useCallback, useContext, useMemo, useState } from "react";
 import clsx from "clsx";
-import Spinner from "../components/spinner";
+import Loader from "../components/loader";
 
 export interface UsePopup {
   openPopup: (node: ReactElement, closeOnBackground?: boolean) => void;
@@ -52,7 +52,7 @@ export default function PopupProvider(props: PropsWithChildren): ReactElement {
           "bg-slate-100/5 backdrop-blur-xl shadow-2xl text-slate-100",
           "border border-slate-100/5 rounded-xl",
         )}>
-          <Suspense fallback={<Spinner className="my-auto" />}>
+          <Suspense fallback={<Loader className="my-auto" />}>
             {popup}
           </Suspense>
         </div>
@@ -60,7 +60,7 @@ export default function PopupProvider(props: PropsWithChildren): ReactElement {
     );
   }, [popup, closeOnBackground]);
 
-  // TODO: in/out animation
+  // FIXME: in/out animation
 
   const context = useMemo(() => {
     return { openPopup, closePopup, setCloseOnBackground, popup };

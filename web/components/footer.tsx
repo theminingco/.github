@@ -7,7 +7,7 @@ import FontIcon from "./font";
 import { usePopup } from "../hooks/popup";
 import { cachedFetch } from "@theminingco/core/lib/cache";
 import { useFirebase } from "../hooks/firebase";
-import Spinner from "./spinner";
+import Loader from "./loader";
 
 async function parseMd(md: string): Promise<string> {
   const marked = await import("marked");
@@ -32,7 +32,7 @@ function HtmlNode(props: { slug: string }): ReactElement {
   }, [props.slug]);
 
   if (html == null) {
-    return <Spinner className="my-auto" />;
+    return <Loader className="my-auto" />;
   }
 
   return (

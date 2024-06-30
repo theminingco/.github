@@ -3,8 +3,8 @@ import { useCallable } from "./callable";
 import { useWallet } from "./wallet";
 import type { Address } from "@solana/web3.js";
 import { useFirebase } from "./firebase";
-import type { ToastProps } from "./toast";
-import { useToast } from "./toast";
+import type { AlertProps } from "./alert";
+import { useAlert } from "./alert";
 import { faUpRightFromSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { humanReadable } from "../utility/error";
 
@@ -14,7 +14,7 @@ interface UseTransaction {
   result?: string | Error;
 }
 
-function preparingToast(): ToastProps {
+function preparingAlert(): AlertProps {
   return {
     title: "1/3 Preparing transaction",
     message: "Please hold on while we prepare your transaction.",
@@ -22,7 +22,7 @@ function preparingToast(): ToastProps {
   };
 }
 
-function approvingToast(): ToastProps {
+function approvingAlert(): AlertProps {
   return {
     title: "2/3 Approving transaction",
     message: "Please approve the transaction in your wallet.",
@@ -30,7 +30,7 @@ function approvingToast(): ToastProps {
   };
 }
 
-function sendingToast(): ToastProps {
+function sendingAlert(): AlertProps {
   return {
     title: "3/3 Sending transaction",
     message: "Sending the transaction to the cluster and confirming it landed.",
@@ -38,25 +38,25 @@ function sendingToast(): ToastProps {
   };
 }
 
-function successToast(hash: string, clearToast: () => void): ToastProps {
+function successAlert(hash: string, clearAlert: () => void): AlertProps {
   return {
     title: "Transaction successful",
     message: "Successfully landed transaction in a block.",
     type: "success",
     actions: [
       { icon: faUpRightFromSquare, href: `https://solscan.io/tx/${hash}` },
-      { icon: faXmark, onClick: clearToast },
+      { icon: faXmark, onClick: clearAlert },
     ],
   };
 }
 
-function failureToast(error: unknown, clearToast: () => void): ToastProps {
+function failureAlert(error: unknown, clearAlert: () => void): AlertProps {
   return {
     title: "Transaction failed",
     message: humanReadable(error),
     type: "error",
     actions: [
-      { icon: faXmark, onClick: clearToast },
+      { icon: faXmark, onClick: clearAlert },
     ],
   };
 }
@@ -66,7 +66,7 @@ export function useTransaction(): UseTransaction {
   const { update, send } = useCallable();
   const { publicKey, signTransaction } = useWallet();
   const { logError } = useFirebase();
-  const { setToast, clearToast } = useToast();
+  const { setAlert, clearAlert } = useAlert();
 
   const asyncCommit = useCallback(async (tokenAddress: Address, allocation: Record<string, string>) => {
     if (publicKey == null) {
@@ -74,21 +74,21 @@ export function useTransaction(): UseTransaction {
     }
     setLoading(true);
     try {
-      setToast(preparingToast());
+      setAlert(preparingAlert());
       const updateResponse = await update({ publicKey, tokenAddress, allocation });
       const transaction = Buffer.from(updateResponse.transaction, "base64");
-      setToast(approvingToast());
+      setAlert(approvingAlert());
       const signedTransaction = await signTransaction(transaction);
       const rawSignedTransaction = signedTransaction.toString("base64");
-      setToast(sendingToast());
+      setAlert(sendingAlert());
       const sendResponse = await send({ transaction: rawSignedTransaction });
-      setToast(successToast(sendResponse.signature, clearToast));
+      setAlert(successAlert(sendResponse.signature, clearAlert));
     } catch (error) {
-      setToast(failureToast(error, clearToast));
+      setAlert(failureAlert(error, clearAlert));
       setLoading(false);
       logError(error);
     }
-  }, [publicKey, update, send, signTransaction, setToast, clearToast, setLoading, logError]);
+  }, [publicKey, update, send, signTransaction, setAlert, clearAlert, setLoading, logError]);
 
   const commit = useCallback((tokenAddress: Address, allocation: Record<string, string>) => {
     void asyncCommit(tokenAddress, allocation);

@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { useIsGeoblocked } from "../hooks/geoblock";
 import { formatLargeNumber } from "@theminingco/core/lib/string";
 import { useTotalLockedValue } from "../hooks/value";
+import Skeleton from "./skeleton";
 
 const fallback = <div className="flex-1" />;
 const List = dynamic(async () => import("../components/list"), { loading: () => fallback });
@@ -14,7 +15,7 @@ const Disabled = dynamic(async () => import("../components/disabled"), { loading
 
 export default function Content(): ReactElement {
   const { selectedPage, setSelectedPage } = useContent();
-  const { tvl } = useTotalLockedValue(selectedPage);
+  const { tvl, loading } = useTotalLockedValue(selectedPage);
   const isBlocked = useIsGeoblocked();
 
   const content = useMemo(() => {
@@ -51,8 +52,11 @@ export default function Content(): ReactElement {
         <div className={clsx("flex gap-4 w-full px-4 items-center", isBlocked ? "hidden" : "")}>
           {tabs}
           <div className="grow" />
-          <div className="flex flex-col">
-            <div className="text-3xl text-right">◎{formatLargeNumber(tvl)}</div>
+          <div className="flex flex-col items-end">
+            {loading
+              ? <Skeleton className="w-24 h-9" />
+              : <div className="text-3xl text-right">◎{formatLargeNumber(tvl)}</div>
+            }
             <div className="text-sm text-right">{tvlTitle}</div>
           </div>
         </div>
