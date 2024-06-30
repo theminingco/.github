@@ -55,8 +55,7 @@ export default function Content(): ReactElement {
           <div className="flex flex-col items-end">
             {loading
               ? <Skeleton className="w-24 h-9" />
-              : <div className="text-3xl text-right">◎{formatLargeNumber(tvl)}</div>
-            }
+              : <div className="text-3xl text-right">◎{formatLargeNumber(tvl)}</div>}
             <div className="text-sm text-right">{tvlTitle}</div>
           </div>
         </div>

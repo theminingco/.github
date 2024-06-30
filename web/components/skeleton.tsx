@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 
 interface SkeletonProps {
   className?: string;
@@ -12,6 +12,6 @@ export default function Skeleton(props: SkeletonProps): ReactElement {
       "animate-pulse bg-slate-100/10",
       "backdrop-blur-xl shadow-2xl",
       props.className,
-    )}/>
-  )
+    )} />
+  );
 }

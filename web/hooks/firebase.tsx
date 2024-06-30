@@ -4,7 +4,7 @@ import { getAnalytics } from "firebase/analytics";
 import type { AppCheck } from "firebase/app-check";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import type { PropsWithChildren, ReactElement } from "react";
-import React, { createContext, useContext, useMemo, useCallback, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext, useMemo, useCallback, useEffect, useRef } from "react";
 import { logEvent as logFirebaseEvent } from "firebase/analytics";
 import { setUserProperties as setFirebaseProperty } from "firebase/analytics";
 import { setUserId as setFirebaseUserId } from "firebase/analytics";

@@ -1,10 +1,9 @@
 import type { ReactElement } from "react";
 import React, { useMemo } from "react";
-import Loader from "./loader";
 import { useItems } from "../hooks/items";
 import Card from "./card";
 import type { Page } from "../hooks/content";
-import { interval } from "@theminingco/core";
+import { interval } from "@theminingco/core/lib/array";
 import Skeleton from "./skeleton";
 import clsx from "clsx";
 
@@ -17,7 +16,7 @@ export default function List(props: ListProps): ReactElement {
 
   const cards = useMemo(() => {
     if (loading) {
-      return interval(24).map(x => <Skeleton key={x} className="h-52" />)
+      return interval(24).map(x => <Skeleton key={x} className="h-52" />);
     }
     return items.map(x => <Card key={x.address} item={x} />);
   }, [items]);

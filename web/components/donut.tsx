@@ -26,6 +26,7 @@ export default function Donut(props: DonutProps): ReactElement {
   const circumference = 2 * Math.PI * radius;
   const editable = props.onSave != null;
   const hideLegend = props.hideLegend ?? false;
+  const disabled = props.disabled ?? false;
 
   const arcs = useMemo(() => {
     let cumlative = 0;
@@ -64,18 +65,19 @@ export default function Donut(props: DonutProps): ReactElement {
 
   const actionButtons = useMemo(() => {
     const saveData = donutData.filter(([_, value]) => value > 0);
+    const saveButton = (
+      <Button
+        onClick={() => props.onSave?.(new Map(saveData))}
+        disabled={disabled || !hasChanges}
+        outerClassName="mt-4 w-32"
+        className="py-2 bg-sky-500/50 rounded"
+      >
+        Save
+      </Button>
+    );
     return (
       <div className="flex gap-2">
-        {editable ? (
-          <Button
-            onClick={() => props.onSave?.(new Map(saveData))}
-            disabled={props.disabled || !hasChanges}
-            outerClassName="mt-4 w-32"
-            className="py-2 bg-sky-500/50 rounded"
-          >
-            Save
-          </Button>
-        ) : null}
+        {editable ? saveButton : null}
         <Button
           onClick={() => closePopup()}
           outerClassName="mt-4 w-32"
@@ -85,7 +87,7 @@ export default function Donut(props: DonutProps): ReactElement {
         </Button>
       </div>
     );
-  }, [editable, hasChanges, donutData, props.disabled, props.onSave, closePopup]);
+  }, [editable, hasChanges, donutData, disabled, props.onSave, closePopup]);
 
   return (
     <div className={clsx("flex flex-col items-center", props.className)}>
