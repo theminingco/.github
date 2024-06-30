@@ -49,7 +49,7 @@ function combineAllocations(allocations: Map<string, bigint>[]): Map<string, big
 
 async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {
   const snapshot = await tokenCollection
-    .where("pool", "==", doc.data().address)
+    .where("collection", "==", doc.data().address)
     .get();
 
   const tokens = snapshot.docs.map(x => x.data());
