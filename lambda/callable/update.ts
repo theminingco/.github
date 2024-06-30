@@ -13,15 +13,19 @@ export default async function getUpdateTokenTransaction(request: CallableRequest
   const publicKey = parsable.key("publicKey").publicKey();
   const allocation = parsable.key("allocation").map(x => x.string());
 
+  console.info(`Fetching token with address ${tokenAddress}`);
   const token = await fetchMaybeAssetV1(rpc, tokenAddress);
   if (!token.exists) { throw new HttpsError("failed-precondition", "Invalid token"); }
   if (token.data.owner !== publicKey) { throw new HttpsError("failed-precondition", "Incorrect token owner"); }
   if (token.data.updateAuthority.__kind !== "Collection") { throw new HttpsError("failed-precondition", "Invalid update authority"); }
   const poolAddress = token.data.updateAuthority.fields[0];
 
+  console.info(`Fetching token metadata with uri ${token.data.uri}`);
   const metadata = await fetchMetadata(token.data.uri);
   // TODO: insert allowed instruments from alpaca
   metadata.allocation = allocationParser({ container: "allocation", value: "percent" }).parse({ allocation });
+
+  console.info(`Uploading new metadata for token ${tokenAddress}`, { allocation });
   const metaUri = await uploadData(JSON.stringify(metadata), signer);
 
   const publicKeySigner = createNoopSigner(publicKey);
@@ -53,6 +57,7 @@ export default async function getUpdateTokenTransaction(request: CallableRequest
     }),
   ];
 
+  console.info(`Creating update transaction for token ${tokenAddress}`);
   const tx = await createTransaction(rpc, instructions, publicKey);
   return { transaction: getBase64EncodedWireTransaction(tx) };
 }

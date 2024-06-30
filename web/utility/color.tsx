@@ -1,6 +1,6 @@
 
 
-// TODO: color scheme
+// FIXME: color scheme
 const colors = [
   "#16a34a", "#a1ca62", "#fff095", "#f49b59", "#d43d51",
   "#56b04f", "#c2d771", "#fdd47b", "#ed7d51", "#7ebd57",

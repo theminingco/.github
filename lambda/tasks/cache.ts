@@ -9,6 +9,7 @@ import { allocationParser, fetchMetadata } from "@theminingco/core";
 async function insertOrUpdatePool(ref: DocumentReference | undefined, pool: Account<CollectionV1>): Promise<void> {
   const metadata = await fetchMetadata(pool.data.uri);
   if (ref == null) {
+    console.info(`Creating pool ${pool.address}`);
     await poolCollection.doc().create({
       address: pool.address,
       name: pool.data.name,
@@ -20,6 +21,7 @@ async function insertOrUpdatePool(ref: DocumentReference | undefined, pool: Acco
       isReleased: false,
     });
   } else {
+    console.info(`Updating pool ${pool.address}`);
     await ref.update({
       name: pool.data.name,
       supply: pool.data.currentSize,
@@ -33,6 +35,7 @@ async function reloadPoolsCache(): Promise<Address[]> {
   const snaphot = await poolCollection.get();
   const fbPools = new Map(snaphot.docs.map(x => [x.data().address.toString(), x]));
   const ocPools = new Map(pools.map(x => [x.address.toString(), x]));
+  console.info(`Found ${pools.length} pools on-chain.`);
 
   let promises: Promise<unknown>[] = [];
 
@@ -45,6 +48,7 @@ async function reloadPoolsCache(): Promise<Address[]> {
     if (ocPools.has(pool.data().address)) {
       continue;
     }
+    console.info(`Deleting pool ${pool.data().address}`);
     promises.push(pool.ref.delete());
   }
 
@@ -58,6 +62,7 @@ async function insertOrUpdateToken(ref: DocumentReference | undefined, token: Ac
   const updateAuthority = token.data.updateAuthority.__kind === "Collection" ? token.data.updateAuthority : { fields: [""] };
   const pool = updateAuthority.fields[0];
   if (ref == null) {
+    console.info(`Creating token ${token.address}`);
     await tokenCollection.doc().create({
       address: token.address,
       collection: pool,
@@ -67,6 +72,7 @@ async function insertOrUpdateToken(ref: DocumentReference | undefined, token: Ac
       allocation,
     });
   } else {
+    console.info(`Updating token ${token.address}`);
     await ref.update({
       collection: pool,
       name: token.data.name,
@@ -84,6 +90,7 @@ async function reloadTokensCache(pool: Address): Promise<Address[]> {
     .get();
   const fbTokens = new Map(snapshot.docs.map(x => [x.data().address.toString(), x]));
   const ocTokens = new Map(tokens.map(x => [x.address.toString(), x]));
+  console.info(`Found ${tokens.length} tokens for pool ${pool}.`);
 
   let promises: Promise<unknown>[] = [];
 
@@ -96,6 +103,7 @@ async function reloadTokensCache(pool: Address): Promise<Address[]> {
     if (ocTokens.has(token.data().address)) {
       continue;
     }
+    console.info(`Deleting token ${token.data().address}`);
     promises.push(token.ref.delete());
   }
 
