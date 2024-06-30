@@ -73,6 +73,7 @@ async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {
   // At some point might run out of money for buying? How should this be handled?
 
   const allocation = allocationParser({ container: "record", value: "bps" }).parse({ allocation: combinedAllocation });
+  console.info(`Updating pool ${doc.data().address}.`, { allocation });
   await doc.ref.update({ allocation });
 }
 
