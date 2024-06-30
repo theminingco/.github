@@ -16,9 +16,11 @@ type ScheduleHandler = () => Promise<void>;
 export = taskSpecs
   .map(spec => {
     const handler = onSchedule({ schedule: spec.schedule, secrets }, async () => {
+      console.info(`Running task ${spec.file}`);
       await initializeConnection();
       const file = await import(`./${spec.file}`) as { default: ScheduleHandler };
       await file.default();
+      console.info(`Task ${spec.file} complete`);
     });
     return [spec.file, handler] as [string, ScheduleFunction];
   }).reduce<Record<string, ScheduleFunction>>((a, b) => ({ ...a, [b[0]]: b[1] }), {});

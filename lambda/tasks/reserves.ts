@@ -8,6 +8,7 @@ export default async function checkTask(): Promise<void> {
   const lamports = BigInt(accountInfo.value?.lamports ?? 0);
   const balance = toNumber(lamports, 9);
   const usdEquivalent = balance * 20; // TODO: <-- add sol price from alpaca
+  console.info(`Checking reserves for ${signer.address}`, { balance, usdEquivalent })
 
   if (usdEquivalent < 100) {
     await sendWarning(

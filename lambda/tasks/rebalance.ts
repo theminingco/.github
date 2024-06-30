@@ -16,15 +16,18 @@ function combineAllocations(allocations: Map<string, bigint>[]): Map<string, big
     return allocation;
   }
 
+  const requiredTotal = Array.from(allocation.values())
+    .reduce((x, y) => x + y, 0n) / BigInt(allocations.length);
+
   const remainders = new Map<string, bigint>();
   for (const [key, value] of allocation) {
     allocation.set(key, value / BigInt(allocations.length));
     remainders.set(key, value % BigInt(allocations.length));
   }
 
-  const total = Array.from(allocation.values())
+  const roundedTotal = Array.from(allocation.values())
     .reduce((x, y) => x + y, 0n);
-  const remaining = 10000n - total;
+  const remaining = requiredTotal - roundedTotal;
   const queue = Array.from(remainders.entries())
     .sort((a, b) => Number(b[1] - a[1]))
     .map(x => x[0]);
@@ -52,6 +55,7 @@ async function rebalancePool(doc: QueryDocumentSnapshot<Pool>): Promise<void> {
   const tokens = snapshot.docs.map(x => x.data());
   const individualAllocations = tokens.map(allocationParser().parse);
   const combinedAllocation = combineAllocations(individualAllocations);
+  console.info(`Rebalancing pool ${doc.data().address}.`, { combinedAllocation });
 
   // TODO: reblance each pool on alpaca based on allocation
 

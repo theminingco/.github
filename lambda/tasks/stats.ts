@@ -6,6 +6,7 @@ import { address } from "@solana/web3.js";
 
 export default async function recordStatistics(): Promise<void> {
   const snapshot = await poolCollection.get();
+  console.info(`Recording statistics for ${snapshot.docs.length} pools.`);
 
   const totalValue = snapshot.docs
     .map(doc => doc.data().supply * doc.data().price)

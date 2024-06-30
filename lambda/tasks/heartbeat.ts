@@ -10,6 +10,7 @@ async function updateTokenOwners(): Promise<void> {
   const addresses = snapshot.docs.map(x => address(x.data().address));
   const assets = await batchFetch(fetchAllMaybeAssetV1).send(rpc, addresses);
   const batch = new BatchWriter();
+  console.info(`Updating ${snapshot.docs.length} tokens.`)
 
   for (let i = 0; i < snapshot.docs.length; i++) {
     const [asset, doc] = [assets[i], snapshot.docs[i]];
@@ -30,6 +31,7 @@ async function updatePrices(): Promise<void> {
   const addresses = snapshot.docs.map(x => address(x.data().address));
   const collections = await batchFetch(fetchEncodedAccounts).send(rpc, addresses);
   const batch = new BatchWriter();
+  console.info(`Updating ${snapshot.docs.length} pools.`)
 
   for (let i = 0; i < snapshot.docs.length; i++) {
     const [collection, doc] = [collections[i], snapshot.docs[i]];

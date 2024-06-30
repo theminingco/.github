@@ -1,13 +1,15 @@
 import { isAddress } from "@solana/web3.js";
 import type { Request, Response } from "express";
 import { poolCollection, tokenCollection } from "../utility/firebase";
+import { HttpsError } from "firebase-functions/v2/https";
 
 export default async function getPrice(request: Request, response: Response): Promise<void> {
   let address = request.query.address;
-  if (address == null) { response.status(400).json("Missing address"); return; }
-  if (typeof address !== "string") { response.status(400).json("Invalid address"); return; }
-  if (!isAddress(address)) { response.status(400).json("Invalid address"); return; }
+  if (address == null) { throw new HttpsError("invalid-argument", "Missing address") }
+  if (typeof address !== "string") { throw new HttpsError("invalid-argument", "Invalid address")}
+  if (!isAddress(address)) { throw new HttpsError("invalid-argument", "Invalid address")}
 
+  console.info(`Fetching token with address ${address}`);
   const token = await tokenCollection
     .where("address", "==", address)
     .limit(1)
@@ -17,14 +19,15 @@ export default async function getPrice(request: Request, response: Response): Pr
     address = token.docs[0].data().collection;
   }
 
+  console.info(`Fetching pool with address ${address}`);
   const pool = await poolCollection
     .where("address", "==", address)
     .limit(1)
     .get();
 
-  if (pool.docs.length !== 1) { response.status(404).json("Not found"); return; }
+  if (pool.docs.length !== 1) { throw new HttpsError("not-found", "No pool or token found") }
   const price = pool.docs[0].data().price;
   const priceTimestamp = pool.docs[0].data().priceTimestamp;
 
-  response.status(200).json({ address, price, priceTimestamp });
+  response.json({ address, price, priceTimestamp });
 }
