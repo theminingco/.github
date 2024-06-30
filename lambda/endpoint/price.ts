@@ -5,9 +5,9 @@ import { HttpsError } from "firebase-functions/v2/https";
 
 export default async function getPrice(request: Request, response: Response): Promise<void> {
   let address = request.query.address;
-  if (address == null) { throw new HttpsError("invalid-argument", "Missing address") }
-  if (typeof address !== "string") { throw new HttpsError("invalid-argument", "Invalid address")}
-  if (!isAddress(address)) { throw new HttpsError("invalid-argument", "Invalid address")}
+  if (address == null) { throw new HttpsError("invalid-argument", "Missing address"); }
+  if (typeof address !== "string") { throw new HttpsError("invalid-argument", "Invalid address"); }
+  if (!isAddress(address)) { throw new HttpsError("invalid-argument", "Invalid address"); }
 
   console.info(`Fetching token with address ${address}`);
   const token = await tokenCollection
@@ -25,7 +25,7 @@ export default async function getPrice(request: Request, response: Response): Pr
     .limit(1)
     .get();
 
-  if (pool.docs.length !== 1) { throw new HttpsError("not-found", "No pool or token found") }
+  if (pool.docs.length !== 1) { throw new HttpsError("not-found", "No pool or token found"); }
   const price = pool.docs[0].data().price;
   const priceTimestamp = pool.docs[0].data().priceTimestamp;
 

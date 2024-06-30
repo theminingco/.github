@@ -90,7 +90,7 @@ async function reloadTokensCache(pool: Address): Promise<Address[]> {
     .get();
   const fbTokens = new Map(snapshot.docs.map(x => [x.data().address.toString(), x]));
   const ocTokens = new Map(tokens.map(x => [x.address.toString(), x]));
-  console.info(`Found ${tokens.length} tokens for pool ${pool}.`)
+  console.info(`Found ${tokens.length} tokens for pool ${pool}.`);
 
   let promises: Promise<unknown>[] = [];
 
