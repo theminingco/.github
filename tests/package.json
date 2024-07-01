@@ -8,7 +8,7 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@solana/web3.js": "^2.0.0-preview.3",
+    "@solana/web3.js": "^2.0.0-preview.3.20240701083225.ffcfc631e7b6588082115bddafc22d7a23139115",
     "@testing-library/dom": "^10.2.0",
     "@testing-library/react": "^16.0.0",
     "@theminingco/core": "*",

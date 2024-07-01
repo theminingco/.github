@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@solana-program/system": "^0.3.3",
-    "@solana/web3.js": "^2.0.0-preview.3",
+    "@solana/web3.js": "^2.0.0-preview.3.20240701083225.ffcfc631e7b6588082115bddafc22d7a23139115",
     "@theminingco/core": "*",
     "@theminingco/metadata": "*",
     "prompts": "^2.4.2",
