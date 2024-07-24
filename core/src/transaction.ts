@@ -34,7 +34,7 @@ async function prependComputeBudgetInstructions(rpc: CreateTransactionRpc, trans
     .filter(x => x.role === AccountRole.WRITABLE || x.role === AccountRole.WRITABLE_SIGNER)
     .map(x => x.address);
   const recentPrioritizationFees = await rpc.getRecentPrioritizationFees(addresses).send();
-  recentPrioritizationFees.sort((a, b) => Number(a.prioritizationFee - b.prioritizationFee));
+  recentPrioritizationFees.toSorted((a, b) => Number(a.prioritizationFee - b.prioritizationFee));
   const percentileIndex = Math.min(
     Math.max(Math.floor(recentPrioritizationFees.length * priorityFeePercentile), 0),
     recentPrioritizationFees.length - 1,
