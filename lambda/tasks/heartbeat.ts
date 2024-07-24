@@ -41,6 +41,9 @@ async function updatePrices(): Promise<void> {
     // 1. Get portfolio size in usd from alpaca
     // 2. Calculate in SOL
     // 3. Divide by (supply)
+    // 24h delta
+    // 7d delta
+    // 30d delta
     const price = 5;
     await batch.update(doc.ref, {
       price,
