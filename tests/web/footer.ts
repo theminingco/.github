@@ -11,8 +11,7 @@ describe("footer", () => {
   });
 
   it("Footer should contain copyright", async () => {
-    const copyright = await context.findByText("Copyright © 2024 iwcapital.xyz");
-    assert.ok(copyright);
+    await context.findByText("Copyright © 2024 iwcapital.xyz");
   });
 
   it("Footer should contain social links", async () => {
