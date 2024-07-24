@@ -12,7 +12,7 @@
   "dependencies": {
     "@solana-program/memo": "^0.3.2",
     "@solana-program/system": "^0.3.3",
-    "@solana-program/token": "^0.1.4",
+    "@solana-program/token": "^0.2.0",
     "@solana/web3.js": "^2.0.0-preview.4",
     "@theminingco/core": "*",
     "firebase-admin": "^12.2.0",
