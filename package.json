@@ -21,7 +21,7 @@
     "@types/sinon": "^17.0.3",
     "firebase-tools": "^13.14.0",
     "nx": "^19.3.2",
-    "rimraf": "^5.0.7"
+    "rimraf": "^6.0.1"
   },
   "workspaces": [
     "cli",
