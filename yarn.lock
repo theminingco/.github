@@ -2067,12 +2067,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana-program/token@npm:^0.1.4":
-  version: 0.1.4
-  resolution: "@solana-program/token@npm:0.1.4"
+"@solana-program/token@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@solana-program/token@npm:0.2.1"
   peerDependencies:
-    "@solana/web3.js": 2.0.0-preview.3
-  checksum: 10c0/acf365d2fe709ea3d97c3c070adcb13f48313fd25bc81e81ce0cd4a40af43c6bbe5b3591b2e1c064f7af88e398e999430d9a379d41c22103d46f065d25335dec
+    "@solana/web3.js": 2.0.0-preview.4
+  checksum: 10c0/5ebc58bf5f9626a8247ab66a474190215c7e3300f5441fc053832dc959a48ebca040f390fdacfa552b2ef2b2bed85ee574639be9e69c8c89c8e9130e68125ef4
   languageName: node
   linkType: hard
 
@@ -2773,7 +2773,7 @@ __metadata:
   dependencies:
     "@solana-program/memo": "npm:^0.3.2"
     "@solana-program/system": "npm:^0.3.3"
-    "@solana-program/token": "npm:^0.1.4"
+    "@solana-program/token": "npm:^0.2.1"
     "@solana/web3.js": "npm:^2.0.0-preview.4"
     "@theminingco/core": "npm:*"
     firebase-admin: "npm:^12.2.0"
