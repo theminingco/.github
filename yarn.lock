@@ -2846,7 +2846,7 @@ __metadata:
     autoprefixer: "npm:^10.4.19"
     clsx: "npm:^2.1.1"
     firebase: "npm:^10.12.2"
-    marked: "npm:^13.0.1"
+    marked: "npm:^13.0.3"
     next: "npm:^14.2.4"
     postcss: "npm:^8.4.38"
     react: "npm:^18.3.1"
@@ -8412,12 +8412,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^13.0.1":
-  version: 13.0.1
-  resolution: "marked@npm:13.0.1"
+"marked@npm:^13.0.3":
+  version: 13.0.3
+  resolution: "marked@npm:13.0.3"
   bin:
     marked: bin/marked.js
-  checksum: 10c0/f14b83b65397ce5c5c4703b2808db6ca0e580d89a52e0f61e204b2451774cd87a7d79a40127d3f7e867e6e03486d1b3f508eb9af7d74623dc7f57adb6a7f8890
+  checksum: 10c0/b1121f420f815206ae5ae109b9b0eb6c21f84d8d459cbe38ffa00543652e091f36a55c2c96ff1414821d8752682af8c0de3f44f0a2a5bd9c8612a4ef520e9b3d
   languageName: node
   linkType: hard
 
