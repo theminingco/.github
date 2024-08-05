@@ -18,7 +18,7 @@
     "@solana/web3.js": "^2.0.0-preview.4",
     "@theminingco/core": "*",
     "@wallet-standard/core": "^1.0.3",
-    "autoprefixer": "^10.4.19",
+    "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "firebase": "^10.12.2",
     "marked": "^13.0.3",
