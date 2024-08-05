@@ -2088,12 +2088,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana-program/system@npm:^0.3.3":
-  version: 0.3.3
-  resolution: "@solana-program/system@npm:0.3.3"
+"@solana-program/system@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@solana-program/system@npm:0.5.0"
   peerDependencies:
-    "@solana/web3.js": 2.0.0-preview.3
-  checksum: 10c0/9520b1a0123c4e90d61965d91efb0a6de8efecf1f23852c5530c84b4cd9147699e4a46300e68ee8ef6f273bfbe992d324bf9b915ab40065af30b0e1bc4a0ac59
+    "@solana/web3.js": 2.0.0-rc.0
+  checksum: 10c0/3c1e89bc4e26582c8503ffe22a996fbf157fb0b209b03d19f2570419d372d436eef47fa09258ab9b2d39fe6c0a5754495d38df29d8313d2339236fc4172d21c1
   languageName: node
   linkType: hard
 
@@ -2771,7 +2771,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@theminingco/cli@workspace:cli"
   dependencies:
-    "@solana-program/system": "npm:^0.3.3"
+    "@solana-program/system": "npm:^0.5.0"
     "@solana/web3.js": "npm:^2.0.0-preview.4"
     "@theminingco/core": "npm:*"
     "@theminingco/metadata": "npm:*"
@@ -2802,7 +2802,7 @@ __metadata:
   resolution: "@theminingco/lambda@workspace:lambda"
   dependencies:
     "@solana-program/memo": "npm:^0.3.2"
-    "@solana-program/system": "npm:^0.3.3"
+    "@solana-program/system": "npm:^0.5.0"
     "@solana-program/token": "npm:^0.2.1"
     "@solana/web3.js": "npm:^2.0.0-preview.4"
     "@theminingco/core": "npm:*"
