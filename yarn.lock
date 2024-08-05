@@ -1530,6 +1530,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kinobi-so/errors@npm:0.21.0":
+  version: 0.21.0
+  resolution: "@kinobi-so/errors@npm:0.21.0"
+  dependencies:
+    "@kinobi-so/node-types": "npm:0.21.0"
+    chalk: "npm:^5.3.0"
+    commander: "npm:^12.0.0"
+  bin:
+    errors: bin/cli.mjs
+  checksum: 10c0/774c8807d0947699c52aa3b83633f3802f24b17e6c0247cd9a06a846ffa12bbb927ede7650a1af8607402f08554c9307db5af6bbd76cf4eafca8b8de0ec569d4
+  languageName: node
+  linkType: hard
+
 "@kinobi-so/node-types@npm:0.20.4":
   version: 0.20.4
   resolution: "@kinobi-so/node-types@npm:0.20.4"
@@ -1537,15 +1550,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kinobi-so/nodes-from-anchor@npm:^0.20.6":
-  version: 0.20.6
-  resolution: "@kinobi-so/nodes-from-anchor@npm:0.20.6"
+"@kinobi-so/node-types@npm:0.21.0":
+  version: 0.21.0
+  resolution: "@kinobi-so/node-types@npm:0.21.0"
+  checksum: 10c0/51355e9c7ec58077edddc21b5b0ecabefefc3a24a0b170aad8878cd5c333aa68df8f9f882369d68e960b621db32b6c1bbc9b6b760ba9ce591578ea58907e7dfc
+  languageName: node
+  linkType: hard
+
+"@kinobi-so/nodes-from-anchor@npm:^0.20.9":
+  version: 0.20.9
+  resolution: "@kinobi-so/nodes-from-anchor@npm:0.20.9"
   dependencies:
-    "@kinobi-so/errors": "npm:0.20.4"
-    "@kinobi-so/nodes": "npm:0.20.4"
-    "@kinobi-so/visitors": "npm:0.20.4"
+    "@kinobi-so/errors": "npm:0.21.0"
+    "@kinobi-so/nodes": "npm:0.21.0"
+    "@kinobi-so/visitors": "npm:0.21.0"
     "@noble/hashes": "npm:^1.4.0"
-  checksum: 10c0/0bcbb130994996347295492d79d817e7e486a513edf122b78a4a90ae63a7d63d8a6632f3b96a64677813a3b4d3055d7f946342974f65667ce92608f707f5c900
+  checksum: 10c0/812e7d2ece3d4c611b33690de052f40d5d9edb8e1369554a8188e4cf32f90579ba95b6d3cb4c76d11cf2b6bf375c639c7b1cb3ca391488cf18083b3da1f4f982
   languageName: node
   linkType: hard
 
@@ -1556,6 +1576,16 @@ __metadata:
     "@kinobi-so/errors": "npm:0.20.4"
     "@kinobi-so/node-types": "npm:0.20.4"
   checksum: 10c0/8b99f80a5fd0c9c57408d37b080c70233ec437f2d704062b5e8141f78902d8c1b94c71debe7e18f540142b37d72b84c84e7b46ac70a40d6d9c18845ea9a990a9
+  languageName: node
+  linkType: hard
+
+"@kinobi-so/nodes@npm:0.21.0":
+  version: 0.21.0
+  resolution: "@kinobi-so/nodes@npm:0.21.0"
+  dependencies:
+    "@kinobi-so/errors": "npm:0.21.0"
+    "@kinobi-so/node-types": "npm:0.21.0"
+  checksum: 10c0/188753c519647e558c4b886987dfdf582fae02595f92d655316a0d32489d2ae59bea18e0cdbfce9408a6ddaea790bf1272ffd85466816f55bc30fd6cb97f8d6d
   languageName: node
   linkType: hard
 
@@ -1607,6 +1637,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kinobi-so/visitors-core@npm:0.21.0":
+  version: 0.21.0
+  resolution: "@kinobi-so/visitors-core@npm:0.21.0"
+  dependencies:
+    "@kinobi-so/errors": "npm:0.21.0"
+    "@kinobi-so/nodes": "npm:0.21.0"
+    json-stable-stringify: "npm:^1.1.1"
+  checksum: 10c0/e0da68594a5670551934c8f1d3535a55117102981d6e1ebcd7caf4e3dac87a7eaf4d7c80316ba51456dde47e084c6862f150b982b79cfa9996ad6f981df5e4c6
+  languageName: node
+  linkType: hard
+
 "@kinobi-so/visitors@npm:0.20.4":
   version: 0.20.4
   resolution: "@kinobi-so/visitors@npm:0.20.4"
@@ -1615,6 +1656,17 @@ __metadata:
     "@kinobi-so/nodes": "npm:0.20.4"
     "@kinobi-so/visitors-core": "npm:0.20.4"
   checksum: 10c0/ced98ef3178f1fb1311d3fa9d00efcf99c8e05a2c3d86ccd543aa951465f7f6a9129402af2d314ae51620aa920436c6ab01a6ebf7e769bf07dc9b97cb42d482a
+  languageName: node
+  linkType: hard
+
+"@kinobi-so/visitors@npm:0.21.0":
+  version: 0.21.0
+  resolution: "@kinobi-so/visitors@npm:0.21.0"
+  dependencies:
+    "@kinobi-so/errors": "npm:0.21.0"
+    "@kinobi-so/nodes": "npm:0.21.0"
+    "@kinobi-so/visitors-core": "npm:0.21.0"
+  checksum: 10c0/da615c6368fac1c3dc3fce9456daa5cb87529dc9b70a180fdc302d6b24eeb3a1bf55048162e7ea5c49d25324b9ac61d69df2a9ce08e1845fa8f7e3569dc36694
   languageName: node
   linkType: hard
 
@@ -2831,7 +2883,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@theminingco/metadata@workspace:metadata"
   dependencies:
-    "@kinobi-so/nodes-from-anchor": "npm:^0.20.6"
+    "@kinobi-so/nodes-from-anchor": "npm:^0.20.9"
     "@kinobi-so/renderers-js": "npm:^0.20.9"
     "@solana/web3.js": "npm:^2.0.0-preview.4"
     kinobi: "npm:^0.20.4"
